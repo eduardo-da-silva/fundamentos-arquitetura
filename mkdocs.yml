@@ -1,0 +1,121 @@
+site_name: Arquitetura de Software
+site_author: Eduardo da Silva
+site_url: https://eduardo-da-silva.github.io/fundamentos-arquitetura
+repo_url: https://github.com/eduardo-da-silva/fundamentos-arquitetura
+repo_name: eduardo-da-silva/fundamentos-arquitetura
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 Eduardo da Silva
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/eduardo-da-silva
+
+theme:
+  name: material
+  favicon: images/favicon.svg
+  icon:
+    logo: fontawesome/solid/code
+  language: pt-BR
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tooltips
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: lucide/sun
+        name: Ativar modo escuro
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: lucide/moon
+        name: Ativar modo claro
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: eduardo-da-silva
+      repo: fundamentos-arquitetura
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Início: index.md
+  - Módulo 1 — Fundamentos Arquiteturais:
+    - Visão geral do módulo: modulo1/index.md
+    - Aula 1 — O que é Arquitetura de Software?: modulo1/aula01-o-que-e-arquitetura.md
+    - Aula 2 — Leis da Arquitetura, trade-offs e ADR: modulo1/aula02-leis-trade-offs-adr.md
+    - Aula 3 — Características arquiteturais: modulo1/aula03-caracteristicas-arquiteturais.md
+    - Aula 4 — Modularidade e Componentes: modulo1/aula04-modularidade-componentes.md
+    - Aula 5 — Acoplamento e Coesão: modulo1/aula05-acoplamento-coesao.md
+    - Aula 6 — Connascência: modulo1/aula06-connascencia.md
+    - Aula 7 — Métricas e governança: modulo1/aula07-metricas-governanca.md
+    - Aula 8 — Oficina de Diagnóstico: modulo1/aula08-oficina-diagnostico.md
+  - Orion Evolution Lab: orion/index.md

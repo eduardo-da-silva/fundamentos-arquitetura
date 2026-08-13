@@ -1,0 +1,7 @@
+site/
+.cache/
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+_rascunhos/
