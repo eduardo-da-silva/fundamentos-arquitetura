@@ -77,7 +77,9 @@ def registrar(pedido: dict) -> None:
 registrar({"status": "confirmado"})
 ```
 
-A mais fraca, e a mais comum. Renomear é mecânico, e ferramentas ajudam. Foi a mudança de vinte minutos do começo da aula.
+A mais fraca, e a mais comum. Renomear é mecânico, e ferramentas ajudam.
+
+É esta a dependência por trás da primeira mudança da seção de abertura. `Checkout` e `Pagamentos` concordavam sobre o nome `valor_total`, e trocá-lo por `total_bruto` obrigou os dois lados a mudarem juntos — logo, há connascência. Mas o acordo é sobre um nome escrito no código, então ele fica todo à vista: o editor localizou os quatro usos, o teste apontou o quinto, e a alteração fechou em vinte minutos.
 
 **2. Connascência de Tipo (CoT)** — partes concordam sobre um tipo.
 
@@ -148,7 +150,7 @@ estoque.reservar(pedido_id)
 
 Inverter roda, não levanta exceção e não falha em teste. Falha quando o estoque acaba entre as duas chamadas: o cliente recebe reserva de um produto que não será cobrado, ou é cobrado por um que não será reservado.
 
-Foi a mudança de três dias do começo da aula. Nenhuma linha de código "quebrou" — o comportamento de negócio é que ficou errado, e só em parte dos casos.
+É esta a dependência por trás da segunda mudança da seção de abertura. Inverter a reserva de estoque e a cobrança parecia uma troca de duas linhas, mas levou três dias e provocou um incidente em produção, com um pedido cobrado sem estoque reservado. A ordem em que `Checkout` aciona a cobrança e a reserva é um acordo que não está escrito em lugar nenhum: nenhuma ferramenta o aponta e nenhum teste o exercitava. Nenhuma linha de código "quebrou" — o comportamento de negócio é que ficou errado, e só em parte dos casos.
 
 **7. Connascência de Tempo (CoTiming)** — o momento ou a duração importam.
 
