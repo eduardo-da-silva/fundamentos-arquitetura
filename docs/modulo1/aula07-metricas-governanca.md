@@ -206,6 +206,36 @@ class Metricas:
 
 O cálculo em si é trivial. O trabalho de verdade é decidir o que entra em `DEPENDENCIAS` e em `ELEMENTOS` — e essas duas decisões não estão na fórmula.
 
+O `ELEMENTOS` acima resume uma contagem já feita. Abrir uma entrada dele mostra a decisão por trás do par de números, e por que duas pessoas competentes chegam a valores diferentes.
+
+??? example "De onde saem os `(2, 10)` do `Checkout`"
+
+    A convenção da seção anterior, aplicada ao `Checkout` classe por classe. Vale lembrar o que ela diz: elemento é toda classe do componente, incluindo `Enum`, `@dataclass` e `Protocol`; função de módulo e constante ficam de fora; abstrato é `Protocol` ou `ABC` com pelo menos um `@abstractmethod`.
+
+    O `Checkout` tem dez classes. Oito são concretas:
+
+    - `ServicoCheckout`, que orquestra o fechamento da compra;
+    - `SessaoCheckout`, a compra em andamento, com seu ciclo de vida;
+    - `EstadoCheckout`, um `Enum` — iniciado, aguardando pagamento, confirmado, cancelado;
+    - `ResumoValores` e `SnapshotEndereco`, dois `@dataclass`: os valores da compra e o endereço congelado no momento dela;
+    - `ChaveIdempotencia`, que impede cobrar duas vezes o mesmo clique;
+    - `ValidadorCarrinho`, que recusa carrinho inconsistente antes da cobrança;
+    - `MontadorPedido`, que traduz a sessão no payload que `Pedidos` emite.
+
+    As outras duas são contratos, e é só o que entra em $N_a$:
+
+    - `PoliticaDeCheckout` (`Protocol`) — as regras que mudam por região e por campanha;
+    - `SelecaoDeGateway` (`Protocol`) — qual provedor de pagamento tentar primeiro.
+
+    Daí $N_a = 2$, $N_c = 10$ e $A = 0{,}20$. Ficaram de fora `calcular_frete_estimado` e `formatar_recibo`: são código do `Checkout`, mas são funções de módulo, e a convenção conta classes.
+
+    Duas decisões aconteceram antes da divisão:
+
+    - **O que conta como elemento.** Contar aquelas duas funções levaria $N_c$ a 12 e $A$ a 0,17. Nenhuma das contagens é errada — são convenções diferentes, e quem lê a métrica precisa saber qual foi usada.
+    - **O que o `Checkout` contém.** Isso é um modelo, não um fato. O Mini-Orion em `code/mini-orion/` é um recorte do fluxo de checkout: tem o `ServicoCheckout` e os contratos que ele consome, e nada além disso. O `Checkout` do marketplace inteiro — com sessão, idempotência e política por região — é o que a tabela mede. Mudar o modelo muda os dois números.
+
+    No extremo oposto, o `Portal` tem `(0, 6)`: seis classes de composição de tela, nenhuma delas `Protocol` ou `ABC`. Um componente de borda sem contrato próprio é o esperado, e é o mesmo que a instabilidade $I = 1{,}00$ dele vai dizer adiante.
+
 ### A tabela do Orion
 
 | Componente | $C_a$ | $C_e$ | $I$ | $N_a$ | $N_c$ | $A$ | $D$ |

@@ -109,6 +109,33 @@ Verificação: a soma dos $C_a$ é 17 e a soma dos $C_e$ é 17, iguais ao númer
 
 Valores arredondados para duas casas. As frações exatas menos óbvias: `Checkout` $I = 5/6$; `Promocoes` $A = 1/7$; `Pedidos` $A = 1/9$; `Integracoes` $A = 5/6$.
 
+### Inventário de elementos por componente
+
+O par $N_a / N_c$ de cada linha vem da convenção de contagem de `06-code-style.md` aplicada a um inventário de classes. Os dois inventários abaixo são a referência para a aula de métricas — os demais componentes seguem a mesma convenção e serão detalhados aqui quando uma aula precisar deles.
+
+**`Checkout` — $N_a = 2$, $N_c = 10$**
+
+| Elemento | Tipo | Abstrato? |
+|---|---|---|
+| `ServicoCheckout` | classe com comportamento | não |
+| `SessaoCheckout` | classe com comportamento | não |
+| `EstadoCheckout` | `Enum` | não |
+| `ResumoValores` | `@dataclass` | não |
+| `SnapshotEndereco` | `@dataclass` | não |
+| `ChaveIdempotencia` | `@dataclass` | não |
+| `ValidadorCarrinho` | classe com comportamento | não |
+| `MontadorPedido` | classe com comportamento | não |
+| `PoliticaDeCheckout` | `Protocol` | sim |
+| `SelecaoDeGateway` | `Protocol` | sim |
+
+Fora da conta: `calcular_frete_estimado` e `formatar_recibo` (funções de módulo) e as constantes de timeout. A convenção conta classes.
+
+Hoje só `ServicoCheckout` e os contratos que ele consome existem em `code/mini-orion/` — o restante é o modelo do componente completo, do qual o Mini-Orion é recorte.
+
+**`Portal` — $N_a = 0$, $N_c = 6$**
+
+Seis classes de composição de tela — `PaginaProduto`, `PaginaCheckout`, `PaginaPedidos`, `PaginaCliente`, `ResumoCarrinho`, `SessaoNavegacao` — todas concretas. Nenhum `Protocol`, nenhum `ABC`. Componente de borda não define contrato próprio.
+
 ### Leituras que estes números permitem
 
 Estes casos são deliberados. Cada um sustenta um argumento de aula:
