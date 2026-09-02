@@ -346,6 +346,14 @@ Em `04-camadas/tests/test_checkout.py`, trocar a função auxiliar `montar(...)`
 
 - [ ] **Step 6: Escrever o contrato `layers` no `setup.cfg`**
 
+`type = layers` do import-linter impõe **camadas abertas**: uma camada
+alta pode importar qualquer camada abaixo (inclusive pulando níveis), e
+nenhuma camada baixa importa uma acima. Fechar as camadas (proibir o
+pulo de nível) exigiria contratos `forbidden` por par. O comentário do
+`setup.cfg` deve descrever essa garantia real, sem afirmar "camadas
+fechadas". A distinção fechada × aberta é tratada como conceito na
+Aula 10.
+
 Substituir o `setup.cfg` por:
 
 ```ini
@@ -353,7 +361,7 @@ Substituir o `setup.cfg` por:
 root_package = mini_orion
 
 [importlinter:contract:camadas]
-name = Regra de dependencia: apresentacao > aplicacao > dominio
+name = Regra de dependencia: nenhuma camada importa uma acima
 type = layers
 layers =
     mini_orion.apresentacao

@@ -300,7 +300,7 @@ decisões).
 
 | Checkpoint | Estado | Introduzido em | Diagnóstico/uso em | Contratos `import-linter` |
 |---|---|---|---|---|
-| `04-camadas/` | pacote em camadas técnicas (`apresentacao`, `aplicacao`, `dominio`) | A10 | A10 | `layers` (apresentacao > aplicacao > dominio), fechadas |
+| `04-camadas/` | pacote em camadas técnicas (`apresentacao`, `aplicacao`, `dominio`) | A10 | A10 | `layers` (apresentacao > aplicacao > dominio; regra aberta — camada alta importa as de baixo, nunca o contrário) + `forbidden` dominio/aplicacao ↛ infraestrutura |
 | `05-modular/` | módulos de domínio (`compra`, `pagamentos`, `notificacoes`), cada um com API pública e *internals* privados | A11 | A12 | `independence` entre módulos + `forbidden` contra *reach-in* |
 | `06-microkernel/` | `Promocoes` como registro de plugins de regra de desconto | A13 | A13 | núcleo↛plugin (`forbidden`) |
 
