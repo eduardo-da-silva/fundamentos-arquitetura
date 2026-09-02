@@ -16,9 +16,9 @@ Duas aulas por semana. Total de 36 encontros.
 | 4 | 14–17 | 8 | Eventos e Arquitetura Evolutiva |
 | — | 18 | 2 | Apresentação final do Orion Evolution Lab e fechamento |
 
-*O Módulo 2 usa 7 aulas em 8 encontros (a oficina ocupa dois). O encontro restante das semanas 5–8 vai para o Módulo 3 — o de maior densidade —, que fica com 11 encontros para suas 10 aulas.*
+*O Módulo 2 tem 7 aulas e ocupa os 8 encontros das semanas 5–8: seis aulas conceituais (9–14) em um encontro cada e a oficina (aula 15) nos dois encontros da semana 8. A fusão das duas aulas de camadas é o que faz a oficina dupla caber — com 8 aulas e oficina dupla não cabia, e é essa a inconsistência que o Módulo 1 ainda carrega. Nada é transferido para outro módulo.*
 
-Isso resolve uma inconsistência do material atual: `docs/index.md` anuncia 18 semanas e 4 módulos, enquanto `docs/modulo1/index.md` estabelece 4 semanas por módulo — o que soma 16 e deixa duas semanas sem destino. O Módulo 3 recebe uma semana a mais por ser o de maior densidade, absorve ainda o encontro que a oficina dupla do Módulo 2 libera, e a semana 18 é dedicada à entrega final.
+Isso resolve uma inconsistência do material atual: `docs/index.md` anuncia 18 semanas e 4 módulos, enquanto `docs/modulo1/index.md` estabelece 4 semanas por módulo — o que soma 16 e deixa duas semanas sem destino. O Módulo 3 recebe uma semana a mais por ser o de maior densidade, e a semana 18 é dedicada à entrega final.
 
 **Nomes dos módulos são normativos.** Qualquer página que os cite usa exatamente estes. O material atual tem contradição direta: `docs/index.md` anuncia "Módulo 2 — Arquiteturas Monolíticas" e o diretório `docs/modulo2/` continha "Módulo 2 — Evoluindo o domínio", resíduo do repositório de POO-II (removido).
 
