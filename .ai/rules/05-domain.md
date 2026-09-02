@@ -148,6 +148,50 @@ Estes casos são deliberados. Cada um sustenta um argumento de aula:
 
 ---
 
+## Agrupamento em módulos de domínio
+
+Os dez componentes canônicos se agrupam em **oito módulos de domínio**. Este agrupamento é **decisão da disciplina**, da mesma natureza que a convenção de contagem de Abstractness em `06-code-style.md`: não é a única leitura possível do domínio, é a leitura fixada para que o exercício de reorganização do grafo, no Módulo 2, tenha resposta verificável. Um agrupamento diferente — separar `Pedidos` de `Checkout`, juntar `Financeiro` e `Distribuição` sob um módulo de pós-venda — seria defensável e não estaria errado. O que não se admite é uma aula derivar números de um agrupamento que não seja este.
+
+| Módulo de domínio | Componentes | Arestas internas |
+|---|---|---|
+| Borda | `Portal` | — |
+| Vitrine | `Catalogo`, `Promocoes` | `Promocoes → Catalogo` |
+| Compra | `Checkout`, `Pedidos` | `Checkout → Pedidos` |
+| Financeiro | `Pagamentos` | — |
+| Distribuição | `Logistica` | — |
+| Comunicação | `Notificacoes` | — |
+| Identidade | `Clientes` | — |
+| Integração | `Integracoes` | — |
+
+### Arestas inter-módulo
+
+Das 17 arestas do grafo oficial, apenas **2 ficam dentro de um módulo** — as duas listadas na coluna acima. As **15 restantes atravessam fronteira de módulo**:
+
+```
+de Portal:       → Catalogo    → Checkout    → Pedidos    → Clientes
+de Checkout:     → Catalogo    → Clientes    → Promocoes  → Pagamentos
+de Pedidos:      → Notificacoes    → Logistica
+de Pagamentos:   → Notificacoes
+de Logistica:    → Notificacoes
+de Integracoes:  → Catalogo    → Pedidos    → Notificacoes
+```
+
+Verificação declarada: `2 internas + 15 inter-módulo = 17 arestas`, igual ao total do grafo oficial e à soma dos $C_a$. Qualquer alteração no grafo obriga a refazer esta separação.
+
+### Leitura em camadas
+
+O agrupamento induz uma direção de dependência em camadas: `Borda` (só `Portal`) depende dos módulos de domínio; os módulos de domínio dependem uns dos outros e dos tipos compartilhados do pacote `dominio`; nenhum módulo de domínio depende de `Borda`. `Portal` é o único ponto de entrada, e ninguém entra por ele.
+
+!!! note "Por que 15 de 17 é o ponto de ensino"
+
+    Quase toda dependência do sistema cruza uma fronteira de módulo. O grafo atual **mal é modular**: o agrupamento não cria esse problema, só o torna visível. `Checkout` sozinho aparece em 5 das 15 arestas inter-módulo — é o hub do grafo, o mesmo componente com $D = 0{,}03$ (métrica ótima) e o que mais causa incidente em produção. O contraexemplo do Módulo 1, relido aqui como problema de modularização.
+
+!!! warning "A tabela de métricas não muda"
+
+    A tabela $C_a$/$C_e$/$I$/$N_a$/$N_c$/$A$/$D$ continua sendo **por componente**, não por módulo. O agrupamento em módulos de domínio é uma camada de leitura adicional sobre o mesmo grafo de 17 arestas — não redefine fan-in, fan-out nem nenhum número já publicado acima.
+
+---
+
 ## Recorte legado (para a aula de acoplamento)
 
 Antes da separação atual, `Checkout`, `Promocoes` e parte de `Pedidos` viviam em um único componente chamado `CoreService`, que tinha ciclo com `Promocoes`:
