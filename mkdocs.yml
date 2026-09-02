@@ -118,4 +118,7 @@ nav:
     - Aula 6 — Connascência: modulo1/aula06-connascencia.md
     - Aula 7 — Métricas e governança: modulo1/aula07-metricas-governanca.md
     - Aula 8 — Oficina de Diagnóstico: modulo1/aula08-oficina-diagnostico.md
+  - Módulo 2 — Arquiteturas Monolíticas:
+    - Visão geral do módulo: modulo2/index.md
+    - Aula 9 — O monólito não é o problema: modulo2/aula09-monolito-nao-e-o-problema.md
   - Orion Evolution Lab: orion/index.md
