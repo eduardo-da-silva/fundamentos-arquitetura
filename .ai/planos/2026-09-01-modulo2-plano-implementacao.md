@@ -526,7 +526,16 @@ source_modules =
 forbidden_modules =
     mini_orion.pagamentos._provedores
     mini_orion.notificacoes._fila
+ignore_imports =
+    mini_orion.notificacoes.api -> mini_orion.notificacoes._fila
 ```
+
+O `ignore_imports` isenta **exatamente uma** aresta legítima — a API de
+`notificacoes` usando o próprio `_fila` — sem desligar a detecção de
+caminho indireto para o resto (um futuro `compra → pagamentos.api →
+pagamentos._provedores` continua sendo pego). Não usar
+`allow_indirect_imports = true`, que abriria a exceção para o contrato
+todo.
 
 - [ ] **Step 8: Rodar pytest**
 
