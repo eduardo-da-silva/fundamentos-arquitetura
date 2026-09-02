@@ -51,11 +51,11 @@ A fronteira lógica é o ensaio da física. Não se extrai o que não tem fronte
 
 A Aula 6 deixou uma regra: connascência forte é tolerável quando a localidade é pequena; a que atravessa fronteira precisa ser fraca. Aplicada ao módulo, ela diz que as formas fortes — execução, tempo, valor, identidade — ficam dentro de um módulo, e só as formas fracas e estáticas — nome, tipo — passam pela API.
 
-No Mini-Orion isso é literal. A ordem em que `compra` chama cobrar, emitir e publicar é connascência de execução: forte, dinâmica. Ela vive inteira dentro de `compra.api`, concentrada num método só (`fechar_pedido`), com grau um. O que cruza para `pagamentos` é connascência de tipo: os dois lados concordam que o resultado da cobrança é um `ResultadoCobranca`. Fraca, estática, verificável por ferramenta. A API é o ponto onde se garante que só as formas fracas passaram.
+No Mini-Orion isso é literal. A ordem em que `compra` chama cobrar, emitir e publicar é connascência de execução: forte, dinâmica. Ela vive inteira dentro de `compra.api`, concentrada num método só (`fechar_pedido`) — localidade alta, a proximidade máxima; as chamadas ordenadas que participam ficam todas nesse método, não espalhadas pelos chamadores. O que cruza para `pagamentos` é connascência de tipo: os dois lados concordam que o resultado da cobrança é um `ResultadoCobranca`. Fraca, estática, verificável por ferramenta. A API é o ponto onde se garante que só as formas fracas passaram.
 
 ### O ponto honesto: `compra` ainda depende de duas APIs
 
-`compra.api` continua importando `pagamentos.api` e `notificacoes.api`. Os contratos do `setup.cfg` não proíbem isso, e não deveriam: quem orquestra conhece o contrato de quem é orquestrado. A fronteira aqui é lógica — o linter garante que `compra` jamais alcança `pagamentos._provedores` — e não física: não há evento nem fila entre eles, `compra` chama `gateway.cobrar` e espera a resposta. Independência total entre `compra` e os outros dois exigiria `compra` publicar um evento e seguir sem esperar, e isso é o Módulo 4. Dizer que três contratos de `import-linter` entregam mais que isso seria vender o que eles não compram.
+`compra.api` continua importando `pagamentos.api` e `notificacoes.api`. Os contratos do `setup.cfg` não proíbem isso, e não deveriam: quem orquestra conhece o contrato de quem é orquestrado. A fronteira aqui é lógica — o linter garante que `compra` não alcança `pagamentos._provedores` — e não física: não há evento nem fila entre eles, `compra` chama `gateway.cobrar` e espera a resposta. Independência total entre `compra` e os outros dois exigiria `compra` publicar um evento e seguir sem esperar, e isso é o Módulo 4. Dizer que três contratos de `import-linter` entregam mais que isso seria vender o que eles não compram.
 
 ## Três alternativas de fronteira
 
@@ -81,7 +81,7 @@ mini_orion/
     notificacoes/   api.py   _fila.py
 ```
 
-`compra.api` carrega `ServicoCheckout`, a fábrica `montar_servico` e o `Protocol` `RepositorioDePedidos`; `compra._pedidos` carrega a classe concreta `RepositorioPedidos`, em memória, que satisfaz o `Protocol` por estrutura. `pagamentos` e `notificacoes` seguem o mesmo molde: contrato na porta, concreto no `_`. O `nucleo` é *shared kernel* — só `@dataclass` de dados (`Carrinho`, `Cliente`, `Pedido`), sem regra de negócio; os três módulos o compartilham sem depender uns dos outros.
+`compra.api` carrega `ServicoCheckout`, a fábrica `montar_servico` e o `Protocol` `RepositorioDePedidos`; `compra._pedidos` carrega a classe concreta `RepositorioPedidos`, em memória, que satisfaz o `Protocol` por estrutura. `pagamentos` e `notificacoes` seguem o mesmo molde: contrato na porta, concreto no `_`. O `nucleo` é *shared kernel* — só `@dataclass` de dados (`Carrinho`, `Cliente`, `Pedido`), sem regra de negócio; está disponível para os módulos que precisam dele — `compra` e `notificacoes` o importam, `pagamentos` não precisa — e depender do `nucleo` não faz um módulo depender dos outros.
 
 ### O mapa: as setas que saem de compra
 
@@ -89,10 +89,14 @@ Se `compra` ainda importa duas APIs, o que exatamente a fronteira impede?
 
 ```mermaid
 flowchart TD
-    compra["compra.api"] --> pagamentos["pagamentos.api"]
-    compra["compra.api"] --> notificacoes["notificacoes.api"]
-    compra["compra.api"] --> nucleo["nucleo.modelos"]
-    notificacoes["notificacoes.api"] --> nucleo["nucleo.modelos"]
+    compra["compra.api"]
+    pagamentos["pagamentos.api"]
+    notificacoes["notificacoes.api"]
+    nucleo["nucleo.modelos"]
+    compra --> pagamentos
+    compra --> notificacoes
+    compra --> nucleo
+    notificacoes --> nucleo
     subgraph internos ["ninguem de fora entra aqui"]
         prov["pagamentos._provedores"]
         fila["notificacoes._fila"]
@@ -206,7 +210,7 @@ Nenhum nome de `compra` entra em cena. Um módulo que se testa sozinho é um mó
 
         **a — Connascência de tipo.** Estática, fraca. Localidade: módulos diferentes. Grau 2. Atravessa a fronteira sem problema: viaja por `pagamentos.api`, o compilador de tipos a enxerga, e um teste rápido a pega.
 
-        **b — Connascência de execução.** Dinâmica, forte. Localidade: um método só, dentro de `compra.api`. Grau 1 — a sequência está concentrada, não espalhada pelos chamadores. Não atravessa fronteira nenhuma, e é assim que deve ser: fica selada dentro de `compra`.
+        **b — Connascência de execução.** Dinâmica, forte. Localidade: alta — um método só, dentro de `compra.api`. Grau: as chamadas ordenadas da sequência (cobrar, emitir, publicar), todas nesse mesmo método, não espalhadas pelos chamadores. Não atravessa fronteira nenhuma, e é assim que deve ser: fica selada dentro de `compra`.
 
         **c — Connascência de valor.** Dinâmica, forte. Localidade: módulos diferentes. Grau 2. A heurística diz que uma forma forte cruzando fronteira é dívida. Aqui ela é tolerada só porque há um orquestrador único — `compra` — que deriva os dois valores de `carrinho.total` num ponto só. Eliminá-la de vez pediria um evento carregando o valor, o que é assunto do Módulo 4.
 
