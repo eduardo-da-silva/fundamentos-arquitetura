@@ -68,7 +68,19 @@ Acompanha:
 
 E, obrigatoriamente, uma frase dizendo **o que o mapa não representa**. Todo diagrama arquitetural omite; omitir sem avisar é o defeito clássico.
 
-### 2. Registro de diagnóstico
+A partir da Aula 11, o mapa ganha uma segunda leitura: cada componente pertence a um módulo de domínio, e o diagrama marca quais arestas ficam dentro de um módulo e quais atravessam uma fronteira.
+
+### 2. Tabela de arestas inter-módulo
+
+A partir da Aula 12.
+
+| Origem (módulo) | Destino (módulo) | Fronteira justificada por |
+|---|---|---|
+
+Confiram: arestas internas + inter-módulo = total de arestas do recorte.
+Ciclo entre módulos é bloqueio de extração — nomeiem o custo de removê-lo.
+
+### 3. Registro de diagnóstico
 
 A partir da Aula 5.
 
@@ -77,7 +89,7 @@ A partir da Aula 5.
 
 Evidência é o que sustenta a linha: uma dependência no grafo, um trecho de código, um número, um incidente. "Parece confuso" não é evidência.
 
-### 3. ADR
+### 4. ADR
 
 A partir da Aula 2, um por decisão relevante.
 
@@ -103,7 +115,7 @@ O que custaria voltar atrás daqui a seis meses.
 
 ADR sem consequência negativa está incompleto. Não é decisão, é anúncio.
 
-### 4. Tabela de métricas
+### 5. Tabela de métricas
 
 A partir da Aula 7.
 
@@ -118,11 +130,13 @@ Três exigências:
 
 A leitura deve conter **um caso em que a métrica não aponta o problema real**. Ele quase sempre existe.
 
-### 5. Proposta de evolução
+### 6. Proposta de evolução
 
 Entrega final.
 
 Para cada ação: o que resolve, o que custa, em que ordem, e **como saberemos que funcionou**. No máximo três ações — a restrição é parte do exercício.
+
+Além das ações, a proposta declara um **critério de parada**: até que ponto modularizar, e por que não distribuir além disso. Proposta sem critério de parada tem teto de nota.
 
 ## Estrutura da entrega
 
