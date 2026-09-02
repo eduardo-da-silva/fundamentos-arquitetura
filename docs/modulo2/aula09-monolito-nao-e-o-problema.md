@@ -21,7 +21,7 @@ O time devolve uma pergunta antes de aceitar a tarefa: o que exatamente a migra�
 
 ### Big ball of mud e monólito estruturado
 
-O *big ball of mud* — o termo é de Foote e Yoder — é o monólito sem fronteira interna reconhecível: qualquer parte alcança qualquer outra, e uma mudança em um ponto propaga sem limite previsível. O monólito estruturado tem o mesmo empacotamento e o oposto por dentro: módulos com interface definida, direção de dependência governada, contratos que falham a análise quando alguém os viola.
+O *big ball of mud* — o monólito sem fronteira interna reconhecível — é o caso em que qualquer parte alcança qualquer outra, e uma mudança em um ponto propaga sem limite previsível. O monólito estruturado tem o mesmo empacotamento e o oposto por dentro: módulos com interface definida, direção de dependência governada, contratos que falham a análise quando alguém os viola.
 
 O Orion hoje é o segundo caso, não o primeiro. O Módulo 1 já mostrou fronteiras: cada componente tem responsabilidade nomeada, o grafo de 17 arestas é conhecido, e o Mini-Orion em `03-governado` carrega três contratos de `import-linter` que quebram a integração contínua se um import proibido volta.
 
@@ -119,7 +119,7 @@ O Orion permanece um único *deployable* pelos próximos 12 meses. O trabalho ar
 
 ### Alternativas consideradas
 
-**Começar a extrair `Pagamentos` agora.** `Pagamentos` tem $C_a = 1$ e $C_e = 1$: o menor acoplamento do grafo, um candidato plausível a serviço. Um time competente escolheria isto para dar à conciliação uma cadência de release própria. Descartada porque o ganho não está medido e o custo é certo e imediato — cobrança e emissão de pedido sem commit único, um novo pipeline, observabilidade distribuída — e porque extrair antes de a fronteira lógica existir é extrair no escuro.
+**Começar a extrair `Pagamentos` agora.** `Pagamentos` tem $C_a = 1$ e $C_e = 1$: um dos menores acoplamentos do grafo, um candidato plausível a serviço. Um time competente escolheria isto para dar à conciliação uma cadência de release própria. Descartada porque o ganho não está medido e o custo é certo e imediato — cobrança e emissão de pedido sem commit único, um novo pipeline, observabilidade distribuída — e porque extrair antes de a fronteira lógica existir é extrair no escuro.
 
 **Aceitar o pedido e entregar o plano de migração completo.** Atende à diretoria no curto prazo. Descartada porque comprometer 12 meses de roadmap com uma decisão sem diagnóstico é o oposto do que o Módulo 1 praticou: o plano descreveria um destino que ninguém justificou.
 
@@ -127,7 +127,7 @@ O Orion permanece um único *deployable* pelos próximos 12 meses. O trabalho ar
 
 **Positivas.** O commit único no fechamento de compra continua valendo. Há um só pipeline para operar. O esforço vai para fronteira interna, que é pré-condição de qualquer extração futura e útil mesmo que a extração nunca aconteça. A decisão é barata de sustentar, porque não consome orçamento de migração.
 
-**Negativas.** Um bug em `Catalogo` ainda pode derrubar o checkout — a falha não fica isolada por processo. `Pagamentos` continua subindo e descendo junto com o resto, sem janela de manutenção própria. A diretoria pode ler a decisão como imobilismo, e o trabalho de fronteira precisa ser comunicado como progresso. Se o diagnóstico de um gargalo aparecer no mês 3, ou se espera o fim do horizonte ou se reabre o ADR antes dele.
+**Negativas.** Um bug em `Catalogo` ainda pode derrubar o checkout — a falha não fica isolada por processo. `Pagamentos` continua subindo e descendo junto com o resto, sem janela de manutenção própria. A diretoria pode ler a decisão como imobilismo, e o trabalho de fronteira precisa ser comunicado como progresso. Se o diagnóstico de um gargalo aparecer no mês 3, a escolha é esperar o fim do horizonte de 12 meses ou reabrir o ADR antes dele.
 
 ### Reversão
 
@@ -184,7 +184,7 @@ Reabrir a decisão custa o plano de migração que não foi feito agora, mais o 
 
 4. **Julgue.** A Orion deveria começar a extrair `Pagamentos` agora?
 
-    As duas posições têm defensores competentes. A favor de extrair: `Pagamentos` tem o menor acoplamento do grafo ($C_a = 1$, $C_e = 1$), a conciliação tem um ritmo operacional distinto do resto, e fronteira lógica sem fronteira física às vezes nunca sai do papel. Contra: o ganho não está medido, o custo de rede é certo, e o sistema de dez componentes mal tem fronteira interna imposta — extrair sem isso é extrair no escuro.
+    As duas posições têm defensores competentes. A favor de extrair: `Pagamentos` tem um dos menores acoplamentos do grafo ($C_a = 1$, $C_e = 1$), a conciliação tem um ritmo operacional distinto do resto, e fronteira lógica sem fronteira física às vezes nunca sai do papel. Contra: o ganho não está medido, o custo de rede é certo, e o sistema de dez componentes mal tem fronteira interna imposta — extrair sem isso é extrair no escuro.
 
     Mais de uma resposta é aceitável. O que se avalia é se a sua resposta nomeia o critério que decide (ganho medido? risco de reversão? cadência de release?), reconhece o que a posição oposta tem de válido, e diz o que observaríamos em seis meses para saber se a escolha foi acertada. Uma resposta sem critério nomeado não conta como resposta técnica.
 
@@ -205,7 +205,10 @@ Ficou decidido não distribuir o Orion nos próximos 12 meses: ninguém nomeou o
 
 O ADR aposta em "reforçar a fronteira interna". Resta a pergunta de que fronteira o Orion tem hoje, de fato. Para o Mini-Orion, são três contratos. Para as dez caixas do grafo, quase nada: a separação entre `Portal` e `Catalogo` está no nome e na tabela de responsabilidades, e nenhuma verificação impede um de alcançar o interior do outro. A Aula 10 pega a primeira forma de impor essa fronteira sem separar processo — as camadas — e examina o que elas governam e o que deixam passar.
 
+## Leitura complementar
+
+- Richards, Mark; Ford, Neal. *Fundamentals of Software Architecture*. Cap. 9 — Foundations (*big ball of mud*; arquitetura monolítica versus distribuída).
+
 ## Referências
 
-- FOOTE, Brian; YODER, Joseph. *Big Ball of Mud*. In: Pattern Languages of Program Design 4. Addison-Wesley, 2000.
-- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020. Capítulos sobre estilo monolítico e sobre a armadilha do *big ball of mud*.
+- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020.
