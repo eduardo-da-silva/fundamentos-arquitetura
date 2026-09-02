@@ -402,19 +402,22 @@ em cada checkpoint. Fecha o backlog #4.
 
 ## 8. Alteração de currículo exigida pela fusão
 
-Reduzir o Módulo 2 para 7 aulas contradiz `07-curriculum.md` ("Módulo 2 … 8 aulas") e
-a soma das 18 semanas (passaria a 35 encontros).
+Reduzir o Módulo 2 para 7 aulas contradiz `07-curriculum.md` ("Módulo 2 … 8 aulas").
 
 **Proposta:** editar `07-curriculum.md`:
 
-- Tabela das 18 semanas: Módulo 2 passa de **8** para **7** aulas.
-- O encontro liberado vai para o **Módulo 3**, que fica com **11 encontros** para suas
-  10 aulas. `07-curriculum.md` já descreve o Módulo 3 como "o de maior densidade" e já
-  lhe deu a semana extra; um encontro de folga no módulo mais pesado é defensável.
-- Total volta a 36 encontros (8 + 7 + 10+1 + 8 + 2).
-- Corrige, de passagem, a inconsistência de encontros que o Módulo 1 carrega (oficina
-  dupla sem folga na contagem): o Módulo 2 fica com 7 aulas em 8 encontros, contando a
-  oficina como dois.
+- Tabela das 18 semanas: Módulo 2 passa de **8** para **7** aulas. Os demais módulos
+  não mudam.
+- As 7 aulas cabem exatas nos 8 encontros das semanas 5–8: seis aulas conceituais
+  (9–14), uma por encontro, e a oficina (Aula 15) ocupando os dois encontros da
+  semana 8. Foi justamente a fusão das duas aulas de camadas que abriu espaço para a
+  oficina dupla caber sem estourar a contagem — com 8 aulas, não cabia (é a
+  inconsistência que o Módulo 1 ainda carrega).
+- Nada é transferido para outro módulo. O Módulo 3 segue com 10 aulas nas semanas
+  9–13.
+- Total das 18 semanas inalterado: 8 + 8 + 10 + 8 + 2 = 36 encontros (encontros de
+  cada módulo = semanas × 2; as 7 aulas do Módulo 2 preenchem 8 encontros porque a
+  oficina conta como dois).
 
 Semana a semana:
 

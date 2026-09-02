@@ -150,11 +150,11 @@ git commit -m "$(printf 'dominio: agrupamento dos 10 componentes em 8 modulos de
 - Modify: `.ai/rules/07-curriculum.md`
 
 **Interfaces:**
-- Produces: Módulo 2 = 7 aulas na tabela das 18 semanas; Módulo 3 = 11 encontros; total 36.
+- Produces: Módulo 2 = 7 aulas na tabela das 18 semanas; demais módulos inalterados; total 36.
 
 - [ ] **Step 1: Atualizar a tabela das 18 semanas**
 
-Trocar a linha do Módulo 2 de `8` para `7` aulas. Trocar a linha do Módulo 3 para indicar `10 aulas / 11 encontros`. Acrescentar nota de rodapé curta: "O Módulo 2 usa 7 aulas em 8 encontros (a oficina ocupa dois). O encontro restante das semanas 5–8 vai para o Módulo 3, o de maior densidade."
+Trocar a linha do Módulo 2 de `8` para `7` aulas. As demais linhas não mudam (Módulo 3 continua `10`). Acrescentar nota de rodapé curta: "As 7 aulas do Módulo 2 preenchem os 8 encontros das semanas 5–8 — seis aulas conceituais (9–14) e a oficina (Aula 15) nos dois encontros da semana 8. Foi a fusão das duas aulas de camadas que abriu espaço para a oficina dupla caber; com 8 aulas, não cabia."
 
 - [ ] **Step 2: Reescrever a seção "Módulo 2 — Arquiteturas Monolíticas"**
 
@@ -176,9 +176,9 @@ Acrescentar duas frases de justificativa, no tom das que já existem no Módulo 
 
 Run:
 ```bash
-python3 -c "assert 8+7+(10+1)+8+2 == 36; print('36 encontros OK')"
+python3 -c "assert 8+8+10+8+2 == 36; print('36 encontros OK')"
 ```
-Expected: `36 encontros OK`.
+Expected: `36 encontros OK`. (Encontros de cada módulo = semanas × 2. As 7 aulas do Módulo 2 preenchem 8 encontros porque a oficina conta como dois.)
 
 - [ ] **Step 4: Verificar consistência de nomes de módulo**
 
@@ -189,7 +189,7 @@ Expected: o nome do Módulo 2 aparece idêntico ("Arquiteturas Monolíticas") em
 
 ```bash
 git add .ai/rules/07-curriculum.md
-git commit -m "$(printf 'curriculo: Modulo 2 passa a 7 aulas; 1 encontro realocado ao Modulo 3\n\nA fusao das duas aulas de camadas reduz o Modulo 2 a 7 aulas em 8\nencontros (oficina dupla). Total das 18 semanas segue 36.\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_013Rfq2SSrHESURLW3XDgVmw')"
+git commit -m "$(printf 'curriculo: Modulo 2 passa de 8 para 7 aulas\n\nA fusao das duas aulas de camadas deixa o Modulo 2 com 7 aulas, que\ncabem exatas nos 8 encontros das semanas 5-8 (oficina dupla na semana\n8). Demais modulos inalterados; total das 18 semanas segue 36.\n\nCo-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_013Rfq2SSrHESURLW3XDgVmw')"
 ```
 
 ---
