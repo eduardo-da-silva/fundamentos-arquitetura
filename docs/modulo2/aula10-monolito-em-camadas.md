@@ -55,7 +55,7 @@ Antes de `04-camadas`, "o domínio não depende de infraestrutura" era um acordo
 
 ### O que a camada não isola: a mudança de cupom
 
-Volte ao "cupom de frete grátis". A regra nova é um assunto de negócio — promoção — e ela desce por todas as camadas: aparece na apresentação (anúncio), na aplicação (o checkout consulta), no domínio (a regra do cupom, o campo de frete no pedido). A camada é horizontal; a mudança de negócio é vertical. Elas se cruzam, não se contêm.
+Voltamos ao "cupom de frete grátis". A regra nova é um assunto de negócio — promoção — e ela desce por todas as camadas: aparece na apresentação (anúncio), na aplicação (o checkout consulta), no domínio (a regra do cupom, o campo de frete no pedido). A camada é horizontal; a mudança de negócio é vertical. Elas se cruzam, não se contêm.
 
 O contrato de camadas continua verde durante essa mudança inteira. Ele não tem nada a dizer sobre ela: cada arquivo tocado importa só o que está abaixo dele. A regra de dependência foi respeitada e mesmo assim quatro componentes mudaram. Camada governa direção, não extensão.
 
@@ -67,7 +67,7 @@ A camada de aplicação do Orion, se existisse fechada, mudaria quando mudasse a
 
 ### Por que fan-in e fan-out por camada não mostram o custo
 
-Se você medir fan-in e fan-out tratando cada camada como um nó, o número fica bonito: quatro camadas, dependências só para baixo, grafo acíclico, $C_e$ baixo em cada uma. A métrica por camada aprova a estrutura.
+Se medirmos fan-in e fan-out tratando cada camada como um nó, o número fica bonito: quatro camadas, dependências só para baixo, grafo acíclico, $C_e$ baixo em cada uma. A métrica por camada aprova a estrutura.
 
 O custo da mudança de cupom não aparece aí porque ele não é uma aresta entre camadas — é um caminho que desce dentro de várias delas ao mesmo tempo. Contar dependências entre faixas horizontais mede a higiene da direção; não mede quantos assuntos de negócio cada faixa carrega, nem quantas faixas um assunto precisa cruzar. É a mesma lição de `Checkout` com $D = 0{,}03$ no Módulo 1: a métrica pode estar ótima e o problema, real.
 
@@ -75,7 +75,7 @@ O custo da mudança de cupom não aparece aí porque ele não é uma aresta entr
 
 O Módulo 1 lê acoplamento com três eixos: **força** (quão difícil é detectar e corrigir), **localidade** (quão perto estão as partes ligadas) e **grau** (quantos pontos participam). A heurística que saiu dali: connascência forte pode ficar dentro de um componente; a que atravessa fronteira precisa ser fraca.
 
-A camada não muda essa conta — só a redistribui. Se a regra do cupom vive no domínio mas a apresentação precisa saber que existe um campo "frete grátis aplicado" para exibi-lo, há uma connascência de nome atravessando três camadas. É fraca (renomear é mecânico, a ferramenta ajuda), então a heurística tolera. Se a apresentação passasse a depender da *ordem* em que o checkout aplica cupom e frete, seria connascência de execução cruzando a mesma distância — forte, atravessando fronteira, o que a heurística proíbe. A camada organiza o mapa; ela não decide qual connascência você deixou cruzando ele.
+A camada não muda essa conta — só a redistribui. Se a regra do cupom vive no domínio mas a apresentação precisa saber que existe um campo "frete grátis aplicado" para exibi-lo, há uma connascência de nome atravessando três camadas. É fraca (renomear é mecânico, a ferramenta ajuda), então a heurística tolera. Se a apresentação passasse a depender da *ordem* em que o checkout aplica cupom e frete, seria connascência de execução cruzando a mesma distância — forte, atravessando fronteira, o que a heurística proíbe. A camada organiza o mapa; ela não decide qual connascência ficou cruzando ele.
 
 ## A mudança que desce pelas três camadas
 
@@ -117,7 +117,7 @@ forbidden_modules =
     mini_orion.infraestrutura
 ```
 
-`type = layers` impõe camadas **abertas**. Cada camada listada pode importar qualquer uma abaixo dela, salto de nível incluído: `apresentacao/app.py` importa `mini_orion.dominio` direto — para tipar o parâmetro `Gateway` na função de montagem — e o contrato continua satisfeito. O que `layers` proíbe é a direção de volta: `dominio` importando `aplicacao`, ou `aplicacao` importando `apresentacao`. Fechar as camadas — barrar também o salto — exigiria contratos `forbidden` adicionais, um por par que se quer impedir. O Mini-Orion não os tem, e essa ausência é deliberada: é o material do Exercício 4.
+`type = layers` impõe camadas **abertas**. Cada camada listada pode importar qualquer uma abaixo dela, salto de nível incluído: `apresentacao/app.py` importa `mini_orion.dominio` direto — para tipar o parâmetro `gateway` como `Gateway` na função de montagem — e o contrato continua satisfeito. O que `layers` proíbe é a direção de volta: `dominio` importando `aplicacao`, ou `aplicacao` importando `apresentacao`. Fechar as camadas — barrar também o salto — exigiria contratos `forbidden` adicionais, um por par que se quer impedir. O Mini-Orion não os tem, e essa ausência é deliberada: é o material do Exercício 4.
 
 O segundo contrato, `dominio-nao-conhece-infra`, é de outro tipo (`forbidden`) e cobre o que `layers` não alcança: `infraestrutura` está fora da pilha de três, então é esse contrato que impede `dominio` e `aplicacao` de importá-la.
 
@@ -132,7 +132,7 @@ Dominio e aplicacao nao conhecem infraestrutura KEPT
 Contracts: 2 kept, 0 broken.
 ```
 
-Agora force uma violação: faça `dominio/contratos.py` importar `mini_orion.infraestrutura.pagamentos` — por exemplo, para "aproveitar" a constante `LIMITE` do `GatewayPagamentoX` em vez de redeclará-la. O `import` está na direção de baixo (infra fica abaixo do domínio), então o contrato `camadas` não reclama. Quem quebra é o outro:
+Agora forçamos uma violação: `dominio/contratos.py` passa a importar `mini_orion.infraestrutura.pagamentos` — por exemplo, para "aproveitar" a constante `LIMITE` do `GatewayPagamentoX` em vez de redeclará-la. O contrato `camadas` ordena só `apresentacao > aplicacao > dominio`; `infraestrutura` não está nessa lista, então `camadas` não considera esse `import`. Quem o pega é o outro contrato:
 
 ```text
 Regra de dependencia: nenhuma camada importa uma acima KEPT
@@ -144,7 +144,7 @@ Dominio e aplicacao nao conhecem infraestrutura
 Contracts: 1 kept, 1 broken.
 ```
 
-A evidência é o linter vermelho, não o argumento. E repare em qual contrato falhou: não foi a regra de camadas — foi a proibição explícita de o domínio olhar para a infraestrutura.
+A evidência é o linter vermelho, não o argumento. E o contrato que falha não é a regra de camadas — é a proibição explícita de o domínio olhar para a infraestrutura.
 
 ### Registro de diagnóstico: onde a camada paga e onde não
 
@@ -190,7 +190,7 @@ Dois pontos onde ela não ajuda:
 
     ??? note "Resposta comentada"
 
-        Quebrou `dominio-nao-conhece-infra`. O `import` vai do domínio para a infraestrutura — direção "para baixo" na pilha, então o contrato `camadas` (que só barra imports para cima) não tem o que dizer. É o contrato `forbidden`, escrito justamente para cobrir o que `layers` deixa passar, que acusa: `mini_orion.dominio.contratos -> mini_orion.infraestrutura.notificacoes`.
+        Quebrou `dominio-nao-conhece-infra`. O `import` vai do domínio para a `infraestrutura`, que não está entre os módulos ordenados pelo contrato `camadas` (`apresentacao > aplicacao > dominio`) — então `camadas` não considera esse `import`. É o contrato `forbidden`, escrito justamente para cobrir o que `layers` deixa passar, que acusa: `mini_orion.dominio.contratos -> mini_orion.infraestrutura.notificacoes`.
 
 3. **Conte as camadas.** O Orion recebe: "o e-mail de confirmação de pedido passa a incluir o prazo de entrega estimado". Liste as camadas técnicas que essa mudança atravessa e diga, em uma frase por camada, o que muda em cada uma. Use o mapa de camadas do Orion desta aula (`Portal` = apresentação; `Checkout` = aplicação; `Catalogo`, `Promocoes`, `Pedidos`, `Clientes` = domínio; adaptadores de provedor e `Integracoes` = infraestrutura).
 
