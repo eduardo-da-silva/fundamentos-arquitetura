@@ -11,12 +11,14 @@ Duas aulas por semana. Total de 36 encontros.
 | Módulo | Semanas | Aulas | Tema |
 |---|---|---|---|
 | 1 | 1–4 | 8 | Fundamentos Arquiteturais |
-| 2 | 5–8 | 8 | Arquiteturas Monolíticas |
+| 2 | 5–8 | 7 | Arquiteturas Monolíticas |
 | 3 | 9–13 | 10 | Arquiteturas Distribuídas |
 | 4 | 14–17 | 8 | Eventos e Arquitetura Evolutiva |
 | — | 18 | 2 | Apresentação final do Orion Evolution Lab e fechamento |
 
-Isso resolve uma inconsistência do material atual: `docs/index.md` anuncia 18 semanas e 4 módulos, enquanto `docs/modulo1/index.md` estabelece 4 semanas por módulo — o que soma 16 e deixa duas semanas sem destino. O Módulo 3 recebe uma semana a mais por ser o de maior densidade, e a semana 18 é dedicada à entrega final.
+*O Módulo 2 usa 7 aulas em 8 encontros (a oficina ocupa dois). O encontro restante das semanas 5–8 vai para o Módulo 3 — o de maior densidade —, que fica com 11 encontros para suas 10 aulas.*
+
+Isso resolve uma inconsistência do material atual: `docs/index.md` anuncia 18 semanas e 4 módulos, enquanto `docs/modulo1/index.md` estabelece 4 semanas por módulo — o que soma 16 e deixa duas semanas sem destino. O Módulo 3 recebe uma semana a mais por ser o de maior densidade, absorve ainda o encontro que a oficina dupla do Módulo 2 libera, e a semana 18 é dedicada à entrega final.
 
 **Nomes dos módulos são normativos.** Qualquer página que os cite usa exatamente estes. O material atual tem contradição direta: `docs/index.md` anuncia "Módulo 2 — Arquiteturas Monolíticas" e o diretório `docs/modulo2/` continha "Módulo 2 — Evoluindo o domínio", resíduo do repositório de POO-II (removido).
 
@@ -77,11 +79,25 @@ Decisão arquitetural; arquitetura versus design; características arquiteturais
 
 ## Módulo 2 — Arquiteturas Monolíticas
 
-Semanas 5–8. Não escrito.
+Semanas 5–8.
 
-Monolito em camadas, monolito modular, arquitetura em pipeline, microkernel. Quando o monolito é a escolha certa — e por que quase sempre é, no começo. Fronteira lógica sem fronteira física. O monolito modular como preparação honesta para uma eventual extração.
+### Composição
+
+| Aula | Tema |
+|---|---|
+| 9 | O monólito não é o problema |
+| 10 | Monólito em camadas: o que governa e o que não isola |
+| 11 | Monólito modular: fronteira lógica sem fronteira física |
+| 12 | Reorganizar o grafo do Orion |
+| 13 | Pipeline e microkernel: monólitos com forma |
+| 14 | Quando o monólito deixa de servir |
+| 15 | Oficina: o Orion modular sob restrição (dois encontros da semana 8) |
 
 Aplicação no Orion: reorganizar o grafo atual sem distribuir nada, e medir o ganho.
+
+**Por que fundir as duas aulas de camadas.** As camadas técnicas e o limite delas são um arco só, e separá-las em duas aulas faria o aluno sair da primeira com a técnica antes de ver o que ela não isola.
+
+**Por que o `06-microkernel/` é checkpoint executável.** Microkernel descrito sem código vira definição solta; um núcleo com plug-ins que de fato rodam obriga o conceito a se sustentar na prática, como a Oficina de Diagnóstico faz no Módulo 1.
 
 ---
 
