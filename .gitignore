@@ -4,4 +4,5 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+.import_linter_cache/
 _rascunhos/
