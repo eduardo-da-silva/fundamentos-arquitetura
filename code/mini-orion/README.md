@@ -4,15 +4,20 @@ Recorte executável do Marketplace Orion, usado como exemplo do professor ao lon
 
 Não é um sistema de produção: não há persistência real, framework web nem concorrência. Ele existe para tornar visível o efeito de decisões estruturais — em especial, para mostrar que **arquitetura se manifesta primeiro como dificuldade de testar**.
 
-## Os três estados
+## Os seis estados
 
 | Pasta | Estado | Aulas |
 |---|---|---|
 | `01-acoplado/` | cobrança e notificação dentro do fluxo, provedor concreto instanciado no construtor | 1 e 2 |
 | `02-fronteiras/` | `Gateway` como `Protocol`, notificação fora do caminho crítico, ciclo quebrado | 3 a 5 |
 | `03-governado/` | connascências reduzidas, contratos isolados, decisões verificadas automaticamente | 6 a 8 |
+| `04-camadas/` | pacote em camadas técnicas, contrato `layers` (aberto) + `forbidden` domínio/aplicação ↛ infraestrutura | 10 |
+| `05-modular/` | módulos de domínio com API pública e internals `_*`, contratos `independence`/`forbidden` | 11 e 12 |
+| `06-microkernel/` | `Promocoes` como registro de plugins, contrato núcleo ↛ plugins concretos | 13 |
 
-Cada estado parte do anterior. Ler os três em sequência é o exercício.
+Cada estado parte do anterior. Ler os seis em sequência é o exercício.
+
+A leitura mais proveitosa continua sendo comparar os contratos de `setup.cfg` de um estado para o outro antes de comparar o código: a decisão arquitetural muda primeiro na verificação executável.
 
 ## O que observar em cada passagem
 
