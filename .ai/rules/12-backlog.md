@@ -41,15 +41,7 @@ docker run --rm -it -p 8006:8000 -v ${PWD}:/docs zensical/zensical serve --dev-a
 
 **Pronto quando:** repositório criado e `git push` feito.
 
-### 4. Mini-Orion sem CI
-
-**Onde:** `code/mini-orion/`.
-
-**Problema:** os 18 testes e os 3 contratos de `import-linter` rodam só localmente. A CI atual constrói o site e não toca no código. Um contrato arquitetural que não roda automaticamente é um acordo verbal com passos extras.
-
-**Pronto quando:** um job de CI rodar `pytest` e `lint-imports` nos três checkpoints.
-
-### 5. Cenários de atividade com personagens redundantes
+### 4. Cenários de atividade com personagens redundantes
 
 **Onde:** `aula01` (campanha Flash Orion), `aula02` (novo parceiro de pagamentos), `aula04` (fronteiras violadas).
 
@@ -57,13 +49,17 @@ docker run --rm -it -p 8006:8000 -v ${PWD}:/docs zensical/zensical serve --dev-a
 
 **Pronto quando:** `05-domain.md` fixar quatro ou cinco personagens com papel estável, e as aulas usarem esses.
 
-### 6. Módulos 2 a 4 não escritos
+### 5. Módulos 2 a 4 não escritos
 
 Escopo em `07-curriculum.md`. Roadmap aula a aula só quando o módulo entrar em produção — escrito com antecedência demais, envelhece antes de ser usado.
 
 ---
 
 ## Resolvido
+
+### Módulo 2
+
+- **Mini-Orion sem CI.** `mini-orion.yml` roda `pytest` + `lint-imports` nos seis checkpoints de `code/mini-orion/`, com passo de lint condicional a `setup.cfg`, separado do build do site (que instala só `zensical`).
 
 ### Onda 1 — coerência
 

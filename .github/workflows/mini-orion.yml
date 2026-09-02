@@ -1,0 +1,39 @@
+name: mini-orion
+
+on:
+  push:
+    branches: [main]
+    paths: ["code/mini-orion/**", ".github/workflows/mini-orion.yml"]
+  pull_request:
+    paths: ["code/mini-orion/**"]
+
+jobs:
+  checkpoints:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        checkpoint:
+          - "01-acoplado"
+          - "02-fronteiras"
+          - "03-governado"
+          - "04-camadas"
+          - "05-modular"
+          - "06-microkernel"
+    defaults:
+      run:
+        working-directory: code/mini-orion/${{ matrix.checkpoint }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r ../requirements-dev.txt
+      - run: python -m pytest -q
+      - name: lint-imports (se houver setup.cfg)
+        run: |
+          if [ -f setup.cfg ]; then
+            lint-imports
+          else
+            echo "sem setup.cfg neste checkpoint — nada a verificar"
+          fi
