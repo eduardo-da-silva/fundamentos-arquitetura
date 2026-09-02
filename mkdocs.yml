@@ -121,4 +121,5 @@ nav:
   - Módulo 2 — Arquiteturas Monolíticas:
     - Visão geral do módulo: modulo2/index.md
     - Aula 9 — O monólito não é o problema: modulo2/aula09-monolito-nao-e-o-problema.md
+    - Aula 10 — Monólito em camadas: modulo2/aula10-monolito-em-camadas.md
   - Orion Evolution Lab: orion/index.md
