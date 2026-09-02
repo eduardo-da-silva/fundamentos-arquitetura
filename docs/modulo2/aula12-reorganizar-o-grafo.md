@@ -93,7 +93,7 @@ O artefato desta aula é a tabela das quinze arestas inter-módulo do grafo ofic
 
 ### 05-modular como referência: nenhum ciclo entre os módulos
 
-O `code/mini-orion/05-modular/` é a versão resolvida em pequena escala. Quatro módulos — `compra`, `pagamentos`, `notificacoes` e o `nucleo` como *shared kernel* — e nenhum ciclo entre eles: o contrato `independence` garante que `pagamentos` e `notificacoes` não se conhecem, e o `forbidden` garante que nenhum dos dois olha para `compra`. Introduzir um ciclo ali exigiria quebrar `lint-imports`. A contagem de arestas inter-módulo desse checkpoint é pequena e acíclica; o grafo do Orion inteiro é o contraste — a mesma leitura, quinze vezes.
+O `code/mini-orion/05-modular/` é a versão resolvida em pequena escala. Três módulos de domínio — `compra`, `pagamentos`, `notificacoes` — mais o `nucleo` como *shared kernel*, e nenhum ciclo entre eles: o contrato `independence` garante que `pagamentos` e `notificacoes` não se conhecem, e o `forbidden` garante que nenhum dos dois olha para `compra`. Introduzir um ciclo ali exigiria quebrar `lint-imports`. A contagem de arestas inter-módulo desse checkpoint é pequena e acíclica; o grafo do Orion inteiro é o contraste — a mesma leitura, quinze vezes.
 
 Não convém confundir as duas escalas. As duas arestas internas de que esta aula fala são as do grafo oficial do Orion (`Checkout --> Pedidos` e `Promocoes --> Catalogo`). O `05-modular/` é um exemplo menor e separado; o que ele demonstra é a ausência de ciclo, não um número de arestas para somar ao do Orion.
 
@@ -174,11 +174,11 @@ O diagrama deixa de fora: a direção em que uma mudança de negócio se propaga
 | `Integracoes --> Pedidos` | Integração → Compra | idem |
 | `Integracoes --> Notificacoes` | Integração → Comunicação | idem |
 
-Cinco linhas envolvem `Checkout` (uma como destino, quatro como origem). Três têm `Integracoes` como origem — e são as únicas da tabela sem fronteira a justificar, porque não há do outro lado ninguém que a fronteira proteja. Das doze restantes, quatro convergem em `Comunicação` com o mesmo contrato (`Notificador`), o que sugere que a primeira fronteira a valer o esforço talvez seja a de `Notificacoes`: uma API, quatro dependentes atendidos de uma vez.
+Cinco linhas envolvem `Checkout` (uma como destino, quatro como origem). Três têm `Integracoes` como origem — e são as únicas da tabela sem fronteira a justificar, porque não há do outro lado ninguém que a fronteira proteja. Das doze restantes, três convergem em `Comunicação` com o mesmo contrato (`Notificador`), o que sugere que a primeira fronteira a valer o esforço talvez seja a de `Notificacoes`: uma API, três dependentes vivos (`Pedidos`, `Pagamentos`, `Logistica`) atendidos por um contrato só. Contando também `Integracoes`, `Notificacoes` tem quatro dependentes ($C_a = 4$) — mas a quarta aresta é justamente a de peso morto, e não é ela que a fronteira precisa servir.
 
 ## Exercícios
 
-1. **Interna ou inter-módulo?** Para cada aresta do grafo oficial, diga se ela fica dentro de um módulo ou atravessa fronteira, pelo agrupamento de `05-domain.md`, e nomeie os módulos dos dois lados.
+1. **Interna ou inter-módulo?** Para cada uma das arestas abaixo, diga se ela fica dentro de um módulo ou atravessa fronteira, pelo agrupamento de `05-domain.md`, e nomeie os módulos dos dois lados.
 
     a. `Promocoes --> Catalogo`
     b. `Checkout --> Pagamentos`
