@@ -1,4 +1,0 @@
-pytest>=8.0
-pydeps>=1.12
-import-linter>=2.0
-radon>=6.0

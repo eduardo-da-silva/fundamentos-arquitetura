@@ -103,7 +103,7 @@ flowchart LR
     Integracoes --> Notificacoes
 ```
 
-Leitura das setas: `A --> B` significa que **A depende de B**. Legenda do estado atual: nenhuma fronteira interna imposta — só nomes. Nada impede `Portal` de alcançar o interior de `Catalogo`; a separação entre os dois vive na tabela de responsabilidades e na disciplina de quem escreve o código, não em um contrato que falha quando é violado. O Mini-Orion tem três desses contratos; o sistema de dez componentes, quase nenhum.
+Leitura das setas: `A --> B` significa que **A depende de B**. Legenda do estado atual: nenhuma fronteira interna imposta — só nomes. Nada impede `Portal` de alcançar o interior de `Catalogo`; a separação entre os dois vive na tabela de responsabilidades e na disciplina de quem escreve o código, não em um contrato que falha quando é violado. 
 
 O que o diagrama **não** mostra: o volume de tráfego em cada aresta, quais arestas causam incidente, e a diferença entre depender de um contrato e depender de uma implementação. É o mesmo grafo de 17 arestas do Módulo 1, relido com a pergunta deste módulo.
 

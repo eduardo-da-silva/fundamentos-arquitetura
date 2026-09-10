@@ -121,7 +121,7 @@ forbidden_modules =
 
 O segundo contrato, `dominio-nao-conhece-infra`, é de outro tipo (`forbidden`) e cobre o que `layers` não alcança: `infraestrutura` está fora da pilha de três, então é esse contrato que impede `dominio` e `aplicacao` de importá-la.
 
-A escolha de deixar as camadas abertas neste checkpoint tem um motivo e um custo. Motivo: o Mini-Orion tem três camadas e um caso de uso; fechar exigiria manter três contratos `forbidden` extras para um ganho de isolamento que ninguém está usando ainda. Custo: `apresentacao` quebra se `dominio` mudar, e nada no `setup.cfg` avisa se um salto de nível vira hábito. Fechar as camadas seria defensável num sistema maior, com mais casos de uso disputando a camada de aplicação — e é essa a pergunta que o Exercício 4 devolve para o Orion inteiro.
+A escolha de deixar as camadas abertas neste checkpoint tem um motivo e um custo. Motivo: o Mini-Orion tem três camadas e um caso de uso; fechar exigiria manter três contratos `forbidden` extras para um ganho de isolamento que ninguém está usando ainda. Custo: `apresentacao` quebra se `dominio` mudar, e nada no `setup.cfg` avisa se um salto de nível vira hábito. Fechar as camadas seria defensável num sistema maior, com mais casos de uso disputando a camada de aplicação.
 
 Com o código como está, `lint-imports` fecha assim:
 
