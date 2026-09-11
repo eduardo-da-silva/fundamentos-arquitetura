@@ -122,6 +122,7 @@ nav:
     - Visão geral do módulo: modulo2/index.md
     - Aula 9 — O monólito não é o problema: modulo2/aula09-monolito-nao-e-o-problema.md
     - Aula 10 — Monólito em camadas: modulo2/aula10-monolito-em-camadas.md
+    - Exercícios de fixação (Aulas 9 e 10): modulo2/exercicios-fixacao-aulas-9-10.md
     - Aula 11 — Monólito modular: modulo2/aula11-monolito-modular.md
     - Aula 12 — Reorganizar o grafo do Orion: modulo2/aula12-reorganizar-o-grafo.md
     - Aula 13 — Pipeline e microkernel: modulo2/aula13-pipeline-e-microkernel.md
