@@ -4,99 +4,192 @@
 
 Ao final desta aula, você deve conseguir:
 
-- classificar um `import` entre duas camadas como permitido ou proibido pela regra de dependência;
-- ler um `setup.cfg` com contrato `type = layers` e dizer o que ele deixa passar;
-- distinguir camada fechada de camada aberta e escolher entre as duas para um contexto dado;
-- traçar uma mudança de negócio pelas camadas que ela atravessa e explicar por que a camada técnica não a contém;
-- apontar, num mapa de componentes, o que não encaixa em camada nenhuma.
+- classificar a direção de dependência entre camadas como permitida ou proibida pela regra de dependência;
+- comparar camadas fechadas e abertas, avaliando o trade-off entre isolamento vertical e o anti-padrão de repasse (*sinkhole*);
+- reconhecer que a regra de dependência só se sustenta com verificação automatizada, e situar onde o Python — via `import-linter` — se encaixa entre os mecanismos que outros ecossistemas usam para o mesmo fim;
+- ler e configurar contratos de governança estática (como `type = layers` e `type = forbidden` no `setup.cfg`);
+- traçar o caminho de uma mudança de negócio pelas camadas técnicas e explicar por que a separação horizontal não contém alterações funcionais;
+- apontar em um mapa de componentes elementos que não se encaixam na hierarquia de camadas.
 
 ## Dois desenhos da mesma arquitetura
 
-Na retrospectiva do grupo, dois integrantes vão ao quadro desenhar "a arquitetura do Orion". Os desenhos não batem. Um empilha três faixas horizontais — borda em cima, regra de negócio no meio, provedores embaixo — e distribui os dez componentes nelas. O outro desenha as dez caixas e as dezessete setas do grafo oficial, sem faixa nenhuma, e diz que camada ali é invenção: não há nada no código que a sustente.
+Na retrospectiva de arquitetura do Marketplace Orion, dois integrantes da equipe vão ao quadro desenhar o sistema. Os desenhos não batem.
 
-Os dois estão descrevendo o mesmo sistema. A divergência não é de opinião — é que a camada, no Orion de hoje, existe só na cabeça de quem desenha. O grafo oficial mostra `Portal --> Catalogo` direto, sem passar por nenhuma faixa de "aplicação", e `Checkout` dependendo de cinco componentes (`Catalogo`, `Clientes`, `Promocoes`, `Pagamentos`, `Pedidos`) ao mesmo tempo. Nenhuma regra impede uma faixa de baixo de chamar uma de cima. O desenho com camadas é uma intenção; o desenho sem camadas é o que a análise de `import` encontraria.
+O primeiro desenha três faixas horizontais bem delineadas — apresentação em cima, lógica de negócio no centro e infraestrutura na base — distribuindo os componentes canônicos nessas caixas. O segundo desenha as dez caixas e as dezessete setas do grafo de dependências oficial (Aula 7), sem faixa nenhuma, afirmando categoricamente que camada ali é ficção: não há no código nada que impeça qualquer arquivo de chamar qualquer outro.
 
-Semanas depois, chega o pedido: "cupom de frete grátis acima de R$ 200". Uma regra de promoção. Para entregá-la, o time mexe em `Portal` (a vitrine anuncia o cupom), em `Promocoes` (a regra que decide se o cupom vale), em `Checkout` (que consulta a regra durante o fechamento) e em `Pedidos` (o pedido emitido registra o frete zerado). Quatro componentes para uma regra só. Nenhum desses quatro está na mesma faixa horizontal — e é isso que esta aula precisa explicar.
+Os dois estão olhando para a mesma base de código. A divergência ilustra a distância comum entre a intenção arquitetural e a realidade estrutural do software:
 
-## Camada é um corte horizontal
+1. **O desenho com camadas é uma aspiração de organização**: expressa como os desenvolvedores gostariam que o sistema estivesse ordenado em papéis tecnológicos.
+2. **O grafo oficial sem camadas é o fato observável**: reflete o que uma análise de dependências estáticas de fato encontra. O grafo mostra `Portal --> Catalogo` direto, sem passar por nenhuma abstração intermediária de aplicação, e `Checkout` sustentando conexões simultâneas com cinco componentes de naturezas distintas (`Catalogo`, `Clientes`, `Promocoes`, `Pagamentos`, `Pedidos`).
 
-Uma camada agrupa componentes por **papel técnico**: o que faz composição de tela fica junto, o que orquestra caso de uso fica junto, o que fala com provedor externo fica junto. É um corte horizontal do sistema.
+A fragilidade dessa "camada informal" é posta à prova semanas depois, quando a equipe recebe uma demanda comercial típica: *"implementar cupom de frete grátis vinculado à campanha promocional que estiver ativa"*.
 
-### Quatro camadas técnicas
+À primeira vista, trata-se de uma regra simples de promoção. Na prática, para colocá-la em produção, a equipe precisa alterar:
+- `Portal`, para exibir o selo de frete grátis na vitrine enquanto a campanha estiver ativa;
+- `Promocoes`, para checar se o carrinho contém item elegível à campanha e calcular o abatimento;
+- `Checkout`, para consultar essa elegibilidade durante o fechamento e consolidar o total;
+- `Pedidos`, para registrar no pedido emitido que a isenção de frete foi concedida via cupom de campanha.
 
-O arranjo mais comum tem quatro:
+Quatro componentes alterados para atender a uma única regra de negócio. Nenhum deles pertence à mesma faixa horizontal. Para entender por que isso acontece — e por que essa é a dinâmica inevitável desse estilo arquitetural —, precisamos examinar a mecânica formal da arquitetura em camadas.
 
-| Camada | Responde por | No Mini-Orion |
-|---|---|---|
-| Apresentação | entrada, composição, tradução para o mundo externo | `apresentacao/app.py` — a raiz de composição |
-| Aplicação | orquestrar o caso de uso, sem regra de domínio própria | `aplicacao/checkout.py` — `ServicoCheckout.fechar_pedido` |
-| Domínio | tipos e contratos do negócio, regras que não dependem de infra | `dominio/` — `PedidoCobranca`, `ResultadoCobranca`, os `Protocol` |
-| Infraestrutura | implementações concretas: provedores, persistência, fila | `infraestrutura/` — `GatewayPagamentoX`, `RepositorioPedidos` |
+## A arquitetura em camadas: corte por papel tecnológico
 
-No Orion inteiro, `Portal` seria a apresentação; `Checkout` orquestra, então tende à aplicação; `Catalogo`, `Promocoes`, `Pedidos` e `Clientes` guardam regra e estado de negócio, então tendem ao domínio; `Integracoes` e os adaptadores de provedor seriam infraestrutura. "Tende a" já é um aviso: nem todo componente cai limpo numa faixa.
+A **arquitetura em camadas** (*layered architecture*, ou arquitetura *N-Tier*) organiza os artefatos de software agrupando-os por **papel tecnológico**. O princípio orientador é a separação de preocupações técnicas (*separation of technical concerns*): elementos responsáveis por capturar entrada e renderizar respostas ficam juntos; elementos responsáveis por coordenar fluxos de execução ficam juntos; elementos que expressam regras conceituais ficam juntos; e elementos que conversam com banco de dados ou redes externas ficam juntos.
 
-### Fechada ou aberta: o que o contrato escolhe
+Trata-se de um corte fundamentalmente **horizontal** do sistema.
 
-Uma camada **fechada** obriga a passar por ela: `apresentacao` só fala com `aplicacao`, que só fala com `dominio`. Pular um nível é proibido. Uma camada **aberta** deixa passar reto: `apresentacao` pode falar direto com `dominio` sem incomodar `aplicacao`.
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Apresentação (Interface, Web, CLI, Serialização)        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │  (dependência desce)
+┌──────────────────────────────▼──────────────────────────────┐
+│ 2. Aplicação (Orquestração de casos de uso, transações)     │
+└──────────────────────────────┬──────────────────────────────┘
+                               │  (dependência desce)
+┌──────────────────────────────▼──────────────────────────────┐
+│ 3. Domínio (Entidades, regras de negócio, contratos)        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │  (dependência desce / inverte)
+┌──────────────────────────────▼──────────────────────────────┐
+│ 4. Infraestrutura (Bancos de dados, filas, APIs externas)   │
+└─────────────────────────────────────────────────────────────┘
+```
 
-A diferença não é estética. Camada fechada dá **isolamento de mudança na vertical**: trocar `dominio` inteiro obriga a revisar só `aplicacao`, porque ninguém mais o enxerga. O preço é a "camada de repasse" — métodos em `aplicacao` que não fazem nada além de encaminhar a chamada para `dominio`. Camada aberta elimina o repasse e paga com menos isolamento: agora `apresentacao` também quebra quando `dominio` muda.
+### As quatro camadas canônicas
 
-O `import-linter` tem um contrato para isso, e a escolha entre fechada e aberta é o que esse contrato expressa. É o que o Mini-Orion usa a partir de `04-camadas`, e voltamos a ele na seção da decisão.
+Embora o número de camadas varie entre projetos, a divisão clássica de quatro níveis estabelece responsabilidades bem delimitadas:
 
-### A regra de dependência aponta para dentro
+| Camada | Responsabilidade principal | O que não deve conter | No Mini-Orion |
+|---|---|---|---|
+| **Apresentação** | Ponto de entrada, recepção de requisições, validação de payload, tradução de DTOs para o cliente externo | Regras de cálculo comercial ou acesso direto a bancos | `apresentacao/app.py` (composição da aplicação) |
+| **Aplicação** | Coordenação e orquestração do caso de uso; abertura de transações; orquestração da sequência de passos | Regras de cálculo intrínsecas de negócio ou SQL/chamadas HTTP | `aplicacao/checkout.py` (`ServicoCheckout.fechar_pedido`) |
+| **Domínio** | Entidades fundamentais, regras de cálculo, invariantes do negócio, contratos abstratos de serviços | Detalhes de frameworks web, bibliotecas de serialização ou drivers | `dominio/` (`PedidoCobranca`, `ResultadoCobranca`, protocolos) |
+| **Infraestrutura** | Implementações concretas de acesso a dados, mensageria, integração com gateways e serviços externos | Decisão sobre regras de negócio ou orquestração do fluxo | `infraestrutura/` (`GatewayPagamentoX`, `RepositorioPedidos`) |
 
-A regra é uma só: **uma camada pode depender das que estão abaixo; nenhuma camada depende de uma acima.** `aplicacao` importa `dominio`; `dominio` não importa `aplicacao`. Infraestrutura fica na base ou fora da pilha, e o domínio não a conhece — quem liga o `GatewayPagamentoX` concreto ao caso de uso é a apresentação, na montagem.
+### A Regra de Dependência: fluxo em runtime versus dependência estática
 
-Isso inverte a intuição de quem vem de POO, onde a dependência costuma seguir o fluxo de chamada. Aqui a seta de dependência e a seta de fluxo apontam para lados opostos: `aplicacao` chama `infraestrutura` em tempo de execução, mas depende só do `Protocol` que está no `dominio`. O fluxo desce e volta; a dependência só desce.
+O pilar central da arquitetura em camadas moderna é a **Regra de Dependência**:
+> *As dependências de código-fonte devem apontar exclusivamente para dentro (ou para baixo), em direção às políticas de negócio de mais alto nível.*
 
-### O que a camada governa: a direção, agora verificável
+Isso exige separar dois conceitos que frequentemente se confundem:
 
-Antes de `04-camadas`, "o domínio não depende de infraestrutura" era um acordo verbal — decaía com a rotatividade do time, como qualquer acordo verbal. Com o contrato de camadas no `setup.cfg`, virou verificação: um `import` na direção errada falha a integração contínua. Esse é o ganho concreto, e é real: a direção da dependência deixou de depender de vigilância humana.
+1. **Fluxo de execução em tempo de execução (*Control Flow*)**: Quando um usuário final clica em "Comprar", o fluxo começa na Apresentação (`app.py`), desce para a Aplicação (`checkout.py`), consulta o Domínio (`modelos.py`), desce até a Infraestrutura (`pagamentos.py` chamando uma API HTTP externa) e retorna com o resultado subindo a pilha. O fluxo de controle desce e sobe.
+2. **Direção da dependência estática (*Source Code Dependency*)**: Em tempo de compilação ou importação, a camada de Domínio **não conhece** a camada de Infraestrutura nem a de Apresentação. O Domínio define apenas uma abstração pura (uma interface ou `Protocol`). A camada de Infraestrutura depende do Domínio para implementar esse contrato, ou a camada de Aplicação depende do contrato definido no Domínio.
 
-### O que a camada não isola: a mudança de cupom
+Quem orquestra a fiação (*wiring*) das implementações concretas aos contratos de domínio é a raiz de composição, geralmente localizada na borda da aplicação (na Apresentação). A inversão de dependência impede que mudanças em tecnologias de infraestrutura (como trocar o driver de banco de dados ou o parceiro de pagamento) forcem alterações nas regras de negócio.
 
-Voltamos ao "cupom de frete grátis". A regra nova é um assunto de negócio — promoção — e ela desce por todas as camadas: aparece na apresentação (anúncio), na aplicação (o checkout consulta), no domínio (a regra do cupom, o campo de frete no pedido). A camada é horizontal; a mudança de negócio é vertical. Elas se cruzam, não se contêm.
+### Camadas fechadas versus camadas abertas
 
-O contrato de camadas continua verde durante essa mudança inteira. Ele não tem nada a dizer sobre ela: cada arquivo tocado importa só o que está abaixo dele. A regra de dependência foi respeitada e mesmo assim quatro componentes mudaram. Camada governa direção, não extensão.
+Ao formalizar uma arquitetura em camadas, a decisão central não é apenas o número de camadas, mas se cada camada é **fechada** (*closed layer*) ou **aberta** (*open layer*):
 
-### Coesão por camada é coesão fraca
+- **Camada Fechada**: uma camada superior só pode se comunicar com a camada imediatamente inferior. A requisição é estritamente sequencial: Apresentação precisa passar por Aplicação para alcançar o Domínio.
+- **Camada Aberta**: uma camada superior pode "saltar" níveis e acessar diretamente camadas mais profundas. Por exemplo, a Apresentação pode invocar o Domínio diretamente para ler dados, ignorando a camada de Aplicação.
 
-Agrupar por camada é pôr `Pagamentos`, `Notificacoes` e `Pedidos` na mesma caixa "infraestrutura" porque os três são infraestrutura — não porque sirvam ao mesmo propósito de negócio. É coesão por semelhança técnica, e o Módulo 1 já classificou esse tipo como fraco: o componente muda por motivos sem relação entre si.
+```
+      CAMADA FECHADA                           CAMADA ABERTA
+┌─────────────────────────┐             ┌─────────────────────────┐
+│      Apresentação       │             │      Apresentação       │
+└────────────┬────────────┘             └──────┬────────────┬─────┘
+             │                                 │            │ (salto)
+┌────────────▼────────────┐             ┌──────▼─────┐      │
+│        Aplicação        │             │ Aplicação  │      │
+└────────────┬────────────┘             └──────┬─────┘      │
+             │                                 │            │
+┌────────────▼────────────┐             ┌──────▼────────────▼─────┐
+│         Domínio         │             │         Domínio         │
+└─────────────────────────┘             └─────────────────────────┘
+```
 
-A camada de aplicação do Orion, se existisse fechada, mudaria quando mudasse a orquestração de checkout, a de devolução, a de reembolso, a de cadastro — assuntos distintos, juntos por serem todos "casos de uso". Uma feature de negócio quer atravessar a caixa; a caixa foi desenhada para segurar o que tem o mesmo formato técnico, não o mesmo dono.
+Essa escolha envolve um trade-off arquitetural direto:
 
-### Por que fan-in e fan-out por camada não mostram o custo
+#### 1. Camadas Fechadas e o *Architecture Sinkhole Anti-Pattern*
+A camada fechada proporciona **alto isolamento vertical**: se o Domínio sofrer uma grande reformulação de tipos, apenas a camada de Aplicação precisa ser inspecionada e adaptada; a Apresentação permanece resguardada.
 
-Se medirmos fan-in e fan-out tratando cada camada como um nó, o número fica bonito: quatro camadas, dependências só para baixo, grafo acíclico, $C_e$ baixo em cada uma. A métrica por camada aprova a estrutura.
+No entanto, quando adotada de forma rígida em sistemas que realizam muitas consultas ou operações sem orquestração complexa, surge o **Architecture Sinkhole Anti-Pattern** (Richards & Ford):
+- Desenvolvedores criam centenas de métodos na camada de Aplicação que só pegam a chamada da Apresentação e a repassam intacta para o repositório ou serviço de Domínio, sem executar nenhuma regra, autorização ou transformação.
+- Se 80% do código de uma camada apenas repassa chamadas sem agregar valor computacional ou de negócio, essa camada virou um "ralo" de processamento e manutenção desnecessária.
 
-O custo da mudança de cupom não aparece aí porque ele não é uma aresta entre camadas — é um caminho que desce dentro de várias delas ao mesmo tempo. Contar dependências entre faixas horizontais mede a higiene da direção; não mede quantos assuntos de negócio cada faixa carrega, nem quantas faixas um assunto precisa cruzar. É a mesma lição de `Checkout` com $D = 0{,}03$ no Módulo 1: a métrica pode estar ótima e o problema, real.
+#### 2. Camadas Abertas e o Risco de Vazamento (*Bypass Risk*)
+Camadas abertas eliminam o código inútil de repasse, tornando operações de leitura direta muito mais ágeis. 
 
-### A connascência que desce junto
+O preço cobrado é a **perda de isolamento**: a camada de Apresentação passa a criar laços de acoplamento direto com estruturas internas do Domínio. Quando uma entidade de domínio muda, telas e contratos de API externa quebram simultaneamente. Além disso, torna-se fácil contornar regras de negócio, pois desenvolvedores podem esquecer de chamar a orquestração da Aplicação quando deveriam.
 
-O Módulo 1 lê acoplamento com três eixos: **força** (quão difícil é detectar e corrigir), **localidade** (quão perto estão as partes ligadas) e **grau** (quantos pontos participam). A heurística que saiu dali: connascência forte pode ficar dentro de um componente; a que atravessa fronteira precisa ser fraca.
+### Governança automatizada, não combinado verbal
 
-A camada não muda essa conta — só a redistribui. Se a regra do cupom vive no domínio mas a apresentação precisa saber que existe um campo "frete grátis aplicado" para exibi-lo, há uma connascência de nome atravessando três camadas. É fraca (renomear é mecânico, a ferramenta ajuda), então a heurística tolera. Se a apresentação passasse a depender da *ordem* em que o checkout aplica cupom e frete, seria connascência de execução cruzando a mesma distância — forte, atravessando fronteira, o que a heurística proíbe. A camada organiza o mapa; ela não decide qual connascência ficou cruzando ele.
+Uma restrição de camada que exista só em documentação ou em combinado verbal é violada em poucas semanas — em equipe dinâmica, mais cedo do que se imagina. Por isso a regra de dependência precisa de um mecanismo que a torne inegociável, e cada ecossistema resolve isso de um jeito. Python não tem modificador de acesso nem compilador que bloqueie um `import`, então a verificação sai do compilador e vai para uma ferramenta de análise estática rodando no CI: é o papel do `import-linter`, lendo contratos declarativos em `setup.cfg` e falhando o build quando uma aresta proibida aparece. Java resolve o mesmo problema com `ArchUnit` testando a estrutura de pacotes ou de módulos JPMS; .NET, com `NetArchTest` sobre assemblies e o modificador `internal`; monorepos TypeScript, com as tags de módulo do Nx ou o `dependency-cruiser`. A ferramenta muda; o papel se repete em todas — transformar uma decisão de camada em teste que quebra o build, não em regra que só existe na cabeça de quem lembra dela.
 
-## A mudança que desce pelas três camadas
+## O diagnóstico: onde a camada falha no Orion
 
-Pergunta que o diagrama responde: se a regra de dependência entre camadas está satisfeita, por que a mudança de cupom ainda toca tudo?
+Com esses conceitos estabelecidos, podemos voltar ao Marketplace Orion e analisar criticamente o que a camada resolve e o que ela é incapaz de conter.
+
+### A mudança de negócio desce na vertical
+
+Retomemos o cupom de frete grátis vinculado à campanha ativa. Quando rastreamos as alterações necessárias na base de código, observamos o seguinte traçado estrutural:
 
 ```mermaid
 flowchart TD
+    apresentacao["Apresentação\n(Portal: banner e vitrine)"]
+    aplicacao["Aplicação\n(Checkout: orquestração de compra)"]
+    dominio["Domínio\n(Promocoes: regra de desconto)\n(Pedidos: registro de frete grátis)"]
+    
     apresentacao --> aplicacao
     aplicacao --> dominio
     apresentacao --> dominio
 ```
 
-Leitura das setas: `A --> B` significa que **A depende de B**. As três setas apontam para baixo — a regra de camadas está satisfeita. A seta de `apresentacao` direto para `dominio` é o salto de nível que as camadas *abertas* permitem, e que `app.py` de fato usa.
+> **Convenção de leitura das setas**: `A --> B` significa que **A depende estaticamente de B** (A importa B).
+> **O que o diagrama não mostra**: componentes de infraestrutura (gateways externos, bancos de dados) e o fluxo de dados em runtime, que percorre a direção oposta.
 
-Uma mudança de negócio como o cupom de frete grátis entra pela `apresentacao` (anúncio na vitrine), desce até `aplicacao` (o checkout consulta a regra) e chega ao `dominio` (a regra do cupom, o campo de frete no pedido). Ela corta as três de cima a baixo, na vertical, enquanto as camadas separam o sistema na horizontal.
+Ao analisar o diagrama, a limitação intrínseca da camada fica evidente:
 
-O que o diagrama **não** mostra: `infraestrutura` — que fica fora desta pilha, alcançada só pela `apresentacao` na montagem; a fiação concreta dentro de `apresentacao/app.py` (qual gateway, qual repositório); e o sentido do fluxo de execução, que desce e volta, ao contrário da dependência, que só desce.
+1. **A camada governa a direção, não a extensão da mudança**: Todas as setas apontam para baixo. Em momento nenhum o Domínio importou a Aplicação, e a Aplicação não importou a Apresentação. O contrato de camadas está 100% satisfeito e verde.
+2. **A mudança corta o sistema de ponta a ponta**: Como a funcionalidade é um conceito de negócio, ela precisa se manifestar na tela (Apresentação), no fluxo de fechamento (Aplicação) e no cálculo/armazenamento do pedido (Domínio). 
 
-## Recorte de 04-camadas: a regra virou contrato
+A arquitetura em camadas fatia o sistema por similaridade de tecnologia, mas as demandas de negócio fatiam o sistema por domínio funcional. Elas são perpendiculares: **a camada é horizontal; a feature é vertical**.
 
-O Mini-Orion em `04-camadas` reorganiza o pacote plano de `03-governado` em quatro pastas — `apresentacao/`, `aplicacao/`, `dominio/`, `infraestrutura/` — e troca os três contratos por-módulo do estado anterior por dois contratos de camada. Este é o recorte do `setup.cfg`:
+### Coesão por camada é coesão fraca
+
+Na Aula 5, definimos coesão como a medida de quanto os elementos dentro de um mesmo módulo pertencem uns aos outros. Classificamos a coesão técnica (ou acidental) como **fraca**:
+- Colocar `Pagamentos`, `Notificacoes`, `Logistica` e `Integracoes` na mesma camada de "Infraestrutura" une componentes que não compartilham motivos de mudança de negócio.
+- O adaptador de pagamentos muda quando a operadora de cartão altera o formato de webhook; o adaptador de notificações muda quando o provedor de SMS migra de protocolo. Eles moram juntos apenas porque ambos usam sockets de rede.
+
+Em contrapartida, a coesão forte une elementos que **mudam juntos pelo mesmo motivo de negócio**. Na arquitetura em camadas pura, elementos altamente coesos de um mesmo assunto (como a regra do cupom em `Promocoes` e o anúncio do cupom no `Portal`) são forçados a viver separados por fronteiras de camada.
+
+### O paradoxo das métricas medidas por camada
+
+Na Aula 7, aprendemos a calcular o acoplamento aferente ($C_a$), eferente ($C_e$), instabilidade ($I$) e distância da sequência principal ($D$). Se aplicarmos essas métricas considerando cada camada inteira como uma unidade estrutural:
+
+- **Apresentação**: $C_a = 0$, $C_e = 2$, $I = 1{,}0$ (máxima instabilidade, adequado para borda).
+- **Aplicação**: $C_a = 1$, $C_e = 1$, $I = 0{,}5$ (equilíbrio intermediário).
+- **Domínio**: $C_a = 2$, $C_e = 0$, $I = 0{,}0$ (estabilidade máxima, nenhum acoplamento de saída).
+
+O grafo entre camadas é limpo, estritamente acíclico e exibe métricas aparentemente impecáveis. No entanto, essas métricas agregadas criam uma ilusão estatística: elas medem a higiene da direção entre papéis técnicos, mas são completamente cegas à quantidade de assuntos de negócio que atravessam essas faixas. É a mesma lição que o componente `Checkout` nos deu no Módulo 1: ter métricas matemáticas elegantes não significa ter uma arquitetura imune a incidentes ou custos elevados de alteração.
+
+### Connascência que atravessa as camadas
+
+A ferramenta de precisão introduzida na Aula 6 — a connascência — permite diagnosticar o tipo de acoplamento residual que a camada mantém:
+
+- **Connascência de Nome (Fraca, Estática)**: A Apresentação precisa conhecer o nome do atributo `frete_gratis_aplicado` retornado pelo Domínio. Essa forma fraca é perfeitamente tolerada entre camadas, pois linters e verificadores de tipo identificam renomeações instantaneamente.
+- **Connascência de Execução (Forte, Dinâmica)**: Se para aplicar o cupom a Apresentação precisasse chamar primeiro `validar_elegibilidade()` no Domínio, depois `preparar_carrinho()` na Aplicação e finalmente `cobrar()` na Infraestrutura, na ordem exata, teríamos uma forma forte de connascência cruzando três níveis de camadas. A regra pedagógica da Aula 6 é taxativa: *connascência forte só é aceitável quando a localidade é máxima (dentro de uma mesma função ou módulo)*. Quando a connascência de execução cruza camadas, a arquitetura se torna frágil.
+
+---
+
+## Mini-Orion 04-camadas: a regra virada em contrato de CI
+
+No repositório do Mini-Orion, o checkpoint `04-camadas` refatora a estrutura plana anterior em pacotes técnicos explícitos:
+
+```text
+mini_orion/
+    apresentacao/    app.py (montagem do sistema)
+    aplicacao/       checkout.py (ServicoCheckout)
+    dominio/         modelos.py, contratos.py
+    infraestrutura/  pagamentos.py, pedidos.py, notificacoes.py
+```
+
+### O arquivo de governança: setup.cfg
+
+Para que a hierarquia não decaia em combinados verbais, dois contratos estáticos foram inseridos no `setup.cfg`:
 
 ```ini title="code/mini-orion/04-camadas/setup.cfg (recorte)"
 [importlinter:contract:camadas]
@@ -117,125 +210,147 @@ forbidden_modules =
     mini_orion.infraestrutura
 ```
 
-`type = layers` impõe camadas **abertas**. Cada camada listada pode importar qualquer uma abaixo dela, salto de nível incluído: `apresentacao/app.py` importa `mini_orion.dominio` direto — para tipar o parâmetro `gateway` como `Gateway` na função de montagem — e o contrato continua satisfeito. O que `layers` proíbe é a direção de volta: `dominio` importando `aplicacao`, ou `aplicacao` importando `apresentacao`. Fechar as camadas — barrar também o salto — exigiria contratos `forbidden` adicionais, um por par que se quer impedir. O Mini-Orion não os tem, e essa ausência é deliberada: é o material do Exercício 4.
+Analisando a mecânica de cada contrato:
 
-O segundo contrato, `dominio-nao-conhece-infra`, é de outro tipo (`forbidden`) e cobre o que `layers` não alcança: `infraestrutura` está fora da pilha de três, então é esse contrato que impede `dominio` e `aplicacao` de importá-la.
+1. **`type = layers`**: define uma ordenação estrita. Módulos listados acima podem importar módulos listados abaixo. Ele implementa camadas **abertas**: `apresentacao` pode importar `dominio` diretamente (como ocorre em `app.py` para tipar dependências via `Protocol`), sem que o linter aponte violação. O que ele proíbe rigorosamente é a subida (`dominio` importar `aplicacao` ou `apresentacao`).
+2. **`type = forbidden`**: complementa a regra de camadas. Como `infraestrutura` não faz parte da pilha sequencial de negócio (ela contém os adaptadores de saída), o contrato proíbe explicitamente que `dominio` ou `aplicacao` importem classes concretas de infraestrutura.
 
-A escolha de deixar as camadas abertas neste checkpoint tem um motivo e um custo. Motivo: o Mini-Orion tem três camadas e um caso de uso; fechar exigiria manter três contratos `forbidden` extras para um ganho de isolamento que ninguém está usando ainda. Custo: `apresentacao` quebra se `dominio` mudar, e nada no `setup.cfg` avisa se um salto de nível vira hábito. Fechar as camadas seria defensável num sistema maior, com mais casos de uso disputando a camada de aplicação.
-
-Com o código como está, `lint-imports` fecha assim:
+Ao executar a verificação estática, o resultado comprova a conformidade:
 
 ```text
+$ lint-imports
 Regra de dependencia: nenhuma camada importa uma acima KEPT
 Dominio e aplicacao nao conhecem infraestrutura KEPT
 
 Contracts: 2 kept, 0 broken.
 ```
 
-Agora forçamos uma violação: `dominio/contratos.py` passa a importar `mini_orion.infraestrutura.pagamentos` — por exemplo, para "aproveitar" a constante `LIMITE` do `GatewayPagamentoX` em vez de redeclará-la. O contrato `camadas` ordena só `apresentacao > aplicacao > dominio`; `infraestrutura` não está nessa lista, então `camadas` não considera esse `import`. Quem o pega é o outro contrato:
+### Provocando uma violação arquitetural
+
+Para observar o papel de evidência do linter, imagine que um desenvolvedor decida "reaproveitar" uma constante ou método auxiliar presente no driver de pagamentos dentro de `dominio/contratos.py`:
+
+```python title="mini_orion/dominio/contratos.py (violacao intencional)"
+# Import proibido: camada interna acessando infraestrutura
+from mini_orion.infraestrutura.pagamentos import GatewayPagamentoX
+```
+
+Ao rodar a verificação na esteira de integração contínua:
 
 ```text
+$ lint-imports
 Regra de dependencia: nenhuma camada importa uma acima KEPT
 Dominio e aplicacao nao conhecem infraestrutura BROKEN
 
-Dominio e aplicacao nao conhecem infraestrutura
-- mini_orion.dominio.contratos -> mini_orion.infraestrutura.pagamentos
-
 Contracts: 1 kept, 1 broken.
+
+Broken contract: Dominio e aplicacao nao conhecem infraestrutura
+----------------------------------------------------------------
+mini_orion.dominio.contratos imports mini_orion.infraestrutura.pagamentos:
+  mini_orion.dominio.contratos -> mini_orion.infraestrutura.pagamentos (l. 3)
 ```
 
-A evidência é o linter vermelho, não o argumento. E o contrato que falha não é a regra de camadas — é a proibição explícita de o domínio olhar para a infraestrutura.
+A violação não depende de revisão manual em pull request. O build é rejeitado automaticamente pelo analisador estático.
 
-### Registro de diagnóstico: onde a camada paga e onde não
+### Registro de diagnóstico: onde a camada entrega e onde ela cobra
 
-Dois pontos onde a camada, neste checkpoint, entrega:
+Avaliando o checkpoint `04-camadas` de forma honesta diante de trade-offs de engenharia:
 
-- **Direção da dependência, verificável.** `aplicacao/checkout.py` importa só `mini_orion.dominio`. Não é disciplina de quem revisa o PR — é o contrato `camadas` mais o teste `test_camada_de_aplicacao_nao_importa_infraestrutura`, que lê o `import` com `ast` e falha se ele voltar.
-- **Trocar o provedor de pagamento sem tocar na aplicação.** `GatewayPagamentoY` foi adicionado para as campanhas. A mudança ficou em `infraestrutura/pagamentos.py` e na fiação de `apresentacao/app.py`; `aplicacao/checkout.py` não mudou uma linha, e `test_troca_de_provedor_nao_altera_checkout` prova isso.
+| Onde a camada entrega valor concreto | Onde a camada não resolve ou cobra preço |
+|---|---|
+| **Direção verificável da dependência**: Nenhuma regra de negócio corre o risco de se acoplar a drivers concretos de banco ou frameworks de entrega. | **Não contém a mudança de negócio**: O cupom de desconto continua exigindo commits em arquivos espalhados por três pastas distintas. |
+| **Facilidade para substituir adaptadores externos**: Adicionar um novo provedor (`GatewayPagamentoY`) alterou apenas `infraestrutura/pagamentos.py` e a raiz de composição em `app.py`. A lógica de checkout em `aplicacao/checkout.py` permaneceu intacta. | **Dificuldade para testar regras unitárias isoladas**: Para testar a regra "compra com cartão acima do limite é recusada", o teste ainda é obrigado a instanciar o caso de uso inteiro, simulando repositório e notificador. |
 
-Dois pontos onde ela não ajuda:
-
-- **Uma mudança de regra de negócio.** Aplicar "cupom de frete grátis" ao Mini-Orion tocaria `dominio` (a regra e o campo de frete), `aplicacao` (o checkout passa a consultá-la) e `apresentacao` (o resultado precisa ser exibível). Três camadas para uma regra; o contrato de camadas fica verde o tempo todo.
-- **Testar uma regra isolada.** Para exercitar só a decisão "acima do limite recusa", o teste ainda monta `Carrinho`, `Cliente`, um gateway concreto, o `RepositorioPedidos` e o notificador, e chama `fechar_pedido` inteiro. A camada separa por papel técnico; a regra que se quer testar está cruzada com as outras dentro do mesmo caso de uso.
+---
 
 ## Exercícios
 
-1. **Classifique.** A pilha é `apresentacao > aplicacao > dominio`, com `infraestrutura` fora dela e proibida ao domínio e à aplicação. Para cada `import`, diga se a regra o **permite** ou o **proíbe**, e por quê.
-
-    a. `aplicacao/checkout.py`: `from mini_orion.dominio import Gateway`
-    b. `dominio/contratos.py`: `from mini_orion.aplicacao.checkout import ServicoCheckout`
-    c. `apresentacao/app.py`: `from mini_orion.dominio import Gateway`
-    d. `dominio/modelos.py`: `from mini_orion.infraestrutura.pedidos import RepositorioPedidos`
+1. **Classificação de dependências.** Considerando a hierarquia do Mini-Orion (`apresentacao > aplicacao > dominio`, com `infraestrutura` isolada por regra `forbidden`), avalie cada declaração de importação abaixo, dizendo se é **permitida** ou **proibida**, e qual contrato é responsável por essa validação:
+   
+    a. Em `mini_orion/aplicacao/checkout.py`: `from mini_orion.dominio.contratos import Gateway`  
+    b. Em `mini_orion/dominio/modelos.py`: `from mini_orion.aplicacao.checkout import ServicoCheckout`  
+    c. Em `mini_orion/apresentacao/app.py`: `from mini_orion.dominio.modelos import Pedido`  
+    d. Em `mini_orion/dominio/contratos.py`: `from mini_orion.infraestrutura.pedidos import RepositorioPedidos`
 
     ??? note "Resposta comentada"
 
-        **a — permitido.** `aplicacao` depende de `dominio`, que está abaixo. É a direção correta.
+        **a — Permitida.** A camada de Aplicação depende da camada de Domínio, que está abaixo dela na hierarquia definida em `type = layers`.
 
-        **b — proibido.** `dominio` importaria uma camada acima. O contrato `camadas` (`type = layers`) falha.
+        **b — Proibida.** O Domínio está tentando importar a camada de Aplicação, que está acima dele. O contrato `type = layers` acusa a violação imediatamente.
 
-        **c — permitido.** As camadas são abertas: `apresentacao` alcança `dominio` saltando `aplicacao`. É o que `app.py` faz hoje, e `lint-imports` fica verde. Fechar as camadas mudaria esta resposta.
+        **c — Permitida.** O contrato `type = layers` adota o modelo de camadas abertas por padrão. Portanto, a Apresentação pode "saltar" a Aplicação e importar diretamente os tipos de dados do Domínio.
 
-        **d — proibido.** Não pelo contrato `camadas` — infra está fora da pilha —, e sim pelo `dominio-nao-conhece-infra`, do tipo `forbidden`.
+        **d — Proibida.** O Domínio não pode importar classes da Infraestrutura. Quem acusa essa quebra não é o contrato `camadas` (pois a infraestrutura não faz parte da pilha hierárquica `layers`), mas sim o contrato explícito `type = forbidden` (`dominio-nao-conhece-infra`).
 
-2. **Aponte o contrato.** Um colega abre um PR com este diff:
-
-    ```python title="mini_orion/dominio/contratos.py"
-    +from mini_orion.infraestrutura.notificacoes import FilaNotificacoes
-    +
-     class Notificador(Protocol):
-         def publicar(self, evento: EventoNotificacao) -> None: ...
+2. **Identificação de contrato.** Durante uma refatoração, um membro da equipe tenta injetar um serviço de mensageria diretamente em uma entidade do domínio para disparar e-mails automáticos ao alterar o estado do pedido. O linter emite:
+   
+    ```text
+    mini_orion.dominio.modelos imports mini_orion.infraestrutura.notificacoes
+    Contracts: 1 kept, 1 broken.
     ```
-
-    `lint-imports` passa de `2 kept, 0 broken` para `1 kept, 1 broken`. Qual contrato quebrou, e por que não foi o outro?
-
-    ??? note "Resposta comentada"
-
-        Quebrou `dominio-nao-conhece-infra`. O `import` vai do domínio para a `infraestrutura`, que não está entre os módulos ordenados pelo contrato `camadas` (`apresentacao > aplicacao > dominio`) — então `camadas` não considera esse `import`. É o contrato `forbidden`, escrito justamente para cobrir o que `layers` deixa passar, que acusa: `mini_orion.dominio.contratos -> mini_orion.infraestrutura.notificacoes`.
-
-3. **Conte as camadas.** O Orion recebe: "o e-mail de confirmação de pedido passa a incluir o prazo de entrega estimado". Liste as camadas técnicas que essa mudança atravessa e diga, em uma frase por camada, o que muda em cada uma. Use o mapa de camadas do Orion desta aula (`Portal` = apresentação; `Checkout` = aplicação; `Catalogo`, `Promocoes`, `Pedidos`, `Clientes` = domínio; adaptadores de provedor e `Integracoes` = infraestrutura).
+    
+    Explique por que o contrato quebrado foi o `forbidden` e não o `layers`, e discuta o perigo arquitetural dessa dependência se ela fosse permitida.
 
     ??? note "Resposta comentada"
 
-        Uma leitura defensável, com `Logistica` fornecendo o prazo e `Notificacoes` compondo o e-mail:
+        O contrato `layers` analisa apenas a relação de precedência entre os módulos explicitamente listados na diretiva (`apresentacao`, `aplicacao`, `dominio`). Como `infraestrutura` não é um degrau dentro dessa lista hierárquica, o contrato `layers` ignora o import. É o contrato `forbidden` que fiscaliza e bloqueia as arestas entre o domínio/aplicação e a infraestrutura.
+        
+        O perigo arquitetural: permitir que entidades de domínio importem infraestrutura concreta faz com que regras conceituais passem a depender de bibliotecas de transporte (como clientes de e-mail ou drivers de banco). Isso impede a execução de testes unitários rápidos em memória e propaga qualquer mudança de protocolo externo diretamente para o coração do negócio.
 
-        - **Domínio** — `Pedidos` e/ou `Logistica` passam a expor o prazo estimado como dado do pedido; é a regra "o pedido conhece seu prazo".
-        - **Aplicação** — o caso de uso que dispara a confirmação passa a buscar o prazo antes de pedir o envio da notificação.
-        - **Infraestrutura** — o template de e-mail (adaptador de `Notificacoes`) ganha o campo.
-        - **Apresentação** — muda se o mesmo prazo for exibido em tela; se for só no e-mail, esta camada fica de fora.
+3. **Rastreamento de mudança vertical.** Imagine o seguinte requisito no Marketplace Orion: *"O prazo estimado de entrega deve ser recalculado e armazenado caso o endereço do cliente mude após a emissão do pedido"*.
+    Mapeie quais camadas e quais componentes do Orion seriam afetados por essa alteração, indicando sucintamente o papel de cada um.
 
-        O ponto do exercício: uma frase de negócio ("incluir o prazo no e-mail") desce por três camadas técnicas, e o contrato de camadas não registra nada disso — cada arquivo tocado continua importando só o que está abaixo dele. Contar componentes tocados e contar camadas atravessadas são duas medidas diferentes do mesmo custo.
+    ??? note "Resposta comentada"
 
-4. **Julgue: camadas fechadas ou abertas para o Orion?** Hoje o Mini-Orion usa `type = layers`, que dá camadas abertas. Fechar as camadas (barrar também o salto de nível) exigiria contratos `forbidden` par a par. Para o Orion inteiro — dez componentes, `Checkout` como hub em cinco arestas inter-módulo —, qual das duas você adotaria?
+        A alteração é uma demanda de negócio que corta três camadas técnicas:
+        - **Apresentação (`Portal`)**: necessita expor a opção de alteração de endereço no painel de pedidos e exibir a confirmação com o novo prazo.
+        - **Aplicação (`Checkout` ou caso de uso de Pós-Venda)**: orquestra a sequência: recebe o novo endereço, consulta o serviço logístico para obter a nova estimativa e aciona a atualização do pedido.
+        - **Domínio (`Pedidos`, `Clientes`, `Logistica`)**: `Clientes` valida as regras do novo endereço; `Logistica` calcula o novo prazo com base na tabela de frete; `Pedidos` atualiza o estado da entidade pedido com o novo snapshot e novo prazo.
+        - **Infraestrutura**: adaptadores de persistência de `Pedidos` salvam a alteração no banco; adaptadores de `Notificacoes` enviam o e-mail comunicando a alteração.
+        
+        A constatação central: a hierarquia técnica em camadas organiza a direção do código, mas não impede que quatro ou cinco componentes precisem ser modificados conjuntamente.
 
-    Mais de uma resposta é aceitável. As duas têm defensores competentes: camada aberta evita o custo da "camada de repasse" e é mais barata de manter num time pequeno; camada fechada dá isolamento de mudança na vertical e um ponto único por onde uma faixa fala com a de baixo, ao custo de indireção e de contratos extras no `setup.cfg`.
+4. **Julgamento de trade-off: camadas abertas versus fechadas.** Em um debate técnico, um engenheiro propõe: *"Devemos transformar todas as camadas do Orion em camadas estritamente fechadas. Nenhum componente da apresentação poderá tocar no domínio; tudo deverá passar obrigatoriamente por uma classe na camada de aplicação."*
+    Defenda ou conteste essa proposta, apontando o critério arquitetural decisivo, os riscos envolvidos e o que você observaria no código em seis meses para avaliar se a decisão foi correta.
 
-    O que se avalia: se a sua resposta nomeia o **critério** que decide (custo de manter o contrato? risco de uma mudança em `dominio` respingar direto na `apresentacao`? tamanho do time?), reconhece o que a opção oposta tem de válido, e diz o que você observaria em seis meses para saber se a escolha foi acertada — por exemplo, quantos métodos de puro repasse apareceram, ou quantas vezes um salto de nível causou retrabalho. Resposta sem critério nomeado não conta como resposta técnica.
+    ??? note "Resposta comentada"
 
-## Atividade em grupo
+        Não existe resposta absoluta; avalia-se a consistência do critério e o reconhecimento dos custos:
+        - **Se você defende o fechamento estrito**: o critério é o isolamento máximo do Domínio contra vazamento de detalhes para interfaces de usuário ou APIs REST externas. Em seis meses, você observaria se a camada de apresentação permaneceu desacoplada de mudanças de modelagem interna do domínio.
+        - **Se você contesta o fechamento estrito**: o critério é a produtividade e a prevenção do anti-padrão *Architecture Sinkhole*. O Orion possui diversas operações que são simples consultas (ex.: buscar detalhes do catálogo ou histórico de pedidos). Forçar a criação de classes de aplicação para métodos que apenas repassam chamadas criará dezenas de classes ocas ("pass-through").
+        - **Sinal observável em 6 meses**: a proporção de métodos da camada de aplicação que não possuem lógica condicional, cálculo ou coordenação transacional. Se mais de 50% dos métodos apenas chamarem `return self._repo.buscar(id)`, a arquitetura caiu no *Sinkhole Anti-Pattern*.
 
-Releiam o mapa de componentes do grupo no Orion Evolution Lab como uma pilha de camadas.
+---
 
-1. Rotulem cada componente do recorte com uma camada: apresentação, aplicação, domínio ou infraestrutura. Registrem o critério usado quando o rótulo não for imediato.
-2. Desenhem as setas de dependência entre camadas e verifiquem se há alguma na direção proibida (de baixo para cima). Se houver, ela é candidata a diagnóstico.
-3. Escolham duas mudanças de negócio plausíveis para o recorte e, para cada uma, listem quantos componentes e quantas camadas ela atravessa.
-4. **Obrigatório:** apontem o componente do mapa que **não encaixa em camada nenhuma** — o que faz o papel de duas, ou o que ninguém importa. Digam o que isso revela sobre a proposta: uma camada mal definida, um componente com responsabilidade dupla, ou uma fronteira que o grupo ainda não decidiu.
+## Atividade em grupo: Orion Evolution Lab
 
-O item 4 é o ponto da atividade. A pilha de camadas costuma ter uma caixa que sobra, e reconhecer qual é — e por quê — diz mais sobre o recorte do que o desenho limpo das outras. Formato e critérios em [Orion Evolution Lab](../orion/index.md).
+No recorte arquitetural adotado pelo seu grupo:
 
-## O que ficou decidido e a porta única
+1. **Atribuição de camadas**: classifique cada componente do recorte em uma das quatro camadas canônicas (Apresentação, Aplicação, Domínio ou Infraestrutura). Registre em um parágrafo o critério adotado para componentes ambíguos.
+2. **Auditoria de direção**: analise as dependências atuais do seu recorte e aponte se existe alguma dependência estática que aponte de baixo para cima (violação da regra de dependência).
+3. **Traçado vertical**: selecione uma mudança de negócio plausível para o seu recorte (ex.: cancelamento de compra, alteração de meio de pagamento, campanha de cashback) e rastreie todas as camadas que seriam tocadas para implementá-la.
+4. **O componente sem camada (Obrigatório)**: identifique qual componente do seu recorte **não se encaixa perfeitamente** na hierarquia de camadas (por exemplo, componentes como `Integracoes`, que tentam atuar como infraestrutura genérica mas não possuem consumidores, ou componentes que misturam apresentação e regra). Explique por que a arquitetura em camadas não é suficiente para acomodá-lo.
 
-O Mini-Orion em `04-camadas` transforma a regra de dependência em contrato: `type = layers` no `setup.cfg`, camadas abertas, mais um `forbidden` para manter a infraestrutura fora do alcance do domínio. `lint-imports` fecha em `2 kept, 0 broken`, e passa a `1 broken` no instante em que o domínio olha para a infraestrutura. A direção da dependência deixou de ser acordo verbal.
+---
 
-O que a camada não deu: contenção de mudança de negócio. A regra do cupom de frete grátis atravessou quatro componentes com o contrato de camadas verde do começo ao fim, porque a camada corta o sistema na horizontal e o assunto de negócio desce na vertical. Coesão por camada agrupa o que tem o mesmo formato técnico, não o mesmo dono — e por isso uma feature acaba cruzando várias faixas.
+## Síntese e o próximo passo: a porta do domínio
 
-Fica a pergunta para a Aula 11: e se, em vez de faixas horizontais, o Orion fosse cortado por assunto — `Promocoes` inteira numa caixa, com uma porta só, e ninguém autorizado a entrar pelo lado? O que muda no custo daquela mudança de cupom quando a fronteira acompanha o negócio em vez do papel técnico?
+A arquitetura em camadas cumpre o que promete: ela **governa a direção da dependência**. Com contratos verificáveis em CI, ela impede que detalhes tecnológicos de infraestrutura contaminem regras conceituais e torna a substituição de adaptadores externos uma tarefa previsível e isolada.
+
+No entanto, ela é incapaz de conter mudanças funcionais. Como as camadas agrupam elementos por semelhança tecnológica, cada nova regra de negócio precisa atravessar a apresentação, a aplicação e o domínio. A coesão por camada é fraca, e as métricas horizontais de $C_a$ e $C_e$ mascaram a complexidade vertical que cada caso de uso carrega.
+
+Isso nos coloca diante da pergunta fundamental que abre a **Aula 11**:
+*E se, em vez de cortarmos o sistema em faixas horizontais de papéis tecnológicos, nós o cortássemos em blocos verticais por assunto de negócio — garantindo que cada domínio tenha uma porta única e inviolável?*
+
+---
 
 ## Leitura complementar
 
-- Richards, Mark; Ford, Neal. *Fundamentals of Software Architecture*. Cap. 10 — Layered Architecture Style (camadas técnicas; camada fechada versus aberta; *architecture sinkhole anti-pattern*).
-- Martin, Robert C. *Clean Architecture*. Cap. 22 — The Clean Architecture (a regra de dependência apontando para dentro).
+- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture*. O'Reilly, 2020. Cap. 10 — *Layered Architecture Style* (análise formal de camadas abertas vs. fechadas e o *Architecture Sinkhole Anti-Pattern*).
+- MARTIN, Robert C. *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall, 2017. Cap. 22 — *The Clean Architecture* (a regra de dependência apontando para dentro).
+- EVANS, Eric. *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley, 2003. Cap. 4 — *Isolating the Domain* (a separação clássica entre apresentação, aplicação, domínio e infraestrutura).
 
 ## Referências
 
-- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020.
+- BASS, Len; CLEMENTS, Paul; KAZMAN, Rick. *Software Architecture in Practice*. 4. ed. Addison-Wesley, 2021.
 - MARTIN, Robert C. *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall, 2017.
+- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020.

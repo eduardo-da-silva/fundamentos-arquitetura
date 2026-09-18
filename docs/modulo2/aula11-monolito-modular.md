@@ -2,90 +2,221 @@
 
 ## Objetivo e competências
 
-Ao terminar esta aula, temos condições de:
+Ao terminar esta aula, você deve conseguir:
 
-- distinguir um módulo de domínio de uma camada técnica, e dizer por qual critério cada um agrupa;
-- separar, dentro de um pacote, o que é API pública do que é *internal* marcado com `_`;
-- classificar uma dependência entre módulos pelos três eixos de connascência da Aula 6 e decidir se ela pode atravessar a fronteira;
-- ler contratos `independence` e `forbidden` de um `setup.cfg` e apontar qual *reach-in* cada um barra;
-- escrever a assinatura da API pública mínima que os outros módulos consomem;
-- justificar em que situação a fronteira lógica, sem a física, já resolve o problema que se tem.
+- definir formalmente o estilo arquitetural Monólito Modular e distingui-lo de monólitos planos (*Big Ball of Mud*), monólitos em camadas e sistemas distribuídos;
+- fundamentar a estratégia *"Modular Monolith First"* e contrastar as propriedades de uma fronteira lógica com as de uma fronteira física;
+- situar onde cada linguagem sustenta a fronteira de módulo — compilador, empacotamento ou CI — e por que Python depende inteiramente da última;
+- aplicar a heurística de connascência à fronteira de um módulo, garantindo que formas fortes fiquem confinadas internamente e apenas formas fracas atravessem a API pública;
+- configurar e interpretar contratos de arquitetura estática (`independence`, `forbidden` e isenções legítimas de `ignore_imports`) que barram o acesso a detalhes internos (*reach-in*);
+- projetar a assinatura de uma API pública mínima de domínio e demonstrar, por meio de testes unitários isolados, a existência de fronteiras reais.
 
-## Promocoes de novo, agora com uma porta só
+## Promocoes de novo: e se a fronteira acompanhasse o assunto?
 
-A Aula 10 terminou com o cupom de frete grátis atravessando `Portal`, `Checkout`, `Promocoes` e `Pedidos`, com o contrato de camadas verde do começo ao fim. A camada governa a direção da dependência; ela não contém a mudança de negócio, que desce na vertical enquanto as faixas cortam na horizontal.
+A Aula 10 terminou com um diagnóstico desconfortável: o cupom de frete grátis vinculado à campanha ativa exigiu modificações em `Portal`, `Checkout`, `Promocoes` e `Pedidos`. Embora a regra de dependência em camadas tenha sido respeitada e o analisador estático tenha permanecido verde do início ao fim, quatro componentes distribuídos em três camadas técnicas distintas precisaram ser alterados conjuntamente. A camada governa a direção descendente da dependência; ela é estruturalmente incapaz de conter a dispersão de uma mudança de negócio.
 
-Na retrospectiva seguinte, a pergunta muda de forma. Em vez de "que camada isso atravessa", passa a ser: e se a fronteira acompanhasse o assunto? Concretamente — **o que muda se ninguém puder importar o interior de `Promocoes`, só a sua API?**
+Na retrospectiva seguinte, a equipe muda a pergunta estrutural de partida:
+> *Em vez de fatiarmos o sistema por papel técnico horizontal, o que aconteceria se a fronteira acompanhasse o assunto de negócio? Concretamente: o que muda se ninguém puder importar o interior de `Promocoes`, exceto por uma porta pública estrita?*
 
-Hoje `Checkout` alcança o motor de regras de `Promocoes` por dentro: importa a classe que calcula desconto e conhece a forma dela. Se `Promocoes` ganhar uma porta única — um `api.py` com um contrato e um punhado de tipos — e todo o resto ficar inalcançável, três coisas acontecem. Um tipo novo de regra de desconto (frete grátis, leve três pague dois, cashback) vira mudança interna de `Promocoes`: nenhum outro módulo é recompilado ou retestado por causa dele, desde que a forma da API não mude. `Checkout` deixa de depender de *como* o desconto é calculado e passa a depender só do fato de que pode pedir um. E o que `Checkout` e `Promocoes` combinam entre si fica reduzido ao que passa pela porta — nome de método, tipo de retorno — em vez de qualquer detalhe interno.
+Hoje, no grafo original do Orion, `Checkout` alcança o motor de regras de `Promocoes` por dentro: importa diretamente classes concretas e conhece a mecânica interna de cálculo de descontos. Se `Promocoes` ganhar uma porta única — contendo exclusivamente contratos abstratos e tipos de dados fundamentais — enquanto todo o seu maquinário interno de regras for blindado contra acessos externos, três transformações arquiteturais acontecem:
 
-O cupom ainda toca `Portal` (anúncio na vitrine) e `Pedidos` (o frete zerado gravado no pedido emitido). A fronteira em volta de `Promocoes` não faz nada por esses dois — são assuntos separados. Vamos ver onde a fronteira paga e onde ela não tem nada a oferecer.
+1. **Isolamento de evolução**: a inclusão de um novo tipo de promoção (frete grátis, "leve 3 pague 2", cupons progressivos ou cashback de parceiro) torna-se uma mudança estritamente interna de `Promocoes`. Nenhum módulo consumidor precisa ser recompilado, retestado ou alterado, desde que a assinatura da porta pública permaneça estável.
+2. **Desacoplamento de conhecimento**: `Checkout` deixa de conhecer *como* o desconto é calculado e passa a depender apenas do fato abstrato de que *pode solicitar* a aplicação de promoções sobre um carrinho de compras.
+3. **Minimização do acoplamento**: o contrato entre chamador e chamado fica restrito a tipos de dados explícitos e interfaces, reduzindo a connascência entre eles ao nível mais fraco e seguro possível.
 
-## Cortar por assunto, não por papel técnico
+O cupom ainda produz reflexos em `Portal` (que exibe o anúncio comercial na vitrine) e em `Pedidos` (que registra a isenção no pedido final). A fronteira em torno de `Promocoes` não elimina a existência desses outros assuntos — eles são legítimos e pertencem a outros domínios. O que ela elimina é o entrelaçamento de código e o vazamento de detalhes internos.
 
-### Módulo de domínio: a caixa acompanha o assunto
+---
 
-Um **módulo de domínio** agrupa componentes por assunto de negócio, não por papel técnico. `05-domain.md` fixa oito deles para o Orion: Vitrine junta `Catalogo` e `Promocoes`; Compra junta `Checkout` e `Pedidos`; Financeiro é `Pagamentos`; Comunicação é `Notificacoes`; e assim por diante. O critério de coesão é "muda pelo mesmo motivo de negócio", que a Aula 6 classifica como coesão forte — o oposto de "são todos serviços", que a camada usa.
+## O que é um Monólito Modular?
 
-A consequência prática é a que a Aula 10 pediu: uma mudança de assunto tende a ficar dentro de uma caixa, em vez de descer por todas as camadas.
+### Definição estrutural
 
-### A porta é o `api.py`; o resto leva `_`
+Um **Monólito Modular** (*Modular Monolith*) é um estilo arquitetural no qual a aplicação:
+- é executada em tempo de execução dentro de um **único processo de sistema operacional**;
+- é empacotada e implantada por meio de um **único pipeline e artefato de entrega**;
+- compartilha a mesma infraestrutura computacional e memória física;
+- **mas** possui sua estrutura interna rigorosamente particionada em **módulos de domínio independentes**, com fronteiras lógicas bem estabelecidas, interfaces públicas explícitas e proibição estrita de acesso a detalhes de implementação interna.
 
-Python não tem `private`. O que ele tem é convenção, e o `import-linter` transforma convenção em verificação. A regra do checkpoint: tudo que um módulo expõe mora em `api.py`; todo o resto ganha prefixo `_` no nome do arquivo — `_provedores.py`, `_fila.py`, `_pedidos.py`. O `_` não bloqueia o `import`; ele marca o limite que a ferramenta lê.
+```mermaid
+---
+title: Arquitetura monolitica modular
+---
+flowchart TB
+    subgraph processo["Único processo — mesma memória, mesma transação"]
+        direction TB
+        subgraph compra["Módulo Compra"]
+            direction TB
+            compra_api["api.py (porta)"] --> compra_int["_pedidos.py (internals)"]
+        end
+        subgraph vitrine["Módulo Vitrine"]
+            direction TB
+            vitrine_api["api.py (porta)"] --> vitrine_int["_regras.py (internals)"]
+        end
+        kernel["Shared Kernel — tipos e modelos primitivos"]
+    end
 
-`pagamentos.api` publica três nomes: o `Gateway` (`Protocol`), o `PedidoCobranca` (entrada) e o `ResultadoCobranca` (saída). As implementações concretas — `GatewayPagamentoX`, `GatewayPagamentoY`, o simulador de indisponibilidade — ficam em `_provedores.py`. `notificacoes.api` publica o trio que forma o contrato — `Notificador`, `EventoNotificacao`, `evento_de_confirmacao` — mais uma conveniência de fiação, `criar_notificador()`, que devolve um `Notificador` montado para que `compra` não precise tocar em `notificacoes._fila` para obter um.
+    compra --> kernel
+    vitrine --> kernel
+```
 
-### O que esconde é o pacote, não a classe
+> **Convenção de leitura das setas**: `A --> B` significa que **A depende de B**. Nenhuma seta toca um nó de *internals*: é a fronteira em desenho.
+> **O que o diagrama omite**: a chamada direta de `compra.api` para `vitrine.api` (um módulo também consome a porta do outro, não só o Shared Kernel), os demais módulos do Orion — mostra só dois, para fixar o padrão —, os testes de isolamento de cada módulo, e o conteúdo interno de cada `_*.py`.
 
-A unidade de encapsulamento aqui é o pacote. Uma classe pode ser pública e ter atributos privados; um pacote decide quais dos seus módulos são importáveis de fora e quais não são. A fronteira passa a ser "quais linhas de `import` são permitidas" — e isso se verifica por análise estática, sem executar nada.
+Para compreender sua posição no espectro arquitetural, compare os quatro arranjos fundamentais:
 
-### Fronteira lógica e fronteira física
+| Estilo | Empacotamento / Deploy | Processos em Execução | Organização Interna | Acoplamento entre Partes |
+|---|---|---|---|---|
+| **Big Ball of Mud** | Monolítico | Único | Desorganizada / Sem fronteiras | Alto / Caótico (qualquer arquivo acessa tudo) |
+| **Monólito em Camadas** | Monolítico | Único | Faixas horizontais técnicas | Médio (regras dependem da direção, mas cortam faixas) |
+| **Monólito Modular** | Monolítico | Único | Módulos verticais de negócio | Baixo / Controlado (somente via APIs públicas de domínio) |
+| **Microsserviços** | Distribuído | Múltiplos processos | Serviços autônomos de negócio | Físico / Rede (isolamento total via sockets e serialização) |
 
-Uma **fronteira lógica** é imposta pelo linter (no caso do Python) ou pelo compilador (em linguagens com sistema de módulos). Violá-la falha a integração contínua. Não há rede no meio; o custo é o de manter os contratos.
+### A estratégia "Modular Monolith First"
 
-Uma **fronteira física** é imposta pela rede: o outro módulo é um processo separado, alcançável só por uma chamada sobre um socket. Um `import` proibido deixa de ser proibido e passa a ser impossível — não há o que importar. Essa é a fronteira do Módulo 3, e ela cobra o que a Aula 9 já nomeou: latência, falha parcial, ausência de commit único.
+Ao longo da última década, uma quantidade expressiva de equipes de engenharia migrou prematuramente de monólitos tradicionais para microsserviços, atraída pela promessa de independência de desenvolvimento. O resultado recorrente foi a substituição de problemas de código por problemas de rede: sistemas que antes sofriam com acoplamento interno passaram a sofrer com latência acumulada, quebras parciais de chamadas remotas, perda de transações atômicas e pesada sobrecarga operacional de observabilidade distribuída — configurando o anti-padrão do *monólito distribuído*.
 
-A fronteira lógica é o ensaio da física. Não se extrai o que não tem fronteira — mas um ensaio não é a apresentação.
+Autores como Martin Fowler, Simon Brown e Neal Ford sintetizaram a resposta da engenharia moderna na máxima:
+> *"Se você não consegue construir um sistema com fronteiras limpas dentro do mesmo processo, que chance você tem de construí-lo separando as partes por uma rede?"*
 
-### A heurística de connascência na fronteira do módulo
+O Monólito Modular oferece os principais benefícios que os desenvolvedores buscam nos microsserviços — isolamento cognitivo, limites claros de contexto (Bounded Contexts do DDD), testes rápidos e autonomia para equipes trabalharem em domínios específicos — **sem** incorrer na fatura da computação distribuída.
 
-A Aula 6 deixou uma regra: connascência forte é tolerável quando a localidade é pequena; a que atravessa fronteira precisa ser fraca. Aplicada ao módulo, ela diz que as formas fortes — execução, tempo, valor, identidade — ficam dentro de um módulo, e só as formas fracas e estáticas — nome, tipo — passam pela API.
+### Fronteira lógica versus fronteira física
 
-No Mini-Orion isso é literal. A ordem em que `compra` chama cobrar, emitir e publicar é connascência de execução: forte, dinâmica. Ela vive inteira dentro de `compra.api`, concentrada num método só (`fechar_pedido`) — localidade alta, a proximidade máxima; as chamadas ordenadas que participam ficam todas nesse método, não espalhadas pelos chamadores. O que cruza para `pagamentos` é connascência de tipo: os dois lados concordam que o resultado da cobrança é um `ResultadoCobranca`. Fraca, estática, verificável por ferramenta. A API é o ponto onde se garante que só as formas fracas passaram.
+A distinção entre essas duas categorias de fronteira é um dos fundamentos mais importantes da disciplina:
 
-### O ponto honesto: `compra` ainda depende de duas APIs
+#### 1. Fronteira Lógica
+- **Mecanismo**: imposta em tempo de compilação, pelo sistema de tipos da linguagem ou por ferramentas de análise estática de código (linters de arquitetura).
+- **Runtime**: os módulos coabitam o mesmo espaço de memória. Uma chamada entre dois módulos é uma chamada de método/função em memória (*in-memory invocation*), executada em microssegundos ou nanossegundos.
+- **Transacionalidade**: permite commits atômicos (ACID) no mesmo banco de dados relacional.
+- **Custo**: quase exclusivamente de design (definir bons contratos e manter a disciplina das ferramentas de governança).
 
-`compra.api` continua importando `pagamentos.api` e `notificacoes.api`. Os contratos do `setup.cfg` não proíbem isso, e não deveriam: quem orquestra conhece o contrato de quem é orquestrado. A fronteira aqui é lógica — o linter garante que `compra` não alcança `pagamentos._provedores` — e não física: não há evento nem fila entre eles, `compra` chama `gateway.cobrar` e espera a resposta. Independência total entre `compra` e os outros dois exigiria `compra` publicar um evento e seguir sem esperar, e isso é o Módulo 4. Dizer que três contratos de `import-linter` entregam mais que isso seria vender o que eles não compram.
+#### 2. Fronteira Física
+- **Mecanismo**: imposta pela separação de processos de sistema operacional e cabos de rede (TCP/IP, HTTP, gRPC, mensageria).
+- **Runtime**: a chamada de função é substituída por serialização de payload, handshake de rede, tráfego de pacotes e desserialização. A latência salta de nanossegundos para milissegundos.
+- **Transacionalidade**: commits únicos deixam de existir; o sistema precisa adotar consistência eventual, padrões de compensação (*Sagas*) ou transações em duas fases.
+- **Custo**: operacional, de infraestrutura, de monitoramento e de tolerância a falhas parciais.
 
-## Três alternativas de fronteira
+> **Tese central**: *A fronteira lógica é o ensaio honesto da fronteira física.*  
+> Se um módulo de domínio não possui sua API pública rigorosamente definida e seus internals blindados dentro da mesma memória, extraí-lo para um serviço distribuído causará falhas imediatas. No entanto, uma vez que a fronteira lógica esteja consolidada e estável, o monólito modular pode atender à empresa por anos — e, caso a separação física venha a ser justificável no futuro (Módulo 3), a extração será direta, pois o contorno do módulo já está pronto.
 
-O estado de partida é `03-governado`: um pacote plano com três contratos `forbidden`, sem separação entre nome público e nome interno. A partir dele, três caminhos, e os três têm quem defenda:
+---
 
-| Alternativa | O que resolve | O que custa | Quando não vale |
-|---|---|---|---|
-| Manter o pacote plano governado | fronteira mínima já verificável; poucos arquivos | "qual nome é público" fica na cabeça de quem revisa o PR | quando o time cresce e a convenção verbal decai |
-| Módulos de domínio com `api.py` + `_` internos | encapsulamento no nível de pacote, verificável; base honesta para extrair depois | mais arquivos; uma fábrica para evitar *reach-in*; uma linha de `ignore_imports` a documentar | quando o sistema tem um assunto só e a separação não paga a indireção |
-| Eventos entre os módulos agora | independência de verdade entre `compra` e os outros | falha assíncrona, ordem de entrega, observabilidade distribuída — sem ganho medido que peça isso | quando a chamada direta ainda cabe no orçamento de latência e de operação |
+## A porta pública é um princípio, o mecanismo muda com a linguagem
 
-A decisão do checkpoint é a segunda linha. Ela não elimina a dependência de `compra` para as duas APIs; ela impõe que essa dependência passe só pela porta.
+O conceito de monólito modular é agnóstico a tecnologia: em qualquer ecossistema, a regra é a mesma — *o que pertence ao interior do módulo não pode ser importado por quem está de fora*. O que muda de linguagem para linguagem é quem garante isso, e em que ponto da cadeia de build.
 
-## 05-modular: três módulos e um teste que antes não existia
+Python é o caso mais exposto: a linguagem foi construída sob a filosofia de *"consenting adults"* e não tem modificador de acesso nativo que barre um `import` — qualquer arquivo `.py` pode, tecnicamente, importar qualquer outro. Por isso o Mini-Orion sustenta a fronteira em duas partes: uma convenção visual (porta pública em `api.py`, implementação interna com prefixo `_`) e uma verificação mecânica no CI (`import-linter`, lendo contratos declarativos e falhando o build quando alguém rompe a convenção). Sem a segunda parte, a primeira não passa de combinado verbal.
 
-### A árvore de pacotes
+Outras linguagens resolvem o mesmo problema em lugares diferentes da cadeia de build. Java barra o acesso já na visibilidade de pacote (`package-private`) e formaliza módulos com o JPMS; Go proíbe no próprio compilador qualquer import que atravesse um diretório `internal/`; C#/.NET usa o modificador `internal` dentro do assembly; monorepos TypeScript aplicam tags de módulo do Nx ou o `dependency-cruiser` como regra de lint. A diferença entre elas é *onde* a barreira vive — compilador, empacotamento ou CI —, não se a barreira existe. Python empurra a barreira inteira para o CI porque não tem onde mais colocá-la.
+
+---
+
+## A anatomia de um módulo de domínio: o caso Orion
+
+Aplicando esse desenho ao Marketplace Orion, contrastamos a abordagem horizontal da Aula 10 com a modularização por domínio.
+
+### Cortar por assunto, não por tecnologia
+
+Um **módulo de domínio** agrupa componentes por assunto de negócio, não por semelhança técnica. Aplicado aos dez componentes canônicos do Orion, esse critério produz oito módulos:
+
+| Módulo de domínio | Componentes |
+|---|---|
+| Borda | `Portal` |
+| Vitrine | `Catalogo`, `Promocoes` |
+| Compra | `Checkout`, `Pedidos` |
+| Financeiro | `Pagamentos` |
+| Distribuição | `Logistica` |
+| Comunicação | `Notificacoes` |
+| Identidade | `Clientes` |
+| Integração | `Integracoes` |
+
+!!! note "Critério de agrupamento"
+
+    O critério de agrupamento atende à definição de **coesão forte**: elementos que sofrem manutenção pelos mesmos motivos de negócio moram juntos. Esse agrupamento é uma decisão desta disciplina, do mesmo tipo que a convenção de contagem de Abstractness do Módulo 1: existe para dar ao exercício de reorganização uma resposta verificável, e um corte diferente — juntar `Financeiro` e `Distribuição` num módulo de pós-venda, por exemplo — seria igualmente defensável.
+
+### A porta única de `Promocoes`
+
+Retomemos o problema do cupom de desconto. Em um monólito modular, como desenhamos a fronteira do módulo `promocoes`?
+
+```text
+promocoes/
+    api.py          <- Porta única: Protocol Promocoes, Desconto, factory
+    _regras.py      <- Internal: MotorRegras, RegraFreteGratis, RegraCashback
+    _campanhas.py   <- Internal: RepositorioCampanhasEmMemoria, cache local
+```
+
+Na porta pública (`api.py`), expomos apenas o contrato de consumo e os tipos de valor imutáveis:
+
+```python title="promocoes/api.py (recorte conceitual da porta)"
+from dataclasses import dataclass
+from typing import Protocol
+from mini_orion.nucleo.modelos import Carrinho
+
+
+@dataclass(frozen=True)
+class Desconto:
+    """Resultado da avaliação promocional."""
+    valor: float
+    descricao: str
+
+
+class Promocoes(Protocol):
+    """Contrato abstrato que outros módulos consomem."""
+    def desconto_para(self, carrinho: Carrinho) -> Desconto:
+        """Calcula o melhor desconto aplicável ao carrinho."""
+        ...
+```
+
+Todo o motor de regras de desconto, a lista de cupons e a mecânica de cálculo residem em `_regras.py`. 
+
+Quando o time de marketing cria uma nova campanha ("leve 3 camisetas e pague 2"), a alteração é feita exclusivamente dentro de `_regras.py`. O módulo `Compra` (`Checkout`) sequer toma conhecimento da alteração: ele continua chamando `desconto_para(carrinho)` e recebendo um objeto imutável `Desconto`. O custo de propagação da mudança foi contido dentro da fronteira do módulo.
+
+### A heurística de connascência na fronteira modular
+
+Na Aula 6, introduzimos a connascência e sua regra de ouro:
+> *Connascência forte só é aceitável quando a localidade é alta; connascência que cruza fronteiras deve ser fraca e estática.*
+
+No monólito modular, essa heurística é aplicada de forma literal:
+
+1. **Connascência de Execução (Forte, Dinâmica)**: Dentro do módulo `compra`, a sequência de fechamento do pedido executa:
+   `validar_carrinho() -> calcular_desconto() -> cobrar() -> emitir_pedido() -> publicar_confirmacao()`.  
+   Essa ordem rígida é uma connascência forte. No entanto, ela reside **inteira dentro de um único método** (`fechar_pedido`) em `compra.api`. A localidade é máxima (algumas linhas no mesmo arquivo). Nenhuma parte dessa sequência vaza para quem chama o checkout.
+2. **Connascência de Tipo (Fraca, Estática)**: Entre `compra` e `pagamentos`, a dependência é restrita a tipos imutáveis: `compra` passa um `PedidoCobranca` e recebe um `ResultadoCobranca`. Se o tipo mudar, o verificador estático acusa o erro antes dos testes rodarem.
+3. **Connascência de Nome (Fraca, Estática)**: Os módulos concordam apenas nos nomes dos métodos da interface (`cobrar`, `desconto_para`).
+
+A API pública atua como um filtro sanitário: ela barra a passagem de connascências fortes para o exterior do módulo.
+
+### O ponto honesto sobre acoplamento residual
+
+É fundamental manter a honestidade técnica: **o monólito modular não elimina todas as dependências entre módulos, nem deve prometer isso.**
+
+No Mini-Orion, o módulo `compra` continua importando as APIs de `pagamentos` e `notificacoes`. Isso é legítimo: quem é responsável por orquestrar um caso de uso precisa conhecer a interface de quem executa as etapas do processo. A invocação continua sendo uma chamada de função direta e síncrona dentro da mesma thread de execução.
+
+Dizer que o monólito modular elimina dependências seria vender uma ilusão. O que ele elimina de forma categórica é o **reach-in**: a prática perigosa de um módulo alcançar implementações concretas e estruturas internas de outro módulo. A independência temporal completa (onde `compra` emite um evento e segue sem esperar resposta) só é atingida com arquiteturas orientadas a eventos, assunto do Módulo 4.
+
+---
+
+## Mini-Orion 05-modular: Código, contratos e isolamento de testes
+
+No repositório do Mini-Orion, o checkpoint `05-modular` reorganiza o sistema em módulos de domínio estritos.
+
+### A árvore de pacotes e o Shared Kernel
 
 ```text title="code/mini-orion/05-modular/mini_orion/"
 mini_orion/
-    nucleo/         modelos.py                 shared kernel: so @dataclass
-    compra/         api.py   _pedidos.py
-    pagamentos/     api.py   _provedores.py
-    notificacoes/   api.py   _fila.py
+    nucleo/         modelos.py                 shared kernel: apenas @dataclass
+    compra/         api.py   _pedidos.py       modulo de dominio
+    pagamentos/     api.py   _provedores.py    modulo de dominio
+    notificacoes/   api.py   _fila.py          modulo de dominio
 ```
 
-`compra.api` carrega `ServicoCheckout`, a fábrica `montar_servico` e o `Protocol` `RepositorioDePedidos`; `compra._pedidos` carrega a classe concreta `RepositorioPedidos`, em memória, que satisfaz o `Protocol` por estrutura. `pagamentos` e `notificacoes` seguem o mesmo molde: contrato na porta, concreto no `_`. O `nucleo` é *shared kernel* — só `@dataclass` de dados (`Carrinho`, `Cliente`, `Pedido`), sem regra de negócio; está disponível para os módulos que precisam dele — `compra` e `notificacoes` o importam, `pagamentos` não precisa — e depender do `nucleo` não faz um módulo depender dos outros.
+O pacote `nucleo` desempenha o papel de **Shared Kernel** (Evans, DDD):
+- Contém apenas estruturas de dados fundamentais (`Carrinho`, `Cliente`, `Pedido`) tipadas com `@dataclass(frozen=True)`.
+- É estritamente desprovido de lógica de negócio comportamental.
+- Serve como vocabulário comum entre os módulos: `compra` e `notificacoes` importam `nucleo`, mas depender do `nucleo` não introduz dependência entre eles.
 
-### O mapa: as setas que saem de compra
-
-Se `compra` ainda importa duas APIs, o que exatamente a fronteira impede?
+### O mapa de dependências e a blindagem dos internals
 
 ```mermaid
 flowchart TD
@@ -93,11 +224,13 @@ flowchart TD
     pagamentos["pagamentos.api"]
     notificacoes["notificacoes.api"]
     nucleo["nucleo.modelos"]
+    
     compra --> pagamentos
     compra --> notificacoes
     compra --> nucleo
     notificacoes --> nucleo
-    subgraph internos ["ninguem de fora entra aqui"]
+    
+    subgraph internos ["Internals blindados (ninguem de fora acessa)"]
         prov["pagamentos._provedores"]
         fila["notificacoes._fila"]
         ped["compra._pedidos"]
@@ -105,11 +238,12 @@ flowchart TD
     style internos stroke-dasharray: 6 4
 ```
 
-Leitura das setas: `A --> B` significa que **A depende de B**. As setas saem só de `compra` para as APIs e daí para o `nucleo` — a dependência que a fronteira admite. Dentro da caixa tracejada estão os módulos `_*`: nenhum nome de fora do pacote os alcança. `compra` depende de `pagamentos.api`, e não pode depender de `pagamentos._provedores`; é essa diferença, e só ela, que os contratos impõem.
-
-O que o diagrama **não** mostra: as classes dentro de cada módulo (`ServicoCheckout`, `Gateway`, `Notificador`, os `@dataclass`); a aresta de cada `api` para o seu próprio `_` interno — legítima, uma API usando o que é dela; e o sentido do fluxo de execução, que vai de `compra` ao gateway e volta com o resultado, ao contrário da seta de dependência.
+> **Convenção de leitura das setas**: `A --> B` significa que **A depende estaticamente de B** (A importa B).
+> **O que o diagrama destaca**: As setas de dependência tocam exclusivamente as portas públicas (`api.py`) e o `nucleo`. Nenhum módulo externo possui arestas apontando para os elementos dentro da caixa tracejada (`_*`).
 
 ### Os três contratos do setup.cfg
+
+Para garantir que a blindagem não dependa de boa vontade, três contratos foram definidos no `setup.cfg`:
 
 ```ini title="code/mini-orion/05-modular/setup.cfg (recorte)"
 [importlinter:contract:pagamentos-e-notificacoes-independentes]
@@ -140,29 +274,25 @@ ignore_imports =
     mini_orion.notificacoes.api -> mini_orion.notificacoes._fila
 ```
 
-O primeiro, `independence`, garante que `pagamentos` e `notificacoes` não se importam em sentido algum — um não conhece a existência do outro. O segundo, `forbidden`, garante que nenhum dos dois olha para `compra`: a orquestração é de mão única. O terceiro, também `forbidden`, é o que impede o *reach-in*: `compra` pode importar `pagamentos.api` e `notificacoes.api`, mas não `pagamentos._provedores` nem `notificacoes._fila`.
+Análise funcional dos contratos:
+1. **`type = independence`**: garante que `pagamentos` e `notificacoes` operem de forma totalmente ortogonal. Nenhum deles pode importar nada do outro, em nenhum sentido.
+2. **`type = forbidden` (downstream)**: assegura a direção única de orquestração. Módulos especialistas não podem importar o orquestrador `compra`.
+3. **`type = forbidden` (anti-reach-in)**: impede que `compra` importe `_provedores` ou `_fila`.
 
-Com o código como está, `lint-imports` fecha assim:
+#### A fiação legítima e a diretiva `ignore_imports`
+A última linha do contrato proíbe `compra` de acessar `notificacoes._fila`, mas contém a cláusula:
+`ignore_imports = mini_orion.notificacoes.api -> mini_orion.notificacoes._fila`.
 
-```text
-Pagamentos e Notificacoes nao se conhecem KEPT
-Pagamentos e Notificacoes nao dependem de Compra KEPT
-Ninguem alcanca os internals de outro modulo KEPT
+Por que essa isenção existe?  
+Dentro de `notificacoes.api`, a fábrica `criar_notificador()` precisa instanciar a classe concreta `FilaNotificacoes` (que vive em `_fila.py`) para entregar um objeto pronto a quem chamou. Isso **não é vazamento arquitetural**: é o próprio módulo montando suas peças internas para oferecer uma conveniência de uso na sua porta pública. A diretiva `ignore_imports` documenta essa fiação interna como legítima, enquanto mantém o bloqueio absoluto para qualquer importação vinda de fora do pacote.
 
-Contracts: 3 kept, 0 broken.
-```
+### O teste de isolamento é a evidência palpável
 
-### A aresta que o ignore_imports isenta
+Na Aula 10, para testar se uma recusa de cartão funcionava, éramos obrigados a instanciar o grafo quase completo da aplicação: carrinho, cliente, gateway concreto, repositório e notificador, disparando o método `fechar_pedido` inteiro. A regra que queríamos testar estava enroscada na orquestração.
 
-A última linha do terceiro contrato isenta uma aresta: `mini_orion.notificacoes.api -> mini_orion.notificacoes._fila`. Ela existe porque `criar_notificador()`, dentro de `notificacoes.api`, importa `_fila` para montar o notificador padrão — uma API usando o próprio interno, não um vazamento. É por esse caminho, via `criar_notificador`, que `compra` obtém um notificador pronto sem tocar em `_fila`. *Reach-in* por qualquer outro caminho — em particular `compra` passando por `pagamentos.api` para chegar em `_provedores` — continua sendo detectado.
+No Monólito Modular, a existência real da fronteira é comprovada por um teste que roda com cada módulo completamente isolado:
 
-### O teste de isolamento é a evidência
-
-Na Aula 10, testar a regra "acima do limite recusa" exigia montar `Carrinho`, `Cliente`, um gateway concreto, o repositório e o notificador, e chamar `fechar_pedido` inteiro. A regra que se queria exercitar estava cruzada com as outras dentro do mesmo caso de uso.
-
-Agora `test_isolamento.py` roda cada módulo sozinho:
-
-```python title="code/mini-orion/05-modular/tests/test_isolamento.py (recorte)"
+```python title="code/mini-orion/05-modular/tests/test_isolamento.py"
 from mini_orion.pagamentos.api import PedidoCobranca, ResultadoCobranca
 from mini_orion.pagamentos._provedores import GatewayPagamentoX
 from mini_orion.notificacoes.api import EventoNotificacao
@@ -170,60 +300,74 @@ from mini_orion.notificacoes._fila import FilaNotificacoes, NotificacaoTolerante
 
 
 def test_pagamentos_isolado() -> None:
-    resultado = GatewayPagamentoX().cobrar(PedidoCobranca(valor=100.0, cartao="4111111111"))
+    # Testa o provedor diretamente sem instanciar nada de compra ou pedidos
+    resultado = GatewayPagamentoX().cobrar(
+        PedidoCobranca(valor=100.0, cartao="4111111111")
+    )
     assert resultado is ResultadoCobranca.APROVADA
 
 
 def test_notificacoes_isolado() -> None:
+    # Testa a fila de notificacoes sem subir checkout ou banco de dados
     fila = FilaNotificacoes()
-    NotificacaoTolerante(fila).publicar(EventoNotificacao(destinatario="a@b.c", assunto="x"))
+    NotificacaoTolerante(fila).publicar(
+        EventoNotificacao(destinatario="cliente@orion.com", assunto="Confirmacao")
+    )
     assert len(fila.pendentes) == 1
 ```
 
-Nenhum nome de `compra` entra em cena. Um módulo que se testa sozinho é um módulo com fronteira de verdade — e é por isso que o teste que passou a ser possível **é** a evidência da decisão, não o argumento sobre ela. O que observaríamos se a fronteira fosse só retórica: `test_pagamentos_isolado` precisaria importar algo de `compra` para montar o cenário, e voltaríamos ao acoplamento da Aula 10.
+Nenhum componente de `compra` é carregado. O teste é executado em milissegundos na memória.
+
+> **Critério de validação**: *Um módulo com fronteira de verdade se testa sozinho.*  
+> Se para testar unitariamente um módulo você for forçado a mockar ou subir as classes do orquestrador, a fronteira é apenas retórica e o acoplamento continua presente.
+
+---
 
 ## Exercícios
 
-1. **Identifique a porta.** O pacote `pagamentos` do checkpoint tem esta forma:
-
+1. **Identificação da porta.** O pacote `pagamentos` do Mini-Orion possui os seguintes arquivos:
+   
     ```text
     pagamentos/
-        api.py          Gateway, PedidoCobranca, ResultadoCobranca
+        api.py          Gateway (Protocol), PedidoCobranca, ResultadoCobranca
         _provedores.py  GatewayPagamentoX, GatewayPagamentoY, GatewayForaDoAr
     ```
-
-    Um módulo `compra` quer cobrar uma compra. Quais nomes ele pode importar e quais o `import-linter` recusaria? Justifique em uma frase por nome.
-
-    ??? note "Resposta comentada"
-
-        `compra` pode importar `Gateway`, `PedidoCobranca` e `ResultadoCobranca` — os três estão em `api.py`, que é a porta pública do módulo. `compra` monta um `PedidoCobranca`, recebe um `ResultadoCobranca` e tipa a dependência pelo `Protocol` `Gateway`.
-
-        `compra` não pode importar `GatewayPagamentoX`, `GatewayPagamentoY` nem `GatewayForaDoAr` — os três estão em `_provedores.py`, marcado com `_`. O contrato `sem-reach-in-nos-internals` acusa `mini_orion.compra -> mini_orion.pagamentos._provedores`. A escolha do provedor concreto é de quem chama a fábrica, não do checkout.
-
-2. **Classifique e decida.** Para cada dependência entre módulos, dê forma, força, localidade e grau, e diga se a heurística da Aula 6 a deixa atravessar a fronteira.
-
-    a. `compra` e `pagamentos` concordam que o resultado da cobrança é um `ResultadoCobranca`.
-    b. Dentro de `fechar_pedido`, a ordem cobrar → emitir → publicar.
-    c. `compra._pedidos` grava `pedido.total` e `pagamentos` cobra `cobranca.valor`; os dois precisam permanecer iguais.
+    
+    Um desenvolvedor do módulo `compra` precisa realizar a cobrança de um pedido. Quais elementos ele tem autorização arquitetural para importar e quais o linter deve proibir? Justifique o motivo para cada caso.
 
     ??? note "Resposta comentada"
 
-        **a — Connascência de tipo.** Estática, fraca. Localidade: módulos diferentes. Grau 2. Atravessa a fronteira sem problema: viaja por `pagamentos.api`, o compilador de tipos a enxerga, e um teste rápido a pega.
+        **Pode importar (de `pagamentos.api`):**
+        - `Gateway`: protocolo abstrato que define a assinatura do método de cobrança;
+        - `PedidoCobranca`: tipo de entrada que empacota os dados da transação;
+        - `ResultadoCobranca`: enum ou tipo de retorno que expressa o status do pagamento.
+        
+        **Não pode importar (de `pagamentos._provedores`):**
+        - `GatewayPagamentoX`, `GatewayPagamentoY`, `GatewayForaDoAr`: classes concretas que implementam o protocolo. O módulo de compra não deve conhecer provedores específicos. A escolha de qual provedor instanciar pertence à composição inicial do sistema (injeção de dependências), não à lógica do checkout. O linter acusa violação de *reach-in* se qualquer um desses arquivos for importado fora de `pagamentos`.
 
-        **b — Connascência de execução.** Dinâmica, forte. Localidade: alta — um método só, dentro de `compra.api`. Grau: as chamadas ordenadas da sequência (cobrar, emitir, publicar), todas nesse mesmo método, não espalhadas pelos chamadores. Não atravessa fronteira nenhuma, e é assim que deve ser: fica selada dentro de `compra`.
-
-        **c — Connascência de valor.** Dinâmica, forte. Localidade: módulos diferentes. Grau 2. A heurística diz que uma forma forte cruzando fronteira é dívida. Aqui ela é tolerada só porque há um orquestrador único — `compra` — que deriva os dois valores de `carrinho.total` num ponto só. Eliminá-la de vez pediria um evento carregando o valor, o que é assunto do Módulo 4.
-
-3. **Escreva a API mínima.** Um módulo de domínio `promocoes` precisa expor a `compra` o suficiente para aplicar desconto no fechamento, e nada além disso. O motor de regras fica em `promocoes/_regras.py`. Escreva o conteúdo público de `promocoes/api.py` — os tipos e o contrato que `compra` importa.
+2. **Classificação de connascência entre módulos.** Avalie cada uma das seguintes conexões entre módulos, apontando a forma de connascência, a localidade e se a conexão é permitida na fronteira modular:
+   
+    a. `compra` e `pagamentos` concordam que a cobrança devolve um objeto imutável `ResultadoCobranca`.  
+    b. Dentro do método `fechar_pedido`, a execução sequencial obrigatória: `gateway.cobrar()` antes de `repo.salvar()`.  
+    c. O módulo `compra._pedidos` armazena `pedido.valor_total = 250.0` e o módulo `pagamentos._provedores` efetua a cobrança com base em `cobranca.valor = 250.0`.
 
     ??? note "Resposta comentada"
 
-        Uma resposta suficiente expõe um tipo de valor e um `Protocol`, e deixa o cálculo do lado de dentro:
+        **a — Connascência de Tipo.** Estática e fraca. Localidade: módulos distintos (atravessa fronteira). É **permitida e recomendada**: expressa um contrato estável de tipos, verificado em tempo de compilação ou checagem de tipos estáticos (`mypy`).
+
+        **b — Connascência de Execução.** Dinâmica e forte. Localidade: máxima (confinada dentro do método `fechar_pedido` em `compra.api`). É **permitida apenas porque a localidade é alta**: não cruza fronteiras; quem chama `fechar_pedido` não precisa saber em que ordem as operações internas ocorrem.
+
+        **c — Connascência de Valor.** Dinâmica e forte. Localidade: módulos distintos. É uma **dívida técnica tolerada**: os dois valores precisam coincidir exatamente. Ela só é sustentável hoje porque o orquestrador `compra` deriva ambos do mesmo `carrinho.total` no momento da chamada. A eliminação definitiva dessa connascência de valor exige eventos imutáveis com payload completo (Módulo 4).
+
+3. **Projetando a API mínima.** O domínio `promocoes` precisa permitir que o módulo de fechamento aplique descontos no carrinho sem que nenhum detalhe de campanhas ou cupons vaze. Escreva o conteúdo completo de `promocoes/api.py`, contendo os tipos de dados e a interface que `compra` deve consumir.
+
+    ??? note "Resposta comentada"
+
+        Uma implementação exemplar expõe apenas estruturas de dados imutáveis e um protocolo tipado:
 
         ```python
         from dataclasses import dataclass
         from typing import Protocol
-
         from mini_orion.nucleo.modelos import Carrinho
 
 
@@ -234,39 +378,62 @@ Nenhum nome de `compra` entra em cena. Um módulo que se testa sozinho é um mó
 
 
         class Promocoes(Protocol):
-            def desconto_para(self, carrinho: Carrinho) -> Desconto: ...
+            def desconto_para(self, carrinho: Carrinho) -> Desconto:
+                """Recebe o carrinho e retorna o desconto a aplicar."""
+                ...
         ```
 
-        O que **não** entra em `api.py`: a classe que percorre as regras, a tabela de campanhas vigentes, a leitura de `Catalogo`. Tudo isso vive em `_regras.py`. `compra` recebe um `Promocoes` pronto por uma fábrica e chama `desconto_para`; um tipo novo de regra muda `_regras.py` e mais nada.
+        O que **não** entra na API: classes de regras individuais (`RegraCupom200`, `RegraFreteGratis`), classes de acesso a banco de campanhas ou conexões externas. Esses elementos permanecem encapsulados nos arquivos internos `_regras.py` e `_campanhas.py`.
 
-4. **Julgue: vale a pena a fronteira lógica sem a física?** O checkpoint impõe que `compra` só fale com as APIs de `pagamentos` e `notificacoes`, mas mantém a chamada direta e síncrona — sem processo separado, sem rede, sem evento. Alguém pode argumentar que isso é meio caminho: a disciplina do contrato sem o isolamento de falha que só a separação de processo dá. Outro alguém pode argumentar que é exatamente a quantidade certa de fronteira para o problema atual.
+4. **Julgamento arquitetural: vale a pena a fronteira lógica sem a física?** Um engenheiro sênior da equipe argumenta: *"Monólito modular é uma meia-medida ilusória. Mantemos o acoplamento de runtime, o risco de concorrência no mesmo banco e a disputa de deploy em um artefato só. Deveríamos ir diretamente para microsserviços."*  
+    Avalie criticamente esse argumento. Identifique quais pontos da afirmação são verdadeiros, quais são falaciosos e defina qual é o **critério decisório** para adotar o monólito modular.
 
-    Mais de uma resposta é defensável. O que se avalia: se a sua resposta nomeia o **critério** que decide (custo de manter os contratos? risco de uma falha em `pagamentos` derrubar `compra`? cadência de release de cada módulo? ausência de ganho medido para pagar a rede?), reconhece o que a posição oposta tem de válido, e diz o que você observaria em seis meses para saber se a escolha envelheceu bem — por exemplo, quantas vezes um `import` de *reach-in* foi barrado no PR, ou se algum módulo passou a precisar de janela de manutenção própria. Resposta sem critério nomeado não conta como resposta técnica.
+    ??? note "Resposta comentada"
 
-## Atividade em grupo
+        **O que a afirmação tem de verdadeiro:** O monólito modular de fato não resolve disputas de deploy em equipes gigantescas (se o pipeline quebrar, ninguém faz deploy) e não isola falhas em nível de processo de SO (se uma thread consumir 100% de CPU ou causar um estouro de memória, o processo inteiro é impactado).
+        
+        **O que a afirmação tem de falacioso:** A ideia de que microsserviços resolvem acoplamento automaticamente. Se os domínios do Orion forem fatiados incorretamente e distribuídos em serviços pela rede, o acoplamento continuará existindo, acrescido da penalidade de latência de rede, falhas de conexão, serialização e transações distribuídas sem garantia ACID.
+        
+        **Critério decisório:** O monólito modular é a escolha correta quando o sistema precisa de organização cognitiva, divisão clara de código e governança de arquitetura, mas a empresa **não possui volume de tráfego que justifique a escala física independente**, nem equipe de operações para gerenciar orquestradores de containers e rastreamento distribuído. Ele é o patamar obrigatório de maturidade: extrai-se depois o que já está modularizado, se e quando houver evidência mensurável de necessidade de escala física.
 
-Sobre o recorte do seu grupo no Orion Evolution Lab:
+---
 
-1. Agrupem os componentes do recorte em módulos de domínio. Usem o agrupamento de `05-domain.md` como referência, mas registrem qualquer divergência e o motivo dela.
-2. Para cada módulo, escrevam a **API pública mínima** que os outros módulos consomem — os tipos e os contratos, não a implementação. Se um módulo expõe mais de quatro nomes, expliquem por quê.
-3. Marquem, para cada módulo, o que ficaria como *internal* `_` — o que os outros não têm razão de importar.
-4. **Obrigatório:** nomeiem uma dependência entre dois módulos do recorte que **não** dá para eliminar sem eventos. Digam qual connascência a sustenta, por que a chamada direta ainda é aceitável hoje, e que sinal observável faria essa dependência virar candidata a um evento — assunto do Módulo 4.
+## Atividade em grupo: Orion Evolution Lab
 
-O item 4 é o ponto da atividade. Toda proposta de modularização tem uma aresta que a fronteira lógica organiza mas não corta; reconhecer qual é, e por quê, diz mais sobre o recorte do que o desenho limpo dos módulos que se isolam bem. Formato e critérios em [Orion Evolution Lab](../orion/index.md).
+Com base no recorte arquitetural do seu grupo:
 
-## Três módulos aqui, dezessete arestas lá
+1. **Partição em módulos de domínio**: agrupe os componentes do seu recorte em módulos de domínio funcionais, tomando como base o agrupamento de oito módulos apresentado nesta aula. Registre qualquer divergência adotada em relação ao padrão da disciplina e justifique o motivo.
+2. **Definição de API pública**: para cada módulo proposto, escreva a assinatura da **API pública mínima** (máximo de quatro classes/tipos expostos por módulo).
+3. **Mapeamento de internals**: liste os arquivos e componentes que receberiam prefixo `_`, justificando por que nenhum outro módulo tem razão legítima para importá-los.
+4. **A dependência que exige eventos (Obrigatório)**: aponte uma dependência entre dois módulos do seu recorte que **não pode ser eliminada** apenas com fronteiras lógicas sem quebrar a sincronia do fluxo. Explique qual connascência a sustenta e qual gatilho observável no futuro recomendaria transformá-la em um evento assíncrono.
 
-O Mini-Orion em `05-modular` tem três módulos de domínio — `compra`, `pagamentos`, `notificacoes` — mais o `nucleo` como *shared kernel*. Cada módulo tem `api.py` como porta e arquivos `_` como interior; três contratos de `import-linter` fecham em `3 kept, 0 broken`; e cada módulo tem ao menos um teste que roda sem instanciar os outros. A fronteira é lógica: `compra` ainda depende de duas APIs, tirar essa dependência exige eventos (Módulo 4), e pôr uma chamada de rede no lugar da chamada direta é o Módulo 3 — com a conta de latência, falha parcial e commit único que a Aula 9 já abriu.
+---
 
-O Mini-Orion tem três módulos. O Orion inteiro tem dez componentes e dezessete arestas. Sob o agrupamento de domínio de `05-domain.md`, cada uma dessas dezessete arestas é uma de duas coisas: fronteira entre módulos, que custa e precisa ser justificada, ou detalhe interno de um módulo, que ninguém de fora enxerga. Quais são quais — e quanto a conta das que atravessam pesa — é o que a Aula 12 mede.
+## Síntese e o próximo passo: reorganizar o grafo
+
+O Mini-Orion demonstrou que é viável criar fronteiras limpas, coesas e testáveis dentro do mesmo artefato monolítico:
+- O sistema é particionado por **domínio**, não por tecnologia;
+- As APIs públicas (`api.py`) funcionam como barreiras sanitárias que barram o vazamento de detalhes internos;
+- Contratos automatizados no CI garantem a proibição do *reach-in*;
+- Módulos se testam de forma unitária e instantânea sem instanciar outros domínios;
+- Mantém-se o benefício do deploy simples em processo único e transações ACID.
+
+No Mini-Orion, operamos com três módulos. No entanto, o sistema completo do **Marketplace Orion** possui **dez componentes e dezessete arestas de dependência**.
+
+Quando aplicamos os oito módulos de domínio desta aula sobre esse grafo de 17 arestas, o que acontece?  
+Quantas dependências ficam guardadas como detalhes internos e quantas cruzam fronteiras entre módulos? A resposta é contraintuitiva — e é o que a **Aula 12** calcula e demonstra.
+
+---
 
 ## Leitura complementar
 
-- Richards, Mark; Ford, Neal. *Fundamentals of Software Architecture*. Cap. 8 — Component-Based Thinking (componente como partição física; coesão de componente); Cap. 3 — Modularity (connascência aplicada à fronteira).
-- Martin, Robert C. *Clean Architecture*. Cap. 14 — Component Cohesion (o que agrupa o que dentro de um módulo).
+- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture*. O'Reilly, 2020. Cap. 8 — *Component-Based Thinking* (componente como partição lógica e física; coesão e acoplamento entre domínios).
+- LILIENTHAL, Carola. *Sustainable Software Architecture: Analyze and Reduce Technical Debt*. dpunkt.verlag, 2019. Cap. 3 — *Modularization Patterns*.
+- FOWLER, Martin. *MonolithFirst*. MartinFowler.com, 2015. (Ensaio clássico sobre o custo de prematuramente distribuir arquiteturas).
 
 ## Referências
 
-- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020.
+- EVANS, Eric. *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley, 2003.
 - MARTIN, Robert C. *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall, 2017.
 - PAGE-JONES, Meilir. *What Every Programmer Should Know About Object-Oriented Design*. Dorset House, 1995.
+- RICHARDS, Mark; FORD, Neal. *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly, 2020.

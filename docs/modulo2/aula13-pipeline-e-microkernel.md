@@ -17,7 +17,7 @@ A Aula 12 fechou com dois fatos sobre o Mini-Orion que as fronteiras de módulo 
 
 O primeiro: `fechar_pedido`, no módulo `compra`, percorre a mesma ordem em toda execução — validar o carrinho, montar o pedido, cobrar, emitir, notificar. Não há ramo que pule uma etapa nem caminho que as reordene; o método *é* essa sequência.
 
-O segundo: `Promocoes` — responsável em `05-domain.md` por "cupons, campanhas, regras de desconto" — recebe um tipo novo de regra quase todo trimestre. Cupom percentual, frete grátis acima de um piso, leve três pague dois, cashback para cliente recorrente: cada um entra no corpo do componente, e cada um obriga um deploy do sistema inteiro para uma mudança que não toca `Checkout`, `Pedidos` nem `Pagamentos`.
+O segundo: `Promocoes` — responsável por cupons, campanhas e regras de desconto — recebe um tipo novo de regra quase todo trimestre. Cupom percentual, frete grátis acima de um piso, leve três pague dois, cashback para cliente recorrente: cada um entra no corpo do componente, e cada um obriga um deploy do sistema inteiro para uma mudança que não toca `Checkout`, `Pedidos` nem `Pagamentos`.
 
 Camadas governam a direção da dependência. Módulos de domínio governam o encapsulamento. Nenhum dos dois diz nada sobre um componente cuja forma é uma sequência fixa, nem sobre um componente que é um miolo estável com regras entrando e saindo. Esta aula trata das duas formas — e do preço de cada uma.
 
@@ -28,6 +28,8 @@ Camadas governam a direção da dependência. Módulos de domínio governam o en
 Uma **arquitetura em pipeline** organiza o sistema como uma sequência de **filtros**: cada filtro recebe um dado, aplica uma transformação e entrega o resultado ao filtro seguinte. O fluxo é unidirecional — um filtro não chama o anterior nem conhece o próximo; ele conhece só o formato do que entra e o do que sai. A ordem dos filtros é a arquitetura: trocar dois de lugar muda o resultado, porque cada filtro assume a pós-condição do anterior.
 
 O pipeline serve quando o domínio *é* uma transformação em etapas — quando descrever o que o sistema faz já produz a lista de filtros. `fechar_pedido` tem esse formato: validar produz um carrinho conferido; montar produz um pedido a partir dele; cobrar produz um pedido pago; emitir produz um pedido registrado; notificar produz o aviso. São cinco etapas, cada uma consumindo o resultado da anterior e nada além disso.
+
+A forma não é de um ecossistema só. O encadeamento de comandos por `|` no shell Unix é o pipeline na sua versão mais literal — cada processo lê a saída do anterior e não conhece mais nada do que vem antes; frameworks de integração como Apache Camel e processadores de fluxo como Kafka Streams formalizam a mesma ideia para dados em trânsito entre sistemas. O que muda entre eles é o meio de transporte entre filtros — variável em memória, `stdout`, tópico de mensageria —, não a arquitetura.
 
 ### Onde o pipeline paga e onde atrapalha
 
@@ -41,7 +43,9 @@ Ele atrapalha quando o fluxo tem muitos ramos condicionais. Se metade das execu�
 
 Uma **arquitetura em microkernel** separa o sistema em duas partes: um **núcleo** que muda pouco e um conjunto de **plugins** que entram e saem. O núcleo sabe fazer três coisas — definir o contrato que um plugin precisa satisfazer, registrar plugins e compor o resultado dos plugins registrados. Não conhece nenhum plugin concreto.
 
-A forma serve quando a variação é **conhecida e recorrente**: sabe-se de antemão a dimensão em que o sistema vai variar — aqui, o tipo de regra de desconto — e essa variação chega em ritmo previsível. `Promocoes` é o caso. A parte que varia (`05-domain.md`: "regras de desconto") é identificável e separável do resto do componente, que é estável.
+A forma serve quando a variação é **conhecida e recorrente**: sabe-se de antemão a dimensão em que o sistema vai variar — aqui, o tipo de regra de desconto — e essa variação chega em ritmo previsível. `Promocoes` é o caso. A parte que varia — a regra de desconto — é identificável e separável do resto do componente, que é estável.
+
+O nome vem do núcleo de sistema operacional que só resolve o essencial — escalonar processo, gerenciar memória — e empurra o resto para módulos carregados à parte; o `OSGi` do ecossistema Java e a arquitetura de plugins do Eclipse aplicam a mesma ideia a aplicações de usuário, e um navegador que carrega extensões sem recompilar segue o mesmo contrato: núcleo que define a interface, plugin que a implementa, sem o núcleo conhecer o plugin de antemão.
 
 ### O contrato que o núcleo enxerga
 
@@ -208,7 +212,7 @@ Três coisas o diagrama não representa: a ordem em que `aplicar` compõe os des
 |---|---|
 | **Identificador** | ADR — regra de desconto como plugin de `Promocoes` |
 | **Status** | Aceita para o checkpoint `06-microkernel` |
-| **Contexto** | `Promocoes` recebe um tipo novo de regra de desconto quase todo trimestre. Hoje cada tipo entra no corpo do componente e obriga o deploy do sistema inteiro, para uma mudança que não toca `Checkout`, `Pedidos` nem `Pagamentos`. A responsabilidade de `Promocoes` em `05-domain.md` — "cupons, campanhas, regras de desconto" — é justamente a parte que varia; o resto do componente é estável. |
+| **Contexto** | `Promocoes` recebe um tipo novo de regra de desconto quase todo trimestre. Hoje cada tipo entra no corpo do componente e obriga o deploy do sistema inteiro, para uma mudança que não toca `Checkout`, `Pedidos` nem `Pagamentos`. A responsabilidade de `Promocoes` — cupons, campanhas, regras de desconto — é justamente a parte que varia; o resto do componente é estável. |
 | **Decisão** | Tratar `Promocoes` como microkernel. O núcleo (`promocoes.api`) define o contrato `RegraDesconto` — `avalia(carrinho)` devolve um `Desconto` ou `None` — e o `MotorPromocoes`, que compõe regras registradas por `registrar`. Cada regra concreta é um plugin em `promocoes._regras` que importa o núcleo para falar `Desconto`. O contrato `nucleo-nao-conhece-plugins` do `import-linter` proíbe o sentido `promocoes.api -> promocoes._regras`. |
 | **Alternativas** | (a) Manter as regras no corpo de `Promocoes`, com um `if`/`match` por tipo: menos indireção, um arquivo, e o time já conhece; some quando o número de tipos cresce e cada mudança arrasta o deploy do componente todo. (b) Extrair `Promocoes` para um serviço com deploy independente: resolve a cadência de release de verdade, mas cobra rede, falha parcial e observabilidade distribuída (Módulo 3), sem sinal medido que peça isso hoje. |
 | **Consequências positivas** | Um tipo novo de regra é um arquivo em `_regras` e uma linha de `registrar` na raiz de composição; o núcleo não muda e não é retestado. O contrato do linter documenta e verifica a direção núcleo↛plugin. `MotorPromocoes` sem plugin nenhum devolve `[]` — o núcleo é exercível sozinho. |

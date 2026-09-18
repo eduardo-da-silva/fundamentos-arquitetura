@@ -103,9 +103,15 @@ Consequência: uma aula desta disciplina pode ser boa com pouco código. Não po
 
 ## Tamanho
 
-Entre 200 e 320 linhas de Markdown para uma aula conceitual. Acima disso, ou a aula está cobrindo dois assuntos, ou está diluída.
+Sem teto fixo de linhas a partir do Módulo 2 — decisão do professor de 2026-09-17, motivada por um formato mais "livro-texto", com aulas servindo de leitura de referência enquanto os slides carregam a apresentação em sala. O Módulo 1 mantém o intervalo de 200–320 linhas como registro histórico; não é retroativo.
 
-Aula de oficina pode passar, desde que o excedente seja material de apoio para os grupos, não exposição.
+O controle de qualidade deixa de ser a contagem de linha e passa a ser inteiramente qualitativo, pelo que já está no resto deste documento e em `11-review-checklist.md`:
+
+- a proporção 50% texto / 25% diagrama-tabela-ADR / 25% código continua valendo — densidade extra deve crescer nas três frentes, não só em prosa;
+- o teste anti-boilerplate (abrir a aula anterior lado a lado, reescrever se mais da metade dos títulos coincidir) é quem detecta diluição, no lugar do limite de linha;
+- uma aula que cresce porque abriu uma segunda frente conceitual sem sintoma que a puxe ainda está cobrindo dois assuntos — o defeito original que o teto de linha tentava capturar continua sendo defeito, só que se verifica lendo, não contando.
+
+Aula de oficina segue podendo exceder com material de apoio para os grupos, sem que isso precise mais de uma exceção — a regra geral já não tem teto.
 
 ---
 
