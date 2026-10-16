@@ -123,23 +123,11 @@ site/            build — gerado, nunca editado
 
 ## Versionamento
 
-!!! danger "O repositório não é um repositório git"
+Este repositório é git, com remoto `origin` em `eduardo-da-silva/fundamentos-arquitetura`. O `.gitignore` já cobre `site/`, `.cache/`, `__pycache__/`, `.venv/` e `_rascunhos/`.
 
-    Não há `git init`, não há histórico, não há remoto. Todo o material do Módulo 1 existe em uma única cópia local, sem backup e sem possibilidade de reverter uma edição ruim.
+O código do Mini-Orion **não** é versionado aqui. Vive em repositório próprio, `eduardo-da-silva/fundamentos-arquitetura-code`, que localmente fica em `code-site/mini-orion/`, ao lado deste. Os slides (`slides/`) são versionados aqui, mas ficam fora de `docs/` e não entram no build.
 
-    A CI em `.github/workflows/ci.yml` pressupõe um remoto no GitHub que ainda não está conectado.
-
-    É o item de risco mais alto do repositório. Ver `12-backlog.md`.
-
-`.gitignore` necessário quando o git for inicializado:
-
-```
-site/
-.cache/
-__pycache__/
-.venv/
-_rascunhos/
-```
+A CI que roda `pytest` e `lint-imports` nos checkpoints pertence ao repositório do código. O workflow `.github/workflows/mini-orion.yml` deste repositório foi escrito para o tempo em que o código vivia em `code/mini-orion/` e hoje não tem o que verificar aqui (ver `12-backlog.md`).
 
 !!! warning "Permissões em `site/` e `.cache/`"
 
@@ -158,7 +146,7 @@ _rascunhos/
 A aula de métricas usa ferramenta real sobre o Mini-Orion (`06-code-style.md`). Essas dependências pertencem ao Mini-Orion, **não** ao build do site:
 
 ```
-code/mini-orion/requirements-dev.txt   # pytest, pydeps, import-linter, radon
+requirements-dev.txt   # na raiz do repositório do código: pytest, pydeps, import-linter, radon
 ```
 
 Nunca adicionar ferramenta de análise às dependências do site. O build do site instala apenas `zensical`.

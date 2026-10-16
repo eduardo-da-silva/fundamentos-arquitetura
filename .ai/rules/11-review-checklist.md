@@ -12,9 +12,11 @@
 
 ## Estrutura
 
+- [ ] **O texto publicado não cita arquivos de orientação** (`05-domain.md`, `06-code-style.md`, `.ai/`). Números e convenções usados estão explicados na própria aula, com origem (medição ou hipótese) e derivação. Vale também para slides, índices de módulo e comentários de código.
+
 - [ ] As seis seções obrigatórias de `02-lesson-structure.md` estão presentes, ainda que com títulos próprios.
 - [ ] A ordem lógica (sintoma → conceito → decisão → exercício) foi respeitada.
-- [ ] Entre 200 e 320 linhas, se for aula conceitual.
+- [ ] O tamanho serve à leitura de um livro-texto: sem teto de linhas, mas sem seção que só repete outra. Slides e código acompanham a aula; não a substituem.
 - [ ] A aula produz o artefato previsto para ela em `08-lesson-roadmap.md`, nas duas trilhas.
 
 ## Voz e anti-boilerplate
@@ -62,7 +64,7 @@
 
 - [ ] Cada bloco está classificado: snippet ilustrativo ou código do Mini-Orion (`06-code-style.md`).
 - [ ] Snippet ilustrativo não usa nomes do Mini-Orion.
-- [ ] Código do Mini-Orion existe de verdade em `code/mini-orion/aulaNN/` e roda.
+- [ ] Código do Mini-Orion existe de verdade no repositório do código (`NN-nome/`), roda, e a aula diz como obtê-lo e executá-lo (endereço do repositório e comandos).
 - [ ] Nomes de classe e método são consistentes com as aulas anteriores.
 - [ ] Nenhum bloco passa de 25 linhas.
 - [ ] "Antes" e "depois" são comparáveis — o "depois" faz tudo que o "antes" fazia, ou a diferença é explicada.

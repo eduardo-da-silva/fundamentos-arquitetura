@@ -2,17 +2,17 @@
 
 > Estado real do material, em oposição a todos os outros documentos desta pasta, que descrevem como ele **deve** ser. Item resolvido sai daqui.
 
-Última revisão: agosto de 2026, após as três ondas de correção do Módulo 1 e a padronização dos exercícios.
+Última revisão: outubro de 2026, ao iniciar o Módulo 3.
 
 ---
 
 ## Aberto
 
-### 1. Build e renderização não verificados
+### 1. Renderização do Módulo 1 não verificada
 
 **Onde:** todo o Módulo 1.
 
-**Problema:** as correções não foram validadas em um build real. `zensical` não está instalado no ambiente onde o material foi editado. Ficam sem verificação:
+**Problema:** o build do site passa sem erro (verificado em outubro de 2026 numa cópia, com `zensical` instalado em ambiente virtual), mas as correções do Módulo 1 não foram vistas renderizadas. Ficam sem verificação:
 
 - o SVG do plano $A \times I$ em `aula07-metricas-governanca.md` — foi conferido por script contra os dados de `05-domain.md`, mas não visualmente;
 - o comportamento do SVG nos temas claro e escuro (usa `currentColor`, mas isso não foi visto);
@@ -25,23 +25,15 @@
 docker run --rm -it -p 8006:8000 -v ${PWD}:/docs zensical/zensical serve --dev-addr=0.0.0.0:8000
 ```
 
-### 2. `site/` com arquivos de propriedade de root
+### 2. `.cache/` (e partes de `site/`) com arquivos de propriedade de root
 
 **Onde:** raiz.
 
-**Problema:** 46 arquivos pertencentes a `root`, de um build anterior em container. Não podem ser removidos nem sobrescritos pelo usuário, o que também impede `zensical build --clean`. Já está no `.gitignore`.
+**Problema:** arquivos pertencentes a `root`, de um build anterior em container. `.cache/` ainda impede `zensical build --clean` pelo usuário comum. Já estão no `.gitignore`. Enquanto isso, o build pode ser validado numa cópia de `docs/` e `mkdocs.yml` fora do repositório.
 
-**Pronto quando:** `sudo rm -rf site` executado.
+**Pronto quando:** `sudo rm -rf .cache` executado (e `site`, se também for de `root`).
 
-### 3. Remoto do GitHub não conectado
-
-**Onde:** `.github/workflows/ci.yml`.
-
-**Problema:** o repositório é local. A CI pressupõe `eduardo-da-silva/fundamentos-arquitetura`, que ainda não existe. Enquanto isso, o site não é publicado e não há backup fora da máquina.
-
-**Pronto quando:** repositório criado e `git push` feito.
-
-### 4. Cenários de atividade com personagens redundantes
+### 3. Cenários de atividade com personagens redundantes
 
 **Onde:** `aula01` (campanha Flash Orion), `aula02` (novo parceiro de pagamentos), `aula04` (fronteiras violadas).
 
@@ -49,9 +41,33 @@ docker run --rm -it -p 8006:8000 -v ${PWD}:/docs zensical/zensical serve --dev-a
 
 **Pronto quando:** `05-domain.md` fixar quatro ou cinco personagens com papel estável, e as aulas usarem esses.
 
-### 5. Módulos 2 a 4 não escritos
+### 4. Aula 15, Módulo 3 e Módulo 4 por escrever
 
-Escopo em `07-curriculum.md`. Roadmap aula a aula só quando o módulo entrar em produção — escrito com antecedência demais, envelhece antes de ser usado.
+O Módulo 2 está escrito até a Aula 14; falta a Aula 15 (oficina). O Módulo 3 está em produção: roadmap detalhado em `08-lesson-roadmap.md`, Aula 16 escrita. O Módulo 4 tem só escopo em `07-curriculum.md`; roadmap aula a aula só quando entrar em produção.
+
+### 5. CI do Mini-Orion no repositório errado
+
+**Onde:** `.github/workflows/mini-orion.yml`.
+
+**Problema:** o workflow roda `pytest` e `lint-imports` em `code/mini-orion/`, mas o código mudou para `fundamentos-arquitetura-code`. Aqui ele não tem o que verificar, e o repositório do código ainda não tem CI.
+
+**Pronto quando:** o workflow for movido para o repositório do código (cobrindo os checkpoints `01` a `07`) e removido deste.
+
+### 6. Referências a arquivos de orientação em material já publicado
+
+**Onde:** a verificar nas aulas 1 a 14.
+
+**Problema:** a regra "o texto publicado não cita `.ai/`" é de 2026-10-15. Uma busca por `05-domain`, `06-code-style` e `.ai/` em `docs/` não achou ocorrências nas aulas 1 a 14, mas a regra de explicar no texto a origem de cada número ainda não foi auditada nelas.
+
+**Pronto quando:** as aulas 1 a 14 forem relidas contra o critério.
+
+### 7. Caminhos `code/mini-orion/` nas aulas 1 a 14
+
+**Onde:** `docs/modulo1/` e `docs/modulo2/` (títulos de bloco de código e texto).
+
+**Problema:** citam `code/mini-orion/NN-nome/…`, caminho do tempo em que o código vivia neste repositório. No repositório do código, os checkpoints ficam na raiz (`NN-nome/…`). A Aula 16 já usa o caminho novo e dá o endereço do repositório.
+
+**Pronto quando:** as aulas 1 a 14 usarem o caminho novo e informarem onde obter o código, depois que o professor revisar e publicar os checkpoints.
 
 ---
 

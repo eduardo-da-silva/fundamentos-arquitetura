@@ -33,4 +33,5 @@ Carregar o conjunto inteiro de `.ai/rules/` desperdiça contexto. Use a tabela d
 - Este repositório trata **exclusivamente** de arquitetura de software. Nunca introduza conteúdo de outras disciplinas. O Módulo 1 já foi contaminado uma vez por uma cópia incompleta do repositório de POO-II.
 - Um arquivo em `docs/` que não esteja no `nav:` de `mkdocs.yml` é um erro, não um rascunho. Rascunhos ficam fora de `docs/`.
 - Todo número apresentado ao aluno (Fan-in, Fan-out, métricas, valores em gráficos) deve vir de `.ai/rules/05-domain.md`. Não invente dados por aula.
+- O texto publicado (aulas, slides, índices, comentários de código) **nunca cita arquivos de orientação** (`.ai/`, `05-domain.md`, `06-code-style.md`). O leitor não os tem: números e convenções são explicados no próprio texto. Ver `.ai/rules/02-lesson-structure.md`.
 - Não use `sudo` nem altere permissões de arquivos sem pedir.

@@ -17,14 +17,27 @@ Existe para mostrar **um** ponto. Pode ser incompleto, pode não rodar isolado.
 
 ### Código do Mini-Orion
 
-É um sistema. Vive em `code/mini-orion/aulaNN/`, roda, tem teste.
+É um sistema. Vive no repositório do código, em uma pasta por checkpoint (`NN-nome/`), roda, tem teste.
 
 - nomes de classe e método **estáveis** ao longo de todo o curso;
 - cada aula parte do estado da aula anterior;
 - toda mudança de nome propaga para as aulas seguintes, não só para a atual;
 - o que aparece na página é recorte do arquivo real, nunca reescrita para a página.
 
-Se a aula mostra código do Mini-Orion, o arquivo correspondente existe em `code/`. Sem exceção.
+Se a aula mostra código do Mini-Orion, o arquivo correspondente existe no repositório do Mini-Orion. Sem exceção.
+
+**Onde o código vive.** Em repositório git à parte, `https://github.com/eduardo-da-silva/fundamentos-arquitetura-code` (localmente, `code-site/mini-orion`, ao lado deste; decisão do professor, 2026-10-15). A pasta `code/` deste repositório não recebe fontes. Cada checkpoint é uma pasta na raiz do repositório do código. A aula que mostra código **diz ao leitor** onde ele está e como rodá-lo: clonar, criar o ambiente, instalar `requirements-dev.txt`, entrar na pasta do checkpoint, executar `pytest` e `lint-imports`. Resultados numéricos que a aula apresenta devem ser reproduzíveis por um script do próprio checkpoint, e a aula mostra o comando.
+
+### Exceção do Módulo 3: rede simulada
+
+A regra "sem I/O real, sem concorrência real" continua valendo. Para ensinar distribuição sem abri-la, os checkpoints do Módulo 3 (`07-remoto` em diante) podem usar um **transporte simulado em processo**:
+
+- ele vive no módulo `rede/` do checkpoint, com `Protocol` público e implementação em `_simulada.py`;
+- latência, timeout e falha parcial são **parâmetros**, com os valores de `05-domain.md` ("Parâmetros da rede simulada");
+- o sorteio de falhas usa semente fixa, e o relógio é injetado: nenhum teste dorme, e nenhum teste é intermitente;
+- não abre socket, não cria thread, não usa `asyncio`.
+
+O que se demonstra com isso é a **forma** do problema (tempo que não é zero, falha que não é exceção local, estado ambíguo), não a física da rede. A aula diz isso ao aluno quando o transporte aparece.
 
 ---
 
@@ -117,7 +130,7 @@ Ver `10-tooling.md` antes de adicionar dependência ao repositório.
 
 ## Testes
 
-Todo estado do Mini-Orion tem teste que passa. `pytest`, em `code/mini-orion/aulaNN/tests/`.
+Todo estado do Mini-Orion tem teste que passa. `pytest`, em `NN-nome/tests/` dentro do repositório do Mini-Orion.
 
 O teste tem papel argumentativo aqui: quando uma fronteira é introduzida, o teste que passou a ser possível **é** a evidência. Mostrar o teste que antes exigia infraestrutura e agora não exige mais vale mais que qualquer parágrafo sobre testabilidade.
 

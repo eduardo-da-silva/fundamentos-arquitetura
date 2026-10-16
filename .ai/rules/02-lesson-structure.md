@@ -10,6 +10,20 @@ Este documento existe para produzir a primeira e evitar a segunda.
 
 ---
 
+## O leitor não vê estas regras
+
+O site é um livro-texto. Quem o lê não tem acesso a `.ai/`, a `05-domain.md` nem a nenhum documento de orientação: eles existem para manter as aulas coesas entre si, não para serem citados por elas.
+
+Consequências para o texto publicado (aulas, slides, índices, comentários de código):
+
+- **nunca citar arquivo de orientação** (`05-domain.md`, `06-code-style.md`, `.ai/…`) como fonte de número, convenção ou regra;
+- **toda convenção e todo número usado é explicado no corpo da aula**: de onde vem, se é medição ou hipótese de trabalho, e como foi derivado. Um valor que a aula usa e não explica é um valor sem história;
+- citar é permitido para o que o leitor tem: outras aulas, o código do Mini-Orion e a bibliografia.
+
+Quando `05-domain.md` fixa um valor, a aula o apresenta na primeira vez em que ele é necessário, diz o que ele é, e dali em diante o trata como fato do enredo.
+
+---
+
 ## Seções obrigatórias
 
 Toda aula precisa ter estas seis coisas. **Os títulos não precisam ser os mesmos entre aulas** — a função é que é obrigatória.
@@ -103,7 +117,7 @@ Consequência: uma aula desta disciplina pode ser boa com pouco código. Não po
 
 ## Tamanho
 
-Sem teto fixo de linhas a partir do Módulo 2 — decisão do professor de 2026-09-17, motivada por um formato mais "livro-texto", com aulas servindo de leitura de referência enquanto os slides carregam a apresentação em sala. O Módulo 1 mantém o intervalo de 200–320 linhas como registro histórico; não é retroativo.
+Sem teto fixo de linhas a partir do Módulo 2 — decisão do professor de 2026-09-17, reafirmada em 2026-10-15: o material é um **livro-texto**. A aula é a leitura de referência e se basta (explica de onde vêm os números, como reproduzi-los e o que eles não provam); os slides carregam a apresentação em sala; o código, no repositório próprio, mostra a implementação. Uma aula pode e deve ser longa quando a história exigir. O Módulo 1 mantém o intervalo de 200–320 linhas como registro histórico; não é retroativo.
 
 O controle de qualidade deixa de ser a contagem de linha e passa a ser inteiramente qualitativo, pelo que já está no resto deste documento e em `11-review-checklist.md`:
 

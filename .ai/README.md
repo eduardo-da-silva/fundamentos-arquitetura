@@ -51,7 +51,7 @@ Todo o curso gira em torno do **Marketplace Orion**, descrito em `rules/05-domai
 
 O Orion aparece em duas trilhas, e elas nunca se misturam:
 
-- **Mini-Orion Checkout** — recorte pequeno do professor, resolvido em aula. Tem código executável em `code/mini-orion/`, que evolui aula após aula.
+- **Mini-Orion Checkout** — recorte pequeno do professor, resolvido em aula. Tem código executável, que evolui aula após aula, em repositório próprio (https://github.com/eduardo-da-silva/fundamentos-arquitetura-code; localmente, `code-site/mini-orion/`, ao lado deste repositório). Cada checkpoint é uma pasta na raiz desse repositório (`01-acoplado`, …, `07-remoto`).
 - **Orion Evolution Lab** — projeto dos grupos, sobre um recorte maior. Nunca é resolvido no material. Produz artefatos de análise acumuláveis em `docs/orion/`.
 
 `rules/05-domain.md` é a fonte da verdade dos dois. Nenhuma aula inventa componente, dependência ou número que não esteja lá.
@@ -81,6 +81,12 @@ Ponte para a próxima aula
 ```
 
 Nunca abrir uma aula pela definição do conceito. O conceito aparece porque o sintoma exigiu.
+
+---
+
+## O leitor não vê esta pasta
+
+O material é um **livro-texto**. Quem o lê não tem acesso a `.ai/`: nenhuma aula, slide, índice ou comentário de código cita um arquivo daqui. Os números e as convenções que a aula usa são explicados no próprio texto (ver `rules/02-lesson-structure.md`).
 
 ---
 
@@ -129,10 +135,13 @@ Todos os treze arquivos existem. Se um caminho citado aqui não existir em disco
 ## Estado atual do material
 
 - **Módulo 1** — 8 aulas escritas e publicadas no `nav`. Passaram por análise crítica; as pendências estão em `rules/12-backlog.md`.
-- **Módulos 2 a 4** — não escritos. Escopo definido em `rules/07-curriculum.md`.
-- **Mini-Orion** — ainda não existe como código. Item de backlog.
-- **Orion Evolution Lab** — ainda não existe como artefato acumulável. Item de backlog.
-- **Versionamento** — o repositório ainda não é um repositório git. Item de backlog de risco alto.
+- **Módulo 2** — aulas 9 a 14 escritas, com slides e exercícios de fixação. Falta a Aula 15 (oficina).
+- **Módulo 3** — em produção. Roadmap detalhado em `rules/08-lesson-roadmap.md`; aula 16 escrita, com slides e checkpoint `07-remoto`.
+- **Módulo 4** — não escrito. Escopo definido em `rules/07-curriculum.md`.
+- **Mini-Orion** — existe, com os checkpoints `01` a `07`, em repositório à parte (ver acima).
+- **Orion Evolution Lab** — formatos e critérios em `docs/orion/index.md`; o conteúdo dos grupos nunca é publicado aqui.
+- **Versionamento** — este repositório é git, com remoto configurado. O código vive em outro repositório git.
+- **Slides** — um HTML por aula em `slides/`, fora do `docs/` e do build do site.
 
 ---
 

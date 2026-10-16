@@ -2,7 +2,7 @@
 
 !!! info "Status"
 
-    Detalhado para os Módulos 1 e 2, na composição de `07-curriculum.md`, já aplicada. Módulos 3 a 4 têm apenas escopo definido.
+    Detalhado para os Módulos 1 a 3, na composição de `07-curriculum.md`, já aplicada. O Módulo 4 tem apenas escopo definido.
 
 ## Como ler este documento
 
@@ -200,8 +200,110 @@ A coluna **Artefato** é a mais importante: é o que torna verificável a promes
 
 ---
 
-## Módulos 3 a 4
+## Módulo 3
 
-Escopo em `07-curriculum.md`. Detalhar aula a aula somente quando o módulo entrar em produção — roadmap escrito com antecedência demais envelhece antes de ser usado.
+Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na prática: Python"**: o recorte real do checkpoint e o teste que serve de evidência. Os checkpoints são `07-remoto/` (Aulas 16–19), `08-dados/` (20) e `09-saga/` (21–23), cada um partindo do anterior, e todos partem de `06-microkernel/`. A rede é simulada (`06-code-style.md`) e os parâmetros vêm de `05-domain.md`.
+
+### Aula 16 — Falácias da computação distribuída
+
+- **Sintoma:** em ensaio de campanha, `compra` chama `pagamentos` pela rede. Nos testes tudo passa. O percentil 95 do fechamento (cerca de 0,2 s) continua dentro do orçamento de 2 s, e é isso que engana. O que a rede cria é cauda (2% das chamadas expiram em 1 s em campanha) e um erro que não existia: a repetição depois de um timeout cobra o cliente duas vezes em cerca de 1% dos fechamentos.
+- **Conceitos:** as falácias, organizadas pelas que o Orion encontra primeiro (a rede é confiável, a latência é zero, o custo de transporte é zero); latência, falha parcial e estado ambíguo; timeout, repetição e idempotência (`ChaveIdempotencia` do domínio); a chamada remota que se disfarça de local.
+- **Artefato:**
+    - *Mini-Orion:* `07-remoto/`. Módulo `rede/` com o transporte simulado. `pagamentos` passa a ser alcançado por um `ClientePagamentos` que satisfaz o mesmo `Gateway`. Um teste reproduz a cobrança duplicada com repetição ingênua, e outro passa com chave de idempotência.
+    - *Evolution Lab:* tabela das arestas do recorte que atravessam a rede se o módulo candidato for extraído (contagem $C_a + C_e$), com a falácia que cada aresta expõe.
+- **Avaliação:** o teste da cobrança duplicada falha antes da chave e passa depois — a evidência é o teste, não o argumento. A tabela do grupo fecha com o grafo.
+- **Ponte:** sabemos o que uma chamada remota custa. Quantos serviços o Orion precisa para pagar esse custo só onde ele compensa?
+
+### Aula 17 — Do *service-based* aos microsserviços
+
+- **Sintoma:** a diretoria ouviu duas propostas: "um microsserviço por componente" e "só tirar `Pagamentos`". Nenhuma das duas vem com número, e as duas se chamam "arquitetura de serviços".
+- **Conceitos:** espectro de granularidade; *service-based* (poucos serviços de domínio, grossos, dado possivelmente compartilhado) contra microsserviços (finos, dado próprio, deploy independente); *architectural quantum*; o que cada estilo otimiza e o que cobra; quando "manter o monólito modular" continua sendo a resposta.
+- **Artefato:**
+    - *Mini-Orion:* `07-remoto/` ganha uma ferramenta pequena que, dado o conjunto de arestas remotas, lista os componentes que ainda precisam ser implantados juntos — o *quantum* calculado do grafo, não desenhado.
+    - *Evolution Lab:* ADR "forma do *deployable*" com no mínimo três alternativas (manter, *service-based*, microsserviços) e gatilho de reversão.
+- **Avaliação:** o ADR compara pelo menos dois estilos em duas características priorizadas na Aula 3 do recorte. "Microsserviços escalam melhor" sem a característica nomeada não conta.
+- **Ponte:** *service-based* ou microsserviços é pergunta de tamanho. Que critério diz onde cortar?
+
+### Aula 18 — Granularidade: o que desintegra e o que integra
+
+- **Sintoma:** um time quer separar `Catalogo` porque ele tem quatro dependentes. Outro quer separar `Promocoes` porque ele muda todo trimestre. Os dois argumentos são de naturezas diferentes, e a reunião os trata como um só.
+- **Conceitos:** forças que desintegram (escopo da função, volatilidade, escala, tolerância a falha, segurança, extensibilidade) e forças que integram (transação, fluxo entre serviços, dado compartilhado); $C_a$, $C_e$ e connascência como evidência de cada força; o que a métrica não vê.
+- **Artefato:**
+    - *Mini-Orion:* `07-remoto/setup.cfg` ganha um contrato que impede `compra` de importar `pagamentos` por qualquer caminho que não seja o cliente remoto. A fronteira nova nasce verificada.
+    - *Evolution Lab:* matriz módulo × força, com a ordenação dos candidatos e a evidência de cada célula.
+- **Avaliação:** cada força citada aponta para aresta, métrica ou incidente. A matriz contém pelo menos uma força integradora que contraria o candidato preferido do grupo.
+- **Ponte:** decidimos onde cortar. Do outro lado do corte o contrato muda de dono. Quem manda quando um campo muda?
+
+### Aula 19 — Contratos entre serviços
+
+- **Sintoma:** `pagamentos` publica uma versão que acrescenta um resultado novo de cobrança, `EM_ANALISE`. `compra`, que não conhece o valor, o trata como cobrança aprovada.
+- **Conceitos:** contrato remoto como API pública; mudança aditiva e mudança que quebra; leitor tolerante e seus limites; teste de contrato guiado pelo consumidor; connascência de tipo e de significado atravessando a rede (força, localidade, grau); deploys coordenados.
+- **Artefato:**
+    - *Mini-Orion:* `07-remoto/` serializa o contrato (v1 e v2) e traz um teste de contrato do lado do consumidor, que falha quando o produtor quebra o acordo, e um leitor tolerante que trata o valor desconhecido como falha, não como aprovação.
+    - *Evolution Lab:* contrato de uma aresta remota do recorte, com a regra de evolução (o que pode mudar sem aviso e o que exige versão).
+- **Avaliação:** o teste de contrato falha de verdade quando o produtor remove ou renomeia um campo. A classificação de connascência usa os três eixos.
+- **Ponte:** o contrato descreve o que atravessa a rede. E o que fica do outro lado, os dados? De quem é a tabela?
+
+### Aula 20 — Dados: de quem é a tabela
+
+- **Sintoma:** a conciliação de `Pagamentos` casa transações com `Pedidos` por um *join*. Depois da extração, o *join* deixa de existir, e o relatório de conciliação do mês fecha com diferença.
+- **Conceitos:** banco compartilhado contra dado por serviço; dono do dado; composição de consulta na borda contra cópia local; duplicação intencional e seu custo; acoplamento por esquema; o que se perde (*join*, integridade referencial, transação).
+- **Artefato:**
+    - *Mini-Orion:* `08-dados/`. `pagamentos` com repositório próprio. A conciliação passa a usar a cópia local dos campos de que precisa, gravada no momento da cobrança, e roda sem importar `compra`.
+    - *Evolution Lab:* tabela de dados do recorte: dono, quem lê, como lê depois do corte.
+- **Avaliação:** o teste de conciliação roda sem `compra`, e um contrato do `import-linter` garante isso. A tabela do grupo nomeia pelo menos um *join* que deixa de existir e o que o substitui.
+- **Ponte:** com o dado separado, cobrar e emitir já não cabem numa transação. O que existe entre os dois passos?
+
+### Aula 21 — Transação distribuída e consistência
+
+- **Sintoma:** a cobrança é aprovada e a emissão do pedido falha, ou o timeout acontece depois de a cobrança ter ocorrido. O cliente foi cobrado e não tem pedido.
+- **Conceitos:** ACID local; *two-phase commit* (coordenador, bloqueio, por que raramente se usa entre serviços); consistência forte e eventual; janela de inconsistência, já nomeada no Módulo 1; estado ambíguo e reconciliação; CAP e PACELC só como vocabulário de trade-off.
+- **Artefato:**
+    - *Mini-Orion:* `09-saga/`. A simulação reproduz o "cobrou e não emitiu", e um teste mede a janela até a reconciliação corrigir.
+    - *Evolution Lab:* para a operação mais crítica do recorte, escolha entre consistência forte e eventual, com a janela tolerada em segundos e a consequência de negócio.
+- **Avaliação:** a janela de inconsistência aparece em tempo e em consequência de negócio. "Consistência eventual" sem janela não conta.
+- **Ponte:** *two-phase commit* bloqueia, e a eventual deixa o estado errado por um tempo. Existe uma forma de desfazer o que já foi feito?
+
+### Aula 22 — Saga orquestrada
+
+- **Sintoma:** quando a emissão falha depois da cobrança, alguém do suporte estorna à mão, quando percebe.
+- **Conceitos:** saga; transação compensável; compensação não é *rollback*; passo pivô e passo repetível; idempotência de cada passo; a compensação que também falha; orquestração como estado explícito (coreografia só nomeada, pertence ao Módulo 4).
+- **Artefato:**
+    - *Mini-Orion:* `09-saga/` com um orquestrador do fechamento (cobrar, emitir, notificar), a compensação (estornar) e uma matriz de testes que injeta falha em cada passo.
+    - *Evolution Lab:* a saga da operação escolhida na Aula 21, em tabela: passo, compensação, o que o cliente enxerga no intervalo.
+- **Avaliação:** a matriz de falhas cobre cada passo, e a compensação que pode falhar tem tratamento nomeado.
+- **Ponte:** já sabemos cortar, chamar, versionar, separar o dado e compensar. Quanto custa operar tudo isso?
+
+### Aula 23 — O custo real: operação, observabilidade e times
+
+- **Sintoma:** depois da campanha, clientes reclamam de cobrança sem pedido e ninguém diz em que serviço o fechamento parou: os registros estão em dois lugares, sem identificador em comum.
+- **Conceitos:** observabilidade (registro, métrica, rastro); identificador de correlação; disponibilidade composta (derivada em `05-domain.md`); custo de operar mais um artefato; Lei de Conway e autonomia de time; o balanço final de ganho e custo.
+- **Artefato:**
+    - *Mini-Orion:* `09-saga/` propaga um identificador de correlação de ponta a ponta e reconstrói o caminho de um fechamento que falhou.
+    - *Evolution Lab:* planilha de custo e benefício da extração do candidato, com cada item da conta da Aula 14 em número de `05-domain.md` ou marcado "não medido".
+- **Avaliação:** todo item da conta tem número ou a marca "não medido" com a forma de medir. O balanço não esconde custo.
+- **Ponte:** temos a conta inteira. Falta decidir sob orçamento.
+
+### Aula 24 — Oficina: o que extrair primeiro
+
+- **Sintoma:** a diretoria aprovou "extrair com critério" e quer um plano: o que sai primeiro, o que fica, e quando parar.
+- **Conceitos:** nenhum novo. Integração de falácias, granularidade, contrato, dado, consistência, saga e custo.
+- **Artefato:**
+    - *Mini-Orion:* a cadeia `06-microkernel → 07-remoto → 08-dados → 09-saga` como referência resolvida, não reconstruída.
+    - *Evolution Lab:* proposta de extração priorizada, ADR da ordem, **critério de parada** e a alternativa "não extrair nada" defendida como opção real.
+- **Avaliação:** rubrica de `09-assessment.md`. Proposta sem a alternativa "não extrair" defendida tem teto de nota; números que não fecham com `05-domain.md` zeram o Diagnóstico.
+- **Ponte:** o Orion agora tem serviços que se chamam. E se, em vez de chamar, publicassem o que aconteceu? O Módulo 4 pergunta.
+
+!!! note "Escopo e tempo"
+
+    Ocupa os **dois encontros** da semana 13, espelhando as Aulas 8 e 15. Nada é reconstruído na oficina; exercita-se a ordem e o critério de parada sob orçamento.
+
+---
+
+## Módulo 4
+
+Escopo em `07-curriculum.md`. Numeração a partir da aula 25. Detalhar aula a aula somente quando o módulo entrar em produção — roadmap escrito com antecedência demais envelhece antes de ser usado.
+
+Quando detalhar, manter as cinco colunas. A coluna **Artefato** é o que impede as trilhas de virarem promessa retórica de novo.
 
 Quando detalhar, manter as cinco colunas. A coluna **Artefato** é o que impede as trilhas de virarem promessa retórica de novo.

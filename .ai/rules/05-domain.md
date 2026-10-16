@@ -1,6 +1,8 @@
 # Marketplace Orion — fonte da verdade
 
 > Nenhuma aula inventa componente, dependência ou número. Tudo vem daqui. Se uma aula precisar de algo que não está neste documento, o documento é estendido primeiro.
+>
+> Este documento é de orientação: **o leitor do livro não o vê, e nenhuma aula o cita.** Cada valor, ao entrar em uma aula, é apresentado e explicado no texto (ver `02-lesson-structure.md`).
 
 Esta regra existe por um motivo concreto: a aula de métricas do Módulo 1 apresenta três valores diferentes de Fan-in para o mesmo componente, dentro do mesmo capítulo. O aluno que tentar refazer as contas não fecha com nada. Um documento único de números elimina essa classe inteira de erro.
 
@@ -130,7 +132,7 @@ O par $N_a / N_c$ de cada linha vem da convenção de contagem de `06-code-style
 
 Fora da conta: `calcular_frete_estimado` e `formatar_recibo` (funções de módulo) e as constantes de timeout. A convenção conta classes.
 
-Hoje só `ServicoCheckout` e os contratos que ele consome existem em `code/mini-orion/` — o restante é o modelo do componente completo, do qual o Mini-Orion é recorte.
+No Mini-Orion existe só o recorte do componente (`ServicoCheckout` e os contratos que ele consome); o restante é o modelo do componente completo.
 
 **`Portal` — $N_a = 0$, $N_c = 6$**
 
@@ -192,6 +194,52 @@ O agrupamento induz uma direção de dependência em camadas: `Borda` (só `Port
 
 ---
 
+## Extensão para o Módulo 3: o que a rede muda no grafo
+
+O Módulo 3 não acrescenta componente nem aresta. Ele lê o mesmo grafo de 17 arestas com uma pergunta nova: qual dessas arestas passa a atravessar a rede se um módulo virar serviço.
+
+### Candidato: `Pagamentos`
+
+Foi o candidato registrado na Aula 14. Com $C_a = 1$ e $C_e = 1$, extraí-lo corta exatamente $C_a + C_e = 2$ arestas, que passam a ser chamadas remotas:
+
+| Aresta | Sentido | Natureza |
+|---|---|---|
+| `Checkout → Pagamentos` | cobrança no caminho crítico do fechamento | síncrona |
+| `Pagamentos → Notificacoes` | aviso de resultado da cobrança | pode sair do caminho crítico |
+
+As outras 15 arestas continuam chamadas no mesmo processo. A conta é verificável: $17 - 2 = 15$.
+
+No Mini-Orion a conta é menor. `pagamentos` e `notificacoes` não se conhecem (contrato `independence`), então só a aresta `compra → pagamentos.api` atravessa a rede. A diferença entre 2 e 1 é diferença entre o Orion e o seu recorte, e as aulas devem dizer qual dos dois estão medindo.
+
+### Parâmetros da rede simulada
+
+Estes valores são **decisão da disciplina**, da mesma natureza que a convenção de contagem de `06-code-style.md`: são hipóteses de enunciado, não medições do Orion real. Existem para que o exercício tenha resposta verificável. O Orion ainda não tem instrumentação para medir nada disso, e o material não deve fingir que tem.
+
+| Parâmetro | Valor |
+|---|---|
+| Chamada entre módulos no mesmo processo | custo desprezível (ordem de microssegundos) |
+| Latência de uma chamada remota, mediana | 20 ms |
+| Latência de uma chamada remota, percentil 99 em campanha | 400 ms |
+| Timeout por chamada remota | 1 s |
+| Timeout total do fechamento de compra | 3 s (o mesmo da Aula 6) |
+| Falha transitória por chamada remota em campanha | 2% |
+| Falha transitória por chamada remota fora de campanha | 0,2% |
+| Parcela das falhas transitórias em que o pedido chega e a resposta se perde | 50% (nas demais, o pedido se perde na ida) |
+| Orçamento do fechamento de compra, percentil 95 | 2 s |
+| Disponibilidade mensal alvo de cada módulo ou serviço | 99,9% |
+
+Derivados, que as aulas podem usar sem recalcular de outro jeito:
+
+- **Disponibilidade composta.** Dois serviços em série, cada um com 99,9%, entregam $0{,}999 \times 0{,}999 \approx 99{,}8\%$. No mês de 30 dias isso é cerca de 86 minutos de indisponibilidade, contra 43 minutos de um serviço só. Dentro do mesmo processo, `Checkout` e `Pagamentos` falham juntos e a conta não se multiplica.
+- **Cobrança duplicada.** Com repetição depois de timeout e sem chave de idempotência, o cliente é cobrado duas vezes quando a resposta se perde: $2\% \times 50\% = 1\%$ dos fechamentos em campanha. A conta é aproximada: a repetição também pode falhar, e uma resposta mais lenta que o timeout de 1 s (cerca de 0,1% das chamadas, com a latência acima) executa o servidor e perde a resposta do mesmo jeito, então fora de campanha o piso não é zero.
+- **Chamadas remotas por fechamento.** Uma, no Mini-Orion; duas, no grafo do Orion, se a notificação de `Pagamentos` ficar no caminho crítico.
+
+!!! warning "O que este bloco não autoriza"
+
+    Nenhuma aula do Módulo 3 inventa outro valor operacional. Precisando de um (tamanho de lote, custo de infraestrutura, número de times), estende-se esta seção primeiro, como em "Estendendo o domínio".
+
+---
+
 ## Recorte legado (para a aula de acoplamento)
 
 Antes da separação atual, `Checkout`, `Promocoes` e parte de `Pedidos` viviam em um único componente chamado `CoreService`, que tinha ciclo com `Promocoes`:
@@ -240,15 +288,15 @@ Nunca se misturam. Cada uma tem escopo, artefato e destino próprios.
 
 **Escopo fixo:** `Checkout`, `Pagamentos`, `Notificacoes` e o mínimo de `Catalogo` e `Pedidos` para o fluxo fechar.
 
-**Onde vive:** `code/mini-orion/aulaNN/`, uma pasta por aula em que o código muda. Executável, com testes.
+**Onde vive:** no repositório do código, uma pasta por checkpoint (`NN-nome/`). Executável, com testes.
 
 **Regra de evolução:** o código de uma aula parte do estado da aula anterior. Nomes de classe e de método são estáveis ao longo do curso — se `ServicoCheckout` mudar de nome, muda em todas as aulas seguintes, não só na atual.
 
 **O que nunca contém:** persistência real, framework web, infraestrutura, concorrência de verdade. É evidência de decisão estrutural, não sistema de produção.
 
-!!! warning "Estado atual"
+!!! info "Onde o código vive"
 
-    O Mini-Orion ainda não existe como código. Hoje as aulas do Módulo 1 usam snippets isolados e mutuamente incoerentes — o `Checkout` da Aula 1, o da Aula 3 e o `CoreService` da Aula 8 são três sistemas diferentes. Item de `12-backlog.md`.
+    O Mini-Orion existe, com seis estados (`01-acoplado` a `06-microkernel`) e mais os do Módulo 3. O código mora em um repositório à parte, `code-site/mini-orion`, ao lado deste, e não é versionado aqui. Nas aulas o caminho lógico continua `code/mini-orion/NN-nome/`.
 
 ### Orion Evolution Lab — trilha dos grupos
 
