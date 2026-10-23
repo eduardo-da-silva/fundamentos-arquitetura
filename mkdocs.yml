@@ -133,5 +133,5 @@ nav:
     - Visão geral do módulo: modulo3/index.md
     - Aula 16 — Falácias da computação distribuída: modulo3/aula16-falacias-da-computacao-distribuida.md
     - Aula 17 — Do service-based aos microsserviços: modulo3/aula17-service-based-e-microsservicos.md
-    - Exercícios de fixação (Aulas 16 e 17): modulo3/exercicios-fixacao-aulas-16-17.md
+    - Projeto das Aulas 16 e 17 — Extrair ou não extrair: modulo3/projeto-extrair-ou-nao-extrair.md
   - Orion Evolution Lab: orion/index.md

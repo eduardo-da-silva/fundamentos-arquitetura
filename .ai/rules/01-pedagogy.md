@@ -83,6 +83,19 @@ O nível *aplicar* é onde falta massa. Sempre que uma aula tratar de algo mensu
 
 ---
 
+## Conceito antes do Orion
+
+Decidido com o professor durante o Módulo 3: o texto fica preso ao Orion quando todo conceito só se explica pelos nomes dele (`Checkout`, `Pagamentos`, "8 domínios"). O leitor precisa entender o conceito e saber lê-lo num cenário, e isso nem sempre pede o Orion.
+
+- **Ordem.** Conceito (o que é, por que existe) → cenário curto que o ilustra → só então o que isso significa para o Orion, em uma ou duas frases.
+- **Cenário de fora é permitido** quando o do Orion exige explicar muita coisa só para chegar ao ponto. Deve ser breve (um parágrafo), plausível e sem números inventados: use descrições qualitativas ("picos nas aberturas de shows", "libera versões depois de auditoria"). Se um número aparecer, o texto explica de onde veio.
+- **Guias de decisão** ("se aparecer X, a opção A; senão B") dizem **o que o cenário mostra e por que a opção se justifica**, e não só o nome da forma. Evite "É o *service-based* de oito domínios" como justificativa: o rótulo nomeia a opção, não a explica.
+- **Termos.** Prefira o vocabulário da área ou acadêmico ("motivador de separação", "forças de desintegração") a expressões vagas como "tem sinal próprio". Defina o termo na primeira vez que ele aparece.
+- **Citar o Orion continua obrigatório na decisão** (seção "Decisão sobre o Orion" e ADR). A regra vale para o desenvolvimento conceitual.
+- **Checar contra a bibliografia.** Atribuições a livros (definições, capítulos, edições) são conferidas no PDF de `refs/` antes de entrar no texto. Na Aula 17, isso corrigiu o capítulo e a edição de um livro, a definição de "monólito distribuído" e o papel do banco compartilhado na contagem de *quanta*.
+
+---
+
 ## Exercícios
 
 ### Regra do gabarito
@@ -114,7 +127,7 @@ Pausas curtas, uma pergunta, sem resposta imediata. Usar com moderação: se apa
 - Alternativa de palha, montada só para perder.
 - Métrica apresentada como veredito em vez de sintoma.
 - Diagrama que só ilustra o texto, sem revelar nada que o texto não disse.
-- Exemplo de domínio auxiliar. O Orion basta.
+- Exemplo de domínio auxiliar **no lugar** do Orion quando o Orion já ilustra o conceito. Ver "Conceito antes do Orion" acima para o caso em que um cenário curto de fora é o que ensina melhor.
 - Conceito introduzido porque está no livro, sem sintoma que o justifique.
 - Aula que termina sem que nada tenha sido decidido.
 

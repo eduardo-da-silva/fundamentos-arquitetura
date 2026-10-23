@@ -469,63 +469,9 @@ O que vale experimentar a partir daí:
 
 O arquivo `tests/test_ensaio.py` fixa os números que esta aula cita. Se o código mudar e os números mudarem, o teste falha, e a aula precisa ser revista junto.
 
-## Exercícios
+## Trabalho do aluno
 
-1. **Pode repetir?** Para cada operação do Orion, diga se ela é idempotente quando chamada duas vezes com os mesmos dados, e o que a segunda chamada produz.
-
-    a. Consultar o preço de um produto no `Catalogo`.
-    b. Cobrar um cartão em `Pagamentos`, sem chave.
-    c. Marcar o pedido 1042 como cancelado em `Pedidos`.
-    d. Emitir um pedido novo a partir de um carrinho, sem chave.
-    e. Enviar o e-mail de confirmação do pedido 1042 em `Notificacoes`.
-
-    ??? note "Resposta comentada"
-
-        **a — idempotente.** Leitura sem efeito; as duas respostas são iguais enquanto o preço não mudar.
-
-        **b — não idempotente.** A segunda chamada cobra de novo. É o caso do ensaio, e a razão da chave.
-
-        **c — idempotente.** Marcar como cancelado leva o pedido a um estado, e levar ao mesmo estado duas vezes deixa tudo como estava. Se a operação fosse "cancelar e estornar", dependeria de o estorno também ser idempotente.
-
-        **d — não idempotente.** Cada chamada cria um pedido, com número novo. Sem chave, a repetição por *timeout* gera dois pedidos para um clique.
-
-        **e — não idempotente, com custo baixo.** O cliente recebe dois e-mails. Nesse caso muitos times aceitam a duplicação em vez de pagar o estado de uma tabela de chaves, e é uma decisão legítima.
-
-2. **Prazo de uma cadeia.** Suponha que `Pagamentos` seja extraído e que `Pagamentos --> Notificacoes` também atravesse a rede, ficando no caminho crítico. O fechamento faz as duas chamadas em série, cada uma com 2 tentativas de 1 s, e o *timeout* total do fechamento é de 3 s, o mesmo do ensaio.
-
-    a. Qual o pior tempo possível do fechamento?
-    b. Ele cabe no *timeout* total? O que acontece com a segunda chamada se a primeira consumiu duas tentativas?
-    c. Cite duas formas de resolver, e o que cada uma custa.
-
-    ??? note "Resposta comentada"
-
-        **a** — 2 chamadas × 2 tentativas × 1 s = 4 s.
-
-        **b** — Não cabe: o *timeout* total é 3 s. Se a primeira chamada gastou as duas tentativas (2 s), restam 1 s, e a segunda chamada tem uma tentativa, ou nenhuma folga para repetir.
-
-        **c** — (1) Propagar um prazo final de ponta a ponta: cada chamada descobre quanto tempo resta e desiste quando acabou. Custa que todo cliente de rede conheça o prazo, e o prazo vira parte do contrato. (2) Tirar `Pagamentos --> Notificacoes` do caminho crítico, que é o que a Aula 5 já fez com a notificação no Mini-Orion. Custa uma janela em que o pedido está pago e o cliente ainda não foi avisado. Há uma terceira, reduzir as tentativas, com o custo de mais fechamentos sem resposta (ver a tabela da decisão).
-
-3. **Medir a cauda.** No `07-remoto`, rode 2000 fechamentos em campanha com `tentativas=3` e com `tentativas=1`, e registre o pior tempo de cada rodada. Explique por que o pior tempo vale 3,00 s e 1,00 s, respectivamente, e o que isso diz sobre o *timeout* total.
-
-    ??? note "Resposta comentada"
-
-        O pior caso é uma sequência de *timeouts* seguidos, e cada um custa o limite de 1 s do `TIMEOUT_POR_CHAMADA`. Com uma tentativa, o pior é 1,00 s; com três, 3,00 s, que é o *timeout* total do fechamento. A terceira tentativa não deixa folga: qualquer outro atraso no fechamento já estoura o prazo.
-
-4. **Julgue: o que `compra` faz com `cobranca_indeterminada`?** Três respostas têm defensores: (a) pedir ao cliente que tente de novo; (b) emitir o pedido como pendente e conferir com o provedor depois; (c) segurar o fechamento e consultar o provedor antes de responder.
-
-    Mais de uma resposta é aceitável. Avalia-se se a sua nomeia o critério que decide (o que custa mais ao negócio: um cliente cobrado em dobro, um pedido sem cobrança, ou um fechamento mais lento?), aplica esse critério ao cenário de campanha, e reconhece o que a opção descartada tem de válido. Diga também o que você observaria depois para saber se a escolha envelheceu bem.
-
-## Atividade em grupo
-
-Sobre o recorte do seu grupo no Orion Evolution Lab, escolham o módulo que mais plausivelmente seria extraído (a Aula 14 deu o critério) e produzam a tabela de **arestas que passam a atravessar a rede**.
-
-1. **Contagem.** Liste cada aresta que entra no módulo e cada aresta que sai dele. O total precisa ser $C_a + C_e$ do módulo no seu mapa, e as demais arestas do recorte precisam fechar com o total (arestas do recorte − cortadas = que ficam no processo).
-2. **Para cada aresta cortada**, preencham: quais falácias ela expõe (latência, confiabilidade, custo de transporte); se está no caminho crítico do fluxo principal; e se a operação por trás dela é idempotente.
-3. **Obrigatório.** Escolham uma operação **não idempotente** do recorte que passaria a atravessar a rede e escrevam: quem geraria a chave, em que momento, e o que o lado que atende teria de guardar. Se nenhuma operação do recorte é não idempotente, justifiquem por que, com a operação mais próxima de ser.
-4. Declarem o que a tabela **não** representa (por exemplo, se a contagem ignora chamadas que não aparecem no mapa).
-5. **Como mediriam.** Para cada aresta cortada, digam que medida confirmaria ou derrubaria a hipótese de que ela é segura de repetir, onde essa medida seria coletada (em quem chama, em quem atende, ou cruzando os dois) e o que ela exigiria que o recorte ainda não tem.
-
-O item 3 é o ponto da atividade. Uma tabela de arestas sem a pergunta sobre repetição fica reduzida a uma contagem. Formato e critérios em [Orion Evolution Lab](../orion/index.md).
+O trabalho das Aulas 16 e 17 é um só: o [projeto "Extrair ou não extrair"](projeto-extrair-ou-nao-extrair.md), individual ou em dupla. A **parte 1** usa o `ensaio.py` desta aula, para medir o custo da rede num cenário escolhido por você, e a **parte 3** é a leitura de um artigo (dois dos quatro propostos tratam de cauda de latência e de repetição segura). A entrega é antes da Aula 18.
 
 ## O que ficou registrado e a pergunta que a Aula 17 abre
 

@@ -50,6 +50,6 @@ Cada grupo aplica o percurso ao seu recorte: identificar quais arestas atravessa
 1. [Falácias da computação distribuída](aula16-falacias-da-computacao-distribuida.md) — a chamada remota tem um desfecho que a local não tem; repetição, idempotência e a cauda que o percentil 95 não vê.
 2. [Do *service-based* aos microsserviços](aula17-service-based-e-microsservicos.md) — o espectro de granularidade, o *architectural quantum* e a conta de cada forma sobre o grafo do Orion; o ADR da forma do *deployable*.
 
-Exercícios de fixação: [Aulas 16 e 17](exercicios-fixacao-aulas-16-17.md).
+Trabalho das Aulas 16 e 17: [projeto "Extrair ou não extrair"](projeto-extrair-ou-nao-extrair.md), individual ou em dupla, que combina o `ensaio.py`, o `quantum.py`, a leitura de um artigo e um ADR.
 
 As demais aulas entram nesta lista conforme são publicadas.
