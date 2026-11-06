@@ -1,0 +1,2109 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo3/aula21-custo-real-operacao-e-times/">
+      
+      
+      
+        <link rel="prev" href="../aula20-consistencia-e-saga/">
+      
+      
+        <link rel="next" href="../aula22-oficina-o-que-extrair-primeiro/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 21 — O custo real, operação, observabilidade e times - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 21 — O custo real, operação, observabilidade e times
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cobranca-sem-pedido-e-ninguem-sabe-onde-parou" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cobrança sem pedido, e ninguém sabe onde parou
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-significa-operar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que significa operar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ver-o-que-acontece-monitoramento-e-observabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ver o que acontece: monitoramento e observabilidade
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ver o que acontece: monitoramento e observabilidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-identificador-de-correlacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O identificador de correlação
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disponibilidade-composta-e-tempo-de-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Disponibilidade composta e tempo de diagnóstico
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conway-quem-e-dono-de-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Conway: quem é dono de quê
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-o-balanco-da-extracao-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: o balanço da extração de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: o balanço da extração de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-registrar-o-identificador-de-correlacao-de-ponta-a-ponta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Registrar o identificador de correlação de ponta a ponta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-22-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 22 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cobranca-sem-pedido-e-ninguem-sabe-onde-parou" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cobrança sem pedido, e ninguém sabe onde parou
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-significa-operar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que significa operar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ver-o-que-acontece-monitoramento-e-observabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ver o que acontece: monitoramento e observabilidade
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ver o que acontece: monitoramento e observabilidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-identificador-de-correlacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O identificador de correlação
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disponibilidade-composta-e-tempo-de-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Disponibilidade composta e tempo de diagnóstico
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conway-quem-e-dono-de-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Conway: quem é dono de quê
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-o-balanco-da-extracao-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: o balanço da extração de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: o balanço da extração de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-registrar-o-identificador-de-correlacao-de-ponta-a-ponta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Registrar o identificador de correlação de ponta a ponta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-22-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 22 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 3 — Arquiteturas Distribuídas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo3/aula21-custo-real-operacao-e-times.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-21-o-custo-real-operacao-observabilidade-e-times">Aula 21 — O custo real: operação, observabilidade e times<a class="headerlink" href="#aula-21-o-custo-real-operacao-observabilidade-e-times" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>explicar o que significa <strong>operar</strong> um artefato a mais e por que esse custo não aparece no grafo de dependências;</li>
+<li>distinguir monitoramento de observabilidade e descrever o que registro, métrica e rastro respondem, cada um;</li>
+<li>explicar o <strong>identificador de correlação</strong>, onde ele nasce, como se propaga e o que ele não resolve;</li>
+<li>relacionar a disponibilidade composta da Aula 17 ao tempo de diagnóstico, que a observabilidade reduz sem alterar a frequência da falha;</li>
+<li>aplicar a <strong>Lei de Conway</strong> a uma proposta de extração, perguntando que time seria dono de cada artefato;</li>
+<li>montar um balanço de ganho e custo de uma extração em que <strong>todo item tem número ou a marca "não medido"</strong> com a forma de medir;</li>
+<li>rodar o Mini-Orion e reconstruir, a partir de dois registros, o caminho de um fechamento que falhou.</li>
+</ul>
+<h2 id="cobranca-sem-pedido-e-ninguem-sabe-onde-parou">Cobrança sem pedido, e ninguém sabe onde parou<a class="headerlink" href="#cobranca-sem-pedido-e-ninguem-sabe-onde-parou" title="Permanent link">&para;</a></h2>
+<p>Depois da campanha, o suporte recebe reclamações de clientes cobrados sem pedido. A Aula 20 deu ao fechamento a compensação e a reconciliação, e elas corrigem o que podem. Mas a pergunta que o time de plataforma recebe é outra: <strong>em que passo e em que serviço aquele fechamento parou?</strong> <code>Compra</code> tem seu registro. <code>Pagamentos</code> tem o dele. Cada um escreve uma linha por evento, com horário e mensagem. Nenhuma linha de um tem algo em comum com uma linha do outro. Para juntar a história de um cliente, alguém compara horários, valores e e-mails nos dois arquivos, e a campanha produziu milhares de linhas por minuto.</p>
+<p>Esta é a parte do custo da distribuição que o grafo não mostra e que o orçamento raramente considera: a <strong>operação</strong>. A conta da Aula 14 listou, entre os custos de extrair, "mais um artefato para operar". Esta aula olha para essa frase e a desdobra em itens que se possam contar.</p>
+<h2 id="o-que-significa-operar">O que significa operar<a class="headerlink" href="#o-que-significa-operar" title="Permanent link">&para;</a></h2>
+<p>Um artefato implantável, antes de entregar valor, precisa de tudo o que o mantém no ar. Ele tem <strong>um caminho de entrega</strong> próprio (compilar, testar, publicar, subir), <strong>monitoramento</strong> (saber se está vivo e saudável), <strong>alertas</strong> (quem é avisado e de quê), <strong>versões e contratos</strong> a manter (a Aula 18), <strong>dado</strong> com cópia de segurança e migração (a Aula 19) e <strong>alguém de plantão</strong> quando algo cai de madrugada. Dentro de um monólito, tudo isso existe uma vez. Extrair um serviço cria uma segunda cópia de cada item.</p>
+<p>O custo cresce com o número de artefatos, e não com o número de linhas de código. Dez serviços pequenos têm dez caminhos de entrega, dez painéis e dez dados a salvar. Por isso a conclusão da Aula 17 (cortar pouco) é também uma conclusão sobre operação: cada artefato evitado é uma cópia a menos de tudo isso. O Orion, no entanto, <strong>ainda não mediu</strong> esse custo. Nem o tempo que o time gasta com cada item, nem o número de pessoas de plantão. A aula marca esses itens como "não medido" e diz como medi-los, em vez de inventar um número.</p>
+<h2 id="ver-o-que-acontece-monitoramento-e-observabilidade">Ver o que acontece: monitoramento e observabilidade<a class="headerlink" href="#ver-o-que-acontece-monitoramento-e-observabilidade" title="Permanent link">&para;</a></h2>
+<p><strong>Monitoramento</strong> responde a perguntas que alguém já previu: a CPU passou de um limite? A fila está maior que o normal? É preciso decidir antes quais perguntas importam. <strong>Observabilidade</strong> é a propriedade de um sistema que permite entender o que ele está fazendo a partir do que ele emite para fora, inclusive para perguntas que ninguém previu. Newman a define nesses termos, e acrescenta um aviso: ela é uma propriedade, não uma lista de ferramentas; o foco deve estar em tornar o sistema compreensível, e não em instalar mais ferramentas.</p>
+<p>Três tipos de informação costumam sustentá-la. O <strong>registro</strong> (<em>log</em>) é uma linha por evento, com instante e mensagem: responde "o que aconteceu, em detalhe". A <strong>métrica</strong> é um número agregado ao longo do tempo (taxa de erro, latência no percentil 95): responde "quanto, e se está piorando". O <strong>rastro</strong> (<em>trace</em>) é a trilha de uma única requisição atravessando vários serviços: responde "por onde passou, quanto demorou em cada trecho". Newman nota que os três se sobrepõem (é possível guardar métricas em arquivo de registro, ou construir um rastro a partir de linhas de registro), e é isso que permite começar pequeno.</p>
+<h3 id="o-identificador-de-correlacao">O identificador de correlação<a class="headerlink" href="#o-identificador-de-correlacao" title="Permanent link">&para;</a></h3>
+<p>Um <strong>identificador de correlação</strong> (<em>correlation ID</em>) é um valor gerado quando uma requisição entra no sistema e carregado em toda chamada que ela provoca. Cada serviço o grava em todas as linhas de registro que escreve por causa dela. Com ele, juntar os registros de serviços diferentes deixa de ser comparar horários e passa a ser uma busca por um valor.</p>
+<p>Três regras tornam o identificador útil. Ele <strong>nasce na borda</strong>, no começo do fluxo, e não em cada serviço (senão há um por serviço e nenhum em comum). Ele <strong>viaja em toda chamada</strong>, como campo da mensagem. E ele é <strong>gravado em toda linha</strong>. Esquecer qualquer um dos três faz o rastro ter buracos justamente onde a falha aconteceu.</p>
+<p>A Aula 18 já deu a ferramenta que torna a propagação barata: um campo novo e opcional na mensagem é uma <strong>mudança aditiva</strong>, e um leitor tolerante o ignora. Um serviço que ainda não grava o identificador continua funcionando; apenas aparece como buraco no rastro. Newman recomenda introduzir o identificador cedo: ele não parece útil no começo, mas é caro de acrescentar depois.</p>
+<p>Uma limitação conhecida: reconstruir a ordem dos eventos entre serviços exige confiar nos relógios. No simulador, o relógio é um só e a ordem é exata. Num sistema real, cada serviço tem o seu relógio, e a ordem entre serviços é uma inferência, com uma margem de erro. É por isso que ferramentas de rastro guardam, além do horário, a relação de quem chamou quem.</p>
+<h2 id="disponibilidade-composta-e-tempo-de-diagnostico">Disponibilidade composta e tempo de diagnóstico<a class="headerlink" href="#disponibilidade-composta-e-tempo-de-diagnostico" title="Permanent link">&para;</a></h2>
+<p>A Aula 17 calculou que dois artefatos em série, cada um com 99,9% de disponibilidade, entregam cerca de 99,8%: 86 minutos fora do ar por mês, contra 43 de um só. Esse número descreve a <strong>frequência</strong> com que o fechamento falha, e a observabilidade não o altera. O que ela altera é a <strong>duração do diagnóstico</strong>: o tempo entre alguém perceber o problema e saber onde ele está. Em um sistema de dois registros sem identificador em comum, esse tempo é o de comparar à mão. Com o identificador, é o de uma busca.</p>
+<p>Vale não prometer mais do que isso. A observabilidade não corta nenhum dos 43 minutos adicionais; ela encurta a parte de cada incidente que se gasta procurando. Quanto isso vale depende de quantos incidentes e de quanto custa cada hora de busca, e o Orion ainda não mediu nenhum dos dois.</p>
+<h2 id="conway-quem-e-dono-de-que">Conway: quem é dono de quê<a class="headerlink" href="#conway-quem-e-dono-de-que" title="Permanent link">&para;</a></h2>
+<p>A <strong>Lei de Conway</strong>, formulada por Melvin Conway em 1968, diz que as organizações que projetam sistemas produzem projetos que são cópias das suas estruturas de comunicação. O corolário prático é que a fronteira de um serviço tende a acompanhar a fronteira de um time. Se dois serviços pertencem ao mesmo time, a fronteira entre eles custa mais do que rende: a autonomia que ela promete é a de um time em relação a si mesmo. Se um serviço atravessa dois times, cada mudança vira uma negociação.</p>
+<p>A consequência para o Orion é uma pergunta a fazer antes de extrair: <strong>que time seria dono de <code>Pagamentos</code></strong>, e esse time tem plantão, ritmo de entrega e conhecimento de provedores para sustentá-lo? O Orion tem uma equipe de plataforma de porte médio. Se a mesma equipe fosse dona do monólito e de <code>Pagamentos</code>, a extração entregaria isolamento de processo e de entrega, e não autonomia de time, que é o motivador mais citado dos microsserviços e o que menos se aplica aqui. Existe também a manobra inversa (<em>Inverse Conway Maneuver</em>): reorganizar os times primeiro para favorecer a arquitetura desejada. Qualquer das duas leituras é defensável, e nenhuma é sem custo: a segunda custa uma reorganização que a diretoria precisa aprovar.</p>
+<h2 id="estudo-de-caso-o-balanco-da-extracao-de-pagamentos">Estudo de caso: o balanço da extração de <code>Pagamentos</code><a class="headerlink" href="#estudo-de-caso-o-balanco-da-extracao-de-pagamentos" title="Permanent link">&para;</a></h2>
+<p>A Aula 14 deixou a conta em aberto: o que a extração de <code>Pagamentos</code> ganha e o que ela custa. Com as Aulas 16 a 20, cada item tem agora um número ou uma forma de medi-lo. A tabela abaixo é o balanço. A coluna "Valor" traz o número do ensaio ou da hipótese de trabalho, e a coluna "Como medir" diz o que substituiria a hipótese por uma medição do Orion.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Ganho ou custo</th>
+<th>Valor</th>
+<th>Como medir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arestas remotas</td>
+<td>custo</td>
+<td>2 no grafo do Orion (1 no Mini-Orion)</td>
+<td>extrair as dependências do código</td>
+</tr>
+<tr>
+<td>Falha por chamada remota</td>
+<td>custo</td>
+<td>2% em campanha (hipótese)</td>
+<td>contagem de <em>timeouts</em> por destino</td>
+</tr>
+<tr>
+<td>Disponibilidade do fechamento</td>
+<td>custo</td>
+<td>99,8%, contra 99,9% (86 contra 43 min/mês)</td>
+<td>fechamentos concluídos sobre tentados, na borda</td>
+</tr>
+<tr>
+<td>Cobrança duplicada</td>
+<td>custo, mitigado</td>
+<td>1% sem chave; 0 com chave</td>
+<td>extrato do provedor contra os fechamentos</td>
+</tr>
+<tr>
+<td>Cobrança sem pedido</td>
+<td>custo, mitigado</td>
+<td>2 em 2000 (0,1%)</td>
+<td>conciliação entre cobranças e pedidos</td>
+</tr>
+<tr>
+<td>Janela de inconsistência</td>
+<td>custo</td>
+<td>0,01 s com compensação; ~900 s sem resposta (hipótese)</td>
+<td>tempo entre cobrança e estorno, no registro</td>
+</tr>
+<tr>
+<td>Artefatos para operar</td>
+<td>custo</td>
+<td>2, contra 1</td>
+<td>contagem direta</td>
+</tr>
+<tr>
+<td>Esforço de operação (entrega, alertas, plantão)</td>
+<td>custo</td>
+<td><strong>não medido</strong></td>
+<td>horas por semana por artefato, registradas por um trimestre</td>
+</tr>
+<tr>
+<td>Tempo de diagnóstico</td>
+<td>custo, mitigado</td>
+<td><strong>não medido</strong></td>
+<td>tempo entre alerta e causa identificada</td>
+</tr>
+<tr>
+<td>Transação local, deploy único, teste sem rede</td>
+<td>custo (perdido)</td>
+<td>3 itens que deixam de existir</td>
+<td>já identificados na Aula 14</td>
+</tr>
+<tr>
+<td>Cadência de release própria</td>
+<td>ganho</td>
+<td><strong>não medido</strong> (gatilho da Aula 14)</td>
+<td>releases fora do trem compartilhado, por sprint</td>
+</tr>
+<tr>
+<td>Janela própria para a conciliação</td>
+<td>ganho</td>
+<td><strong>não medido</strong></td>
+<td>deploys bloqueados por janela de conciliação</td>
+</tr>
+<tr>
+<td>Autonomia de time</td>
+<td>ganho</td>
+<td><strong>não medido</strong>; depende de quem seria o dono</td>
+<td>quem é dono e quem faz plantão</td>
+</tr>
+</tbody>
+</table>
+<p>A tabela é o ponto principal da aula. Duas colunas dela merecem leitura. Os <strong>custos</strong> têm quase todos algum número, porque vieram do ensaio e da conta das aulas anteriores: a rede foi simulada, e simulado é mensurável. Os <strong>ganhos</strong>, ao contrário, estão quase todos marcados "não medido", porque dependem do que o Orion ainda não observou: o gatilho da Aula 14 não disparou, e ninguém mediu a espera por <em>deploy</em>. Isso muda o peso do que a tabela diz. Ela não condena a extração; mostra que o lado do custo tem evidência e o do ganho, ainda não.</p>
+<h3 id="adr-registrar-o-identificador-de-correlacao-de-ponta-a-ponta">📐 ADR — Registrar o identificador de correlação de ponta a ponta<a class="headerlink" href="#adr-registrar-o-identificador-de-correlacao-de-ponta-a-ponta" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — Identificador de correlação de ponta a ponta</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceito para o <code>09-saga</code>.</td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td>Depois da campanha, clientes cobrados sem pedido não podem ser rastreados: <code>compra</code> e <code>pagamentos</code> têm registros separados, sem identificador em comum.</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td>O orquestrador gera um identificador por fechamento, na entrada. Ele viaja num campo opcional da mensagem para <code>pagamentos</code> (mudança aditiva, ignorada por quem não o conhece) e é gravado em toda linha de registro dos dois lados, inclusive nas pendências e na reconciliação.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Comparar horários, valores e e-mails à mão: sem código novo, e inviável em campanha. (b) Usar a chave de idempotência como identificador: já existe, mas mistura dois papéis (evitar repetição e rastrear) e uma chave pode ser reusada em outro contexto. &copy; Uma ferramenta de rastro distribuído completa: mais capacidade, com um custo de operação que o Orion não mediu e que seria mais um artefato.</td>
+</tr>
+<tr>
+<td><strong>Consequências positivas</strong></td>
+<td>O caminho de um fechamento que falhou se reconstrói por uma busca. A pendência e a reconciliação entram na mesma história.</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td>O campo é mais uma regra a respeitar em toda chamada futura: um serviço que esqueça o identificador deixa um buraco. A ordem entre serviços só é exata no simulador. O registro continua em memória por serviço; reunir os registros num lugar é outro custo.</td>
+</tr>
+<tr>
+<td><strong>Reversão</strong></td>
+<td>Barata: o campo é opcional.</td>
+</tr>
+<tr>
+<td><strong>Condição de falseamento</strong></td>
+<td>Estaria errado se, em produção, uma fração relevante dos fechamentos que falham não pudesse ser reconstruída (identificador perdido em algum trecho).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="na-pratica-python">Na prática: Python<a class="headerlink" href="#na-pratica-python" title="Permanent link">&para;</a></h3>
+<p>O checkpoint é o mesmo <code>09-saga/</code> da Aula 20. A observabilidade mora em um módulo próprio, <code>mini_orion/observabilidade/api.py</code>, que não conhece nenhum módulo de domínio (um contrato do <code>import-linter</code> verifica isso). Cada módulo tem o seu registro, como dois serviços teriam dois arquivos. O que os liga é a função que filtra pelo identificador e ordena:</p>
+<div class="language-python highlight"><span class="filename">09-saga/mini_orion/observabilidade/api.py (recorte)</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Registro</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origem</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">agora</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_origem</span> <span class="o">=</span> <span class="n">origem</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_agora</span> <span class="o">=</span> <span class="n">agora</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eventos</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Evento</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">registrar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mensagem</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">correlacao</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eventos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>            <span class="n">Evento</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">_SEQUENCIA</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agora</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origem</span><span class="p">,</span> <span class="n">correlacao</span><span class="p">,</span> <span class="n">mensagem</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="p">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">reconstruir</span><span class="p">(</span><span class="n">correlacao</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">registros</span><span class="p">:</span> <span class="n">Registro</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Evento</span><span class="p">]:</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="sd">"""Junta, em ordem, os eventos de todos os registros que levam o identificador."""</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">todos</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">registros</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">eventos</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">correlacao</span> <span class="o">==</span> <span class="n">correlacao</span><span class="p">]</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">todos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">instante</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">sequencia</span><span class="p">))</span>
+</span></code></pre></div>
+<p>O identificador viaja como campo opcional do pedido de cobrança, o que é a mudança aditiva da Aula 18. O servidor de <code>pagamentos</code> o lê com <code>carga.get("correlacao")</code> e o grava em cada linha. O teste <code>test_sem_identificador_os_dois_registros_nao_se_juntam</code> reproduz o início da aula: os dois registros têm linhas, nenhuma com identificador, e a busca devolve uma lista vazia. O teste ao lado, <code>test_com_o_identificador_o_caminho_do_fechamento_que_falhou_se_reconstroi</code>, mostra a história inteira de um fechamento cuja emissão falhou:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>compra       fechamento iniciado: cobrar
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pagamentos   cobranca recebida
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pagamentos   cobranca aprovada
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>compra       emissao falhou: compensar
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>pagamentos   estorno executado
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>compra       compensado: cobranca estornada
+</span></code></pre></div>
+<p>E o caso mais difícil, de uma cobrança que expirou e só a reconciliação resolveu, aparece com o intervalo que separa os eventos:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>   0.0 s  compra       fechamento iniciado: cobrar
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>   0.0 s  pagamentos   cobranca recebida
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>   0.0 s  pagamentos   cobranca aprovada
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>   1.0 s  pagamentos   repeticao reconhecida
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>   2.0 s  compra       pendencia aberta: cobranca_indeterminada
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a> 902.0 s  pagamentos   consulta: aprovada
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a> 902.1 s  pagamentos   estorno executado
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a> 902.1 s  compra       pendencia corrigida pela reconciliacao
+</span></code></pre></div>
+<p>Perceba o que o rastro mostra e as métricas não mostrariam: a cobrança foi aprovada às 0,0 s, a resposta não chegou, e o cliente ficou cerca de 900 s cobrado e sem pedido. O número 900 é a hipótese do intervalo do job, e o rastro é o instrumento que o mediria em produção.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>fundamentos-arquitetura-code/09-saga
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>pytest<span class="w"> </span>tests/test_observabilidade.py<span class="w">     </span><span class="c1"># 4 testes</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pytest<span class="w">                                   </span><span class="c1"># 82 testes</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>lint-imports<span class="w">                             </span><span class="c1"># 9 contratos</span>
+</span></code></pre></div>
+<p>O que vale experimentar:</p>
+<ul>
+<li><strong>Ver o buraco.</strong> Em <code>montar_saga</code>, passe <code>gerar_correlacao=lambda: None</code> e rode a reconstrução de um fechamento que falhou. O que o rastro mostra e o que ele perdeu?</li>
+<li><strong>Esquecer um ponto.</strong> Em <code>_servidor.py</code>, retire o <code>correlacao</code> de uma das chamadas a <code>_registrar</code>. Qual evento some do rastro, e em que ponto da história a falta dele atrapalharia mais?</li>
+<li><strong>Preencher o balanço.</strong> Escolha uma linha "não medido" da tabela do estudo de caso e escreva, em duas frases, como o Orion mediria o item em um trimestre.</li>
+</ul>
+<h2 id="o-que-ficou-decidido-e-o-que-a-aula-22-pergunta">O que ficou decidido e o que a Aula 22 pergunta<a class="headerlink" href="#o-que-ficou-decidido-e-o-que-a-aula-22-pergunta" title="Permanent link">&para;</a></h2>
+<p>Ficou decidido que cada fechamento carrega um identificador de correlação de ponta a ponta, gravado dos dois lados, e que o balanço da extração de <code>Pagamentos</code> tem um número ou a marca "não medido" em cada item. Ficou registrado também que a observabilidade encurta o diagnóstico sem reduzir a frequência da falha, que a Lei de Conway pergunta que time seria dono do serviço antes de extraí-lo, e que o lado do custo tem mais evidência do que o do ganho.</p>
+<p>Temos a conta inteira, com seus buracos à vista. Falta o que o módulo inteiro vinha preparando: decidir sob orçamento. Se a diretoria aprovar "extrair com critério", o que sai primeiro, o que fica e quando parar? A Aula 22 pede essa proposta, e pede também que o grupo defenda a alternativa de não extrair nada como opção real.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 10 — From Monitoring to Observability (a definição de observabilidade, registros, métricas, rastro distribuído e a recomendação de adotar o identificador de correlação cedo).</li>
+<li>Conway, Melvin E. "How Do Committees Invent?". <em>Datamation</em>, abril de 1968.</li>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Seção "Conway's Law" (a lei e a manobra inversa de Conway).</li>
+<li>Ford, Neal; Parsons, Rebecca; Kua, Patrick; Sadalage, Pramod. <em>Building Evolutionary Architectures</em>. 2. ed. (observabilidade e métricas como base de funções de aptidão, tema do Módulo 4).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>NEWMAN, Sam. <em>Building Microservices</em>. 2. ed. O'Reilly, 2021.</li>
+<li>CONWAY, Melvin E. How Do Committees Invent? <em>Datamation</em>, v. 14, n. 4, 1968.</li>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>FORD, Neal; PARSONS, Rebecca; KUA, Patrick; SADALAGE, Pramod. <em>Building Evolutionary Architectures</em>. 2. ed. O'Reilly, 2023.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula20-consistencia-e-saga/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 20 — Consistência e saga">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 20 — Consistência e saga
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 22 — Oficina, o que extrair primeiro">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 22 — Oficina, o que extrair primeiro
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

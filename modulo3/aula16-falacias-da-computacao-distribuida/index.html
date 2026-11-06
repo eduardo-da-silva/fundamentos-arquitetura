@@ -1,0 +1,2898 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo3/aula16-falacias-da-computacao-distribuida/">
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../aula17-service-based-e-microsservicos/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 16 — Falácias da computação distribuída - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 16 — Falácias da computação distribuída
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-separar-um-modulo-vira-uma-opcao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando separar um módulo vira uma opção
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#as-oito-falacias-da-computacao-distribuida" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As oito falácias da computação distribuída
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="As oito falácias da computação distribuída">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ponto-de-partida-o-que-uma-chamada-local-garante" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ponto de partida: o que uma chamada local garante
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-a-rede-e-confiavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. A rede é confiável
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-a-latencia-e-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. A latência é zero
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a-largura-de-banda-e-infinita" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. A largura de banda é infinita
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-a-rede-e-segura" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. A rede é segura
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-a-topologia-nao-muda" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. A topologia não muda
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-existe-um-unico-administrador" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. Existe um único administrador
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-o-custo-de-transporte-e-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. O custo de transporte é zero
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-a-rede-e-homogenea" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        8. A rede é homogênea
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-seguinte-cobre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo seguinte cobre
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#um-estudo-para-verificar-pagamentos-atras-de-uma-rede-simulada" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Um estudo para verificar: <code>Pagamentos</code> atrás de uma rede simulada
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Um estudo para verificar: Pagamentos atrás de uma rede simulada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-o-estudo-foi-montado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como o estudo foi montado
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-supomos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que supomos
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#por-que-uma-distribuicao-lognormal" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Por que uma distribuição lognormal
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-esses-numeros-seriam-medidos-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como esses números seriam medidos de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-encontra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo encontra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-ensina-e-o-que-apenas-supoe" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo ensina e o que apenas supõe
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defesa-repetir-com-seguranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Defesa: repetir com segurança
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defesa: repetir com segurança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repetir-so-e-seguro-quando-a-operacao-aguenta-ser-repetida" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Repetir só é seguro quando a operação aguenta ser repetida
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-assinatura-que-continua-igual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A assinatura que continua igual
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-pagamentos-atras-da-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: Pagamentos atrás da rede
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: Pagamentos atrás da rede">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quantas-arestas-cruzam-a-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quantas arestas cruzam a rede
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-politicas-de-repeticao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três políticas de repetição
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-cobranca-remota-com-repeticao-unica-e-chave-de-idempotencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Cobrança remota com repetição única e chave de idempotência
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reproduzindo-o-ensaio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Reproduzindo o ensaio
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trabalho-do-aluno" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Trabalho do aluno
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-a-pergunta-que-a-aula-17-abre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e a pergunta que a Aula 17 abre
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-separar-um-modulo-vira-uma-opcao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando separar um módulo vira uma opção
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#as-oito-falacias-da-computacao-distribuida" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As oito falácias da computação distribuída
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="As oito falácias da computação distribuída">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ponto-de-partida-o-que-uma-chamada-local-garante" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ponto de partida: o que uma chamada local garante
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-a-rede-e-confiavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. A rede é confiável
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-a-latencia-e-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. A latência é zero
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a-largura-de-banda-e-infinita" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. A largura de banda é infinita
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-a-rede-e-segura" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. A rede é segura
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-a-topologia-nao-muda" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. A topologia não muda
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-existe-um-unico-administrador" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. Existe um único administrador
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-o-custo-de-transporte-e-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. O custo de transporte é zero
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-a-rede-e-homogenea" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        8. A rede é homogênea
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-seguinte-cobre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo seguinte cobre
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#um-estudo-para-verificar-pagamentos-atras-de-uma-rede-simulada" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Um estudo para verificar: <code>Pagamentos</code> atrás de uma rede simulada
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Um estudo para verificar: Pagamentos atrás de uma rede simulada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-o-estudo-foi-montado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como o estudo foi montado
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-supomos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que supomos
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#por-que-uma-distribuicao-lognormal" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Por que uma distribuição lognormal
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-esses-numeros-seriam-medidos-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como esses números seriam medidos de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-encontra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo encontra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-o-estudo-ensina-e-o-que-apenas-supoe" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que o estudo ensina e o que apenas supõe
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defesa-repetir-com-seguranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Defesa: repetir com segurança
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defesa: repetir com segurança">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repetir-so-e-seguro-quando-a-operacao-aguenta-ser-repetida" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Repetir só é seguro quando a operação aguenta ser repetida
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-assinatura-que-continua-igual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A assinatura que continua igual
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-pagamentos-atras-da-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: Pagamentos atrás da rede
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: Pagamentos atrás da rede">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quantas-arestas-cruzam-a-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quantas arestas cruzam a rede
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-politicas-de-repeticao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três políticas de repetição
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-cobranca-remota-com-repeticao-unica-e-chave-de-idempotencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Cobrança remota com repetição única e chave de idempotência
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reproduzindo-o-ensaio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Reproduzindo o ensaio
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trabalho-do-aluno" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Trabalho do aluno
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-a-pergunta-que-a-aula-17-abre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e a pergunta que a Aula 17 abre
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 3 — Arquiteturas Distribuídas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo3/aula16-falacias-da-computacao-distribuida.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-16-falacias-da-computacao-distribuida">Aula 16 — Falácias da computação distribuída<a class="headerlink" href="#aula-16-falacias-da-computacao-distribuida" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>listar os desfechos de uma chamada local e os de uma chamada remota, e dizer qual deles a assinatura do método esconde;</li>
+<li>explicar por que um <em>timeout</em> não informa se a operação aconteceu, distinguindo a perda do pedido da perda da resposta;</li>
+<li>decidir se uma operação pode ser repetida, e o que ela precisa ter para aguentar a repetição (idempotência, chave);</li>
+<li>enumerar as oito falácias da computação distribuída e dizer, de cada uma, o que o código de um único processo supõe e o que a rede desfaz;</li>
+<li>ler a latência de uma operação em percentis (mediana, p95, p99) sem confundir com a média;</li>
+<li>contar quantas arestas do grafo do Orion passam a atravessar a rede quando um módulo é extraído, usando <span class="arithmatex">\(C_a\)</span> e <span class="arithmatex">\(C_e\)</span>;</li>
+<li>separar o que uma simulação ensina (consequência do desenho do código) do que ela só supõe (consequência dos parâmetros), e dizer como cada número supostamente seria medido de verdade;</li>
+<li>rodar o <code>07-remoto</code>, reproduzir o ensaio e ler os testes que mostram a cobrança duplicada e a que não duplica.</li>
+</ul>
+<h2 id="quando-separar-um-modulo-vira-uma-opcao">Quando separar um módulo vira uma opção<a class="headerlink" href="#quando-separar-um-modulo-vira-uma-opcao" title="Permanent link">&para;</a></h2>
+<p>Um sistema modular guarda todos os seus módulos no mesmo processo, e um módulo chama o outro como quem chama uma função. Em algum momento alguém propõe extrair um deles para um serviço próprio: porque uma equipe quer implantá-lo sozinha, porque ele precisa escalar de outro jeito, porque muda em outro ritmo. No Orion, a Aula 14 deixou <code>Pagamentos</code> registrado como candidato a essa extração.</p>
+<p>A extração troca chamadas de função por chamadas através de uma rede, e essa troca tem um custo que não aparece no diagrama de componentes. Esta aula examina esse custo antes de qualquer decisão. O caminho tem quatro passos: primeiro, as oito suposições que valem dentro de um processo e deixam de valer fora dele, conhecidas como falácias da computação distribuída; depois, um estudo simulado que verifica o que elas fazem com o Orion; em seguida, a defesa que o estudo sugere; por fim, a decisão sobre <code>Pagamentos</code>.</p>
+<h2 id="as-oito-falacias-da-computacao-distribuida">As oito falácias da computação distribuída<a class="headerlink" href="#as-oito-falacias-da-computacao-distribuida" title="Permanent link">&para;</a></h2>
+<p>Em meados dos anos 1990, engenheiros da Sun Microsystems, com Peter Deutsch à frente, reuniram as suposições falsas que programadores costumam fazer ao passar de um processo para vários. A lista ficou conhecida como as falácias da computação distribuída, e tem oito itens: a rede é confiável; a latência é zero; a largura de banda é infinita; a rede é segura; a topologia não muda; existe um único administrador; o custo de transporte é zero; a rede é homogênea.</p>
+<p>Nenhuma delas é difícil de entender. A dificuldade é que, dentro de um processo, todas são verdadeiras, e o código escrito para esse mundo as carrega sem declarar. Cada uma é apresentada abaixo da mesma forma: a suposição como um programador a faria, a razão de ela deixar de valer e, ao final, a consequência para o projeto.</p>
+<h3 id="ponto-de-partida-o-que-uma-chamada-local-garante">Ponto de partida: o que uma chamada local garante<a class="headerlink" href="#ponto-de-partida-o-que-uma-chamada-local-garante" title="Permanent link">&para;</a></h3>
+<p>Considere uma função <code>cobrar(valor, cartao)</code>. Quem a chama é o <strong>chamador</strong>; o código que a executa é o <strong>servidor</strong>. Dentro de um processo o servidor é só a função, mas o papel existe e é útil nomeá-lo. Ao chamar, o chamador pode esperar um de dois desfechos, e sabe qual ocorreu: a função devolve um valor, ou levanta uma exceção. As duas coisas acontecem na hora. Se voltou, a cobrança ocorreu; se levantou, não ocorreu. Essa certeza não está escrita em lugar nenhum. É uma propriedade do processo, e ninguém a pediu porque nunca faltou.</p>
+<p>Entre dois processos, o chamador passa a esperar com um limite de tempo, o <em><strong>timeout</strong></em>: o tempo máximo que aceita esperar antes de desistir. A tabela compara o que ele observa e o que pode concluir:</p>
+<table>
+<thead>
+<tr>
+<th>O que o chamador observa</th>
+<th>Chamada local</th>
+<th>Chamada remota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uma resposta de sucesso</td>
+<td>a cobrança ocorreu</td>
+<td>a cobrança ocorreu</td>
+</tr>
+<tr>
+<td>Uma resposta de erro</td>
+<td>a cobrança não ocorreu</td>
+<td>a cobrança não ocorreu, se o erro foi devolvido pelo servidor</td>
+</tr>
+<tr>
+<td>Nada, até o limite de tempo</td>
+<td>não existe</td>
+<td>a cobrança <strong>pode ou não</strong> ter ocorrido</td>
+</tr>
+</tbody>
+</table>
+<p>A última linha não tem análoga na chamada local. Uma chamada remota pode terminar em <strong>não saber</strong>, e boa parte da aula decorre disso. Quem vem de POO costuma tratar a chamada remota como uma chamada de método com mais latência; a tabela mostra por que essa equivalência falha. O que muda não se resume ao tempo: muda o conjunto de coisas que o chamador pode concluir.</p>
+<h3 id="1-a-rede-e-confiavel">1. A rede é confiável<a class="headerlink" href="#1-a-rede-e-confiavel" title="Permanent link">&para;</a></h3>
+<p><em>"Chamei o servidor, então a chamada chegou, foi executada e a resposta voltou."</em> É assim que se escreve <code>resultado = servidor.cobrar(...)</code>: a linha seguinte pressupõe que a anterior terminou.</p>
+<p>Na rede, mensagens se perdem: um cabo, um balanceador que reinicia, um processo que cai no meio da operação. O problema maior não é a perda, e sim o que o chamador consegue saber dela. Duas coisas diferentes podem acontecer quando a resposta não chega. O pedido pode ter se perdido na ida, e então o servidor nunca soube da cobrança. Ou o pedido chegou, o cartão foi cobrado, e a resposta se perdeu na volta.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as chamador
+    participant S as servidor
+    alt perda na ida
+        C-xS: cobrar
+        Note over C: espera 1 s e desiste
+    else perda na volta
+        C-&gt;&gt;S: cobrar
+        Note over S: cobra o cartão
+        S--xC: resposta
+        Note over C: espera 1 s e desiste
+    end</code></pre>
+<p>O diagrama responde a uma pergunta: o que o chamador consegue observar em cada caso? Nada que os distinga. Nos dois, ele espera o limite e recebe um erro de <em>timeout</em>. Num deles o cliente não foi cobrado, no outro foi. Há ainda uma terceira causa de <em>timeout</em>: uma resposta que demora mais que o limite e que, por isso, também deixa o chamador sem resposta embora o servidor tenha executado a operação.</p>
+<div class="admonition question">
+<p class="admonition-title">Pausa</p>
+<p>O chamador espera um segundo e não obtém resposta. Ele deve repetir a cobrança, tratá-la como recusada, ou emitir o pedido e conferir depois? Cada uma dessas respostas é correta para um dos dois casos do diagrama e errada para o outro. O que o chamador teria de saber para escolher?</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>Toda chamada remota tem um terceiro desfecho, "não sei", e a assinatura da operação precisa declará-lo. Operações que mudam o mundo (cobrar, enviar, reservar) precisam aguentar ser repetidas; a seção "Defesa: repetir com segurança" mostra como.</p>
+</div>
+<h3 id="2-a-latencia-e-zero">2. A latência é zero<a class="headerlink" href="#2-a-latencia-e-zero" title="Permanent link">&para;</a></h3>
+<p><em>"Chamar o servidor custa o mesmo que chamar uma função, então posso chamar quantas vezes precisar."</em></p>
+<p>Uma chamada local custa microssegundos. Uma chamada remota custa milissegundos, e o custo varia de chamada para chamada: a maioria é rápida e algumas são muito mais lentas, por fila, retransmissão ou pausa do servidor. Por isso a latência não é um número, é uma distribuição, e se descreve por <strong>percentis</strong>. A <strong>mediana</strong> (p50) é o valor abaixo do qual está metade das chamadas. O <strong>percentil 95</strong> (p95) é o valor abaixo do qual estão 95% delas, e o <strong>p99</strong>, 99%. A média engana: poucas chamadas muito lentas puxam a média para cima sem que a maioria perceba, e escondem-se atrás da mediana.</p>
+<p>A cauda também compõe. Se uma operação faz <span class="arithmatex">\(n\)</span> chamadas remotas em série e cada uma falha com probabilidade <span class="arithmatex">\(p\)</span>, a chance de pelo menos uma falhar é</p>
+<div class="arithmatex">\[P = 1 - (1 - p)^n\]</div>
+<p>onde <span class="arithmatex">\((1-p)\)</span> é a chance de uma chamada dar certo e o expoente <span class="arithmatex">\(n\)</span> diz que todas as <span class="arithmatex">\(n\)</span> precisam dar certo. Com <span class="arithmatex">\(p = 0{,}02\)</span> e <span class="arithmatex">\(n = 2\)</span> (valores de exemplo), <span class="arithmatex">\(P \approx 0{,}04\)</span>: duas chamadas que falham 2% cada uma falham juntas 4% das vezes, quase o dobro. Cada chamada que atravessa a rede soma sua cauda à da operação.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>Metas de tempo devem ser escritas em percentil, não em média, e o número de chamadas remotas em série no caminho principal de uma operação é uma decisão de projeto, não um detalhe.</p>
+</div>
+<h3 id="3-a-largura-de-banda-e-infinita">3. A largura de banda é infinita<a class="headerlink" href="#3-a-largura-de-banda-e-infinita" title="Permanent link">&para;</a></h3>
+<p><em>"Passar o dado ao outro componente é passar uma referência; o tamanho não importa."</em></p>
+<p>Dentro do processo, entregar uma lista de dez mil produtos a quem só queria um preço custa o mesmo que entregar um produto: passa-se um ponteiro. Na rede, cada chamada copia o que atravessa a fronteira. O custo de transferir cresce com o volume do dado, não com o número de chamadas, e a banda é compartilhada com todo o resto que trafega por ali.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>O que atravessa a fronteira deve ser desenhado: pedir só o necessário, devolver só o pedido. O tamanho típico de cada carga é um dado a levantar com o registro de requisições reais; nada neste estudo o mede.</p>
+</div>
+<h3 id="4-a-rede-e-segura">4. A rede é segura<a class="headerlink" href="#4-a-rede-e-segura" title="Permanent link">&para;</a></h3>
+<p><em>"Quem me chama é quem o código diz que é."</em></p>
+<p>Dentro de um processo, só chama quem foi compilado junto. Na rede, qualquer coisa que alcance o endereço do servidor pode fazer uma chamada, e o que trafega pode ser lido no caminho. Passa a ser preciso autenticar quem chama, autorizar o que ele pode pedir e proteger o conteúdo em trânsito. No Orion, a cobrança leva o número do cartão do cliente: o que era uma variável em memória vira um dado sensível em trânsito, e <code>pagamentos</code> passaria a aceitar cobranças de quem soubesse o endereço dele.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>Segurança entre serviços é um requisito a declarar antes de extrair. A Aula 18 a conta entre as forças que justificam separar um serviço do resto. A rede simulada deste estudo não tem atacante e não exercita esta falácia.</p>
+</div>
+<h3 id="5-a-topologia-nao-muda">5. A topologia não muda<a class="headerlink" href="#5-a-topologia-nao-muda" title="Permanent link">&para;</a></h3>
+<p><em>"O outro componente está sempre no mesmo lugar."</em></p>
+<p>Dentro de um processo está: é o mesmo programa. Na rede, serviços sobem, caem, mudam de máquina e de endereço, e instâncias são acrescentadas ou retiradas conforme a carga. O chamador precisa de uma forma de descobrir o destino e de lidar com o destino que, naquele momento, não existe. O transporte do Mini-Orion mostra a menor versão do problema: os destinos são registrados por nome, e chamar um nome não registrado levanta <code>DestinoDesconhecido</code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>O chamador deve conhecer um nome lógico, não um endereço, e tolerar a ausência do destino. Descoberta de serviço e implantação gradual são assuntos de operação, tratados na Aula 21.</p>
+</div>
+<h3 id="6-existe-um-unico-administrador">6. Existe um único administrador<a class="headerlink" href="#6-existe-um-unico-administrador" title="Permanent link">&para;</a></h3>
+<p><em>"Quem muda um lado muda o outro junto."</em></p>
+<p>Dentro de um artefato é verdade: os dois componentes saem na mesma entrega. Na rede, cada lado tem o próprio calendário de mudanças, o próprio ambiente e, às vezes, outra equipe ou outra empresa. Uma versão nova de um lado chega enquanto o outro ainda roda a anterior, e ninguém decide sozinho quando reiniciar, trocar de versão ou descontinuar uma função. É o que acontece quando um provedor de pagamento externo atualiza sua interface: quem o chama não escolhe o dia.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>O que protege os dois lados é um contrato que continue válido enquanto as versões se alternam. É um dos temas centrais da Aula 18.</p>
+</div>
+<h3 id="7-o-custo-de-transporte-e-zero">7. O custo de transporte é zero<a class="headerlink" href="#7-o-custo-de-transporte-e-zero" title="Permanent link">&para;</a></h3>
+<p><em>"Passar um objeto ao outro componente é passar um ponteiro."</em></p>
+<p>Na rede o objeto não viaja: seus dados precisam ser escritos em um formato, transportados e lidos do outro lado. Cada passo tem custo de tempo, de código e de manutenção, e o formato escolhido passa a ser, ele mesmo, um contrato entre os dois lados. No Mini-Orion, o pedido de cobrança é escrito como carga de dados em um lado e lido no outro: duas implementações do mesmo formato, que precisam mudar juntas.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>O formato das mensagens é uma interface pública e merece o cuidado de uma. A Aula 18 trata do que ele cobra de quem o muda.</p>
+</div>
+<h3 id="8-a-rede-e-homogenea">8. A rede é homogênea<a class="headerlink" href="#8-a-rede-e-homogenea" title="Permanent link">&para;</a></h3>
+<p><em>"Os dois lados falam a mesma linguagem, com os mesmos tipos."</em></p>
+<p>Não necessariamente. Os dois lados podem estar escritos em linguagens diferentes, rodar em sistemas diferentes e representar um número, uma data ou um texto de maneiras diferentes. Um tipo de Python não atravessa a rede como tipo de Python: atravessa como bytes que o outro lado interpreta.</p>
+<div class="admonition tip">
+<p class="admonition-title">Consequência para o projeto</p>
+<p>A mensagem deve usar valores simples (textos e números), sem tipos próprios de uma linguagem. É o que o Mini-Orion faz: a carga da cobrança é montada com valores simples, e um serviço escrito em outra linguagem poderia substituir <code>pagamentos</code> sem que <code>compra</code> notasse.</p>
+</div>
+<h3 id="o-que-o-estudo-seguinte-cobre">O que o estudo seguinte cobre<a class="headerlink" href="#o-que-o-estudo-seguinte-cobre" title="Permanent link">&para;</a></h3>
+<p>Das oito, o estudo a seguir exercita três: a 1, a 2 e a 7. A rede simulada não tem como representar as outras cinco (3, 4, 5, 6 e 8), que ficam como riscos de projeto, sem medição, e a aula diz em que ponto o curso volta a cada uma.</p>
+<h2 id="um-estudo-para-verificar-pagamentos-atras-de-uma-rede-simulada">Um estudo para verificar: <code>Pagamentos</code> atrás de uma rede simulada<a class="headerlink" href="#um-estudo-para-verificar-pagamentos-atras-de-uma-rede-simulada" title="Permanent link">&para;</a></h2>
+<h3 id="a-pergunta">A pergunta<a class="headerlink" href="#a-pergunta" title="Permanent link">&para;</a></h3>
+<p>Se <code>Pagamentos</code> fosse extraído para um serviço próprio, o fechamento de compra do Orion sofreria o que as falácias 1, 2 e 7 descrevem? E, se sofresse, em que medida? A pergunta é feita antes da extração, porque depois dela a resposta custaria dinheiro a clientes de verdade.</p>
+<h3 id="como-o-estudo-foi-montado">Como o estudo foi montado<a class="headerlink" href="#como-o-estudo-foi-montado" title="Permanent link">&para;</a></h3>
+<p>O que rodamos <strong>não é uma medição do Orion</strong>. É uma simulação: o código de <code>compra</code> e de <code>pagamentos</code> do Mini-Orion executa de verdade, mas a rede entre os dois é um programa que sorteia atrasos e falhas segundo parâmetros escolhidos por nós. Esse recorte executável é o checkpoint <code>07-remoto</code>. A extração de <code>Pagamentos</code> ainda não aconteceu, e não existe nenhum dado de produção sobre essa fronteira.</p>
+<p>O estudo executa 2000 fechamentos de compra, em uma configuração de <strong>campanha</strong> (um período de promoção, com volume de acesso e taxa de falha acima do normal). Para cada fechamento, registra o tempo total e o que aconteceu com a cobrança. Os 2000 fechamentos, a semente do sorteio e os parâmetros são fixos, de modo que a mesma rodada dá sempre o mesmo resultado. A seção "Reproduzindo o ensaio", mais adiante, mostra o passo a passo. O script que o executa se chama <code>ensaio.py</code>, e por isso "ensaio" e "estudo" designam, daqui em diante, a mesma coisa.</p>
+<h3 id="o-que-supomos">O que supomos<a class="headerlink" href="#o-que-supomos" title="Permanent link">&para;</a></h3>
+<p>Uma simulação só é tão boa quanto os parâmetros que recebe, e os nossos são suposições. A tabela os lista, junto com a origem de cada um, para que o leitor saiba o que é dado e o que é hipótese:</p>
+<table>
+<thead>
+<tr>
+<th>Parâmetro</th>
+<th>Valor</th>
+<th>Origem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latência de uma chamada remota</td>
+<td>mediana de 20 ms, percentil 99 de 400 ms</td>
+<td>hipótese de trabalho</td>
+</tr>
+<tr>
+<td><em>Timeout</em></td>
+<td>1 s por chamada; 3 s para o fechamento inteiro</td>
+<td>o de 3 s é o limite do <code>Checkout</code> mostrado na Aula 6</td>
+</tr>
+<tr>
+<td>Falha transitória por chamada, em campanha</td>
+<td>2% (0,2% fora de campanha)</td>
+<td>hipótese de trabalho</td>
+</tr>
+<tr>
+<td>Parcela dessas falhas em que a resposta se perde</td>
+<td>50% (nas demais, é o pedido que se perde)</td>
+<td>hipótese de trabalho</td>
+</tr>
+<tr>
+<td>Meta do fechamento</td>
+<td>percentil 95 em até 2 s</td>
+<td>meta combinada com o negócio, não medição</td>
+</tr>
+</tbody>
+</table>
+<p>As falhas saem de um sorteio independente por chamada. A simulação reproduz a <strong>forma</strong> do problema: tempo que não é zero, falha que não é exceção local, estado ambíguo. Ela não reproduz a física de uma rede de verdade.</p>
+<h3 id="por-que-uma-distribuicao-lognormal">Por que uma distribuição lognormal<a class="headerlink" href="#por-que-uma-distribuicao-lognormal" title="Permanent link">&para;</a></h3>
+<p>Falta dizer de onde saem os atrasos de 20 ms e 400 ms. O simulador sorteia cada latência de uma distribuição <strong>lognormal</strong>, e a escolha tem uma justificativa estatística que cabe explicar.</p>
+<p>Uma latência nunca é negativa; a maioria das chamadas fica perto de um valor típico; e uma minoria é muito mais lenta. Isso dá um histograma assimétrico, com cauda longa à direita, no qual a média é maior que a mediana. A distribuição normal (o sino simétrico) não serve: ela admitiria latências negativas e não teria cauda assim.</p>
+<p>Uma variável é lognormal quando o seu <strong>logaritmo</strong> é normal. A razão de ela aparecer em latências é parecida com a da normal para somas: a normal surge quando muitos efeitos pequenos se <strong>somam</strong>; a lognormal surge quando muitos efeitos pequenos se <strong>multiplicam</strong>. Uma chamada passa por várias etapas (fila, processamento, rede), e uma etapa lenta tende a atrasar as seguintes em proporção, não por uma quantidade fixa.</p>
+<p>Dois parâmetros bastam, e correspondem ao que uma equipe mede: a mediana e o p99. Se a mediana é <span class="arithmatex">\(m\)</span> e o p99 é <span class="arithmatex">\(q\)</span>, o logaritmo da latência é normal com média <span class="arithmatex">\(\mu = \ln m\)</span> e desvio-padrão</p>
+<div class="arithmatex">\[\sigma = \frac{\ln(q / m)}{z_{0{,}99}}\]</div>
+<p>onde <span class="arithmatex">\(z_{0{,}99} \approx 2{,}326\)</span> é o ponto da normal padrão que deixa 99% da área abaixo dele. Com <span class="arithmatex">\(m = 20\)</span> ms e <span class="arithmatex">\(q = 400\)</span> ms, <span class="arithmatex">\(\sigma \approx 1{,}29\)</span>. Uma consequência: a chance de uma latência passar de 1 s, o <em>timeout</em>, é de cerca de 0,1%, o que corresponde à "terceira causa de <em>timeout</em>" da falácia 1.</p>
+<p>Isso é aceitável para o cenário, e não uma lei da rede. Latências reais costumam ter vários picos (acerto e erro de cache, por exemplo) e caudas ainda mais pesadas. A lognormal captura o que importa para o argumento, que é a assimetria e a cauda longa, e permite ajustar os dois parâmetros com dados reais quando eles existirem. O resultado qualitativo do estudo não depende dessa escolha.</p>
+<h3 id="como-esses-numeros-seriam-medidos-de-verdade">Como esses números seriam medidos de verdade<a class="headerlink" href="#como-esses-numeros-seriam-medidos-de-verdade" title="Permanent link">&para;</a></h3>
+<p>Se a simulação não mede, o que mediria? A resposta depende do ponto da história em que estamos, e tem três partes.</p>
+<p><strong>Antes de extrair, parte já pode ser lida do que existe.</strong> <code>Pagamentos</code> já fala por rede hoje: a cobrança chega a um provedor externo (no Mini-Orion, <code>GatewayPagamentoX</code>). Os registros dessas chamadas mostram a latência e a taxa de <em>timeout</em> de uma chamada remota real do Orion. Não são os números da fronteira entre <code>compra</code> e <code>pagamentos</code>, mas são a melhor estimativa disponível de como uma chamada remota se comporta na nossa infraestrutura, e é de lá que sairiam, por exemplo, os 2% e os 400 ms. O defeito que vamos estudar também já existe nessa fronteira: uma repetição depois de um <em>timeout</em> pode cobrar de novo no provedor. É um dos motivos pelos quais muitos provedores de pagamento oferecem chave de idempotência em suas interfaces.</p>
+<p><strong>Antes de extrair, também se pode ensaiar de forma mais realista.</strong> Em ambiente de homologação, <code>pagamentos</code> sobe como processo separado, com um intermediário que atrasa e derruba uma fração das chamadas (a técnica se chama injeção de falhas, e há ferramentas para isso, como o Toxiproxy), e uma ferramenta de teste de carga reproduz o volume de campanha. É o equivalente real do nosso simulador. Continua sendo hipótese sobre a rede, mas o código que roda é o de produção, com serialização, <em>pool</em> de conexões e sistema operacional, e por isso encontra defeitos que o simulador não encontra.</p>
+<p><strong>Só depois de extrair, em produção, a fronteira real pode ser medida.</strong> Cada número do ensaio tem um equivalente a instrumentar:</p>
+<table>
+<thead>
+<tr>
+<th>O que o ensaio supõe</th>
+<th>Como se mediria em produção</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>latência de 20 ms (mediana) e 400 ms (p99)</td>
+<td>histograma da duração de cada chamada de <code>compra</code> a <code>pagamentos</code>, lido em percentis, não em média</td>
+</tr>
+<tr>
+<td>2% de falha transitória</td>
+<td>contagem de <em>timeouts</em> por destino dividida pelo total de chamadas, por janela de tempo</td>
+</tr>
+<tr>
+<td>repetição</td>
+<td>fechamentos que precisaram de mais de uma tentativa, e quantas chaves repetidas <code>pagamentos</code> recebeu</td>
+</tr>
+<tr>
+<td>50% das falhas perdem a resposta</td>
+<td>cruzar o registro de <code>compra</code> ("estourei o tempo na chamada X") com o de <code>pagamentos</code> ("executei a chamada X")</td>
+</tr>
+<tr>
+<td>cobrança duplicada</td>
+<td><strong>conciliação</strong>: comparar o extrato do provedor com os pedidos emitidos e contar cobranças sem par</td>
+</tr>
+</tbody>
+</table>
+<p>Duas linhas dessa tabela merecem atenção. A parcela de respostas perdidas é a medida mais difícil: sem um identificador comum nos dois lados, não há como saber, para cada <em>timeout</em>, se o servidor chegou a executar. A chave de idempotência já serve a esse papel, e a Aula 21 trata disso como correlação. E a cobrança duplicada não aparece em nenhum relatório de latência: só a conciliação a enxerga, e é por isso que o cliente costuma ser o primeiro a avisar.</p>
+<p>Daí a razão de o ensaio vir antes da extração. Ele não substitui a medição. Ele diz o que medir e quais defesas desenhar antes que a primeira cobrança duplicada custe dinheiro a um cliente de verdade. E o ADR desta aula, mais abaixo, é escrito para que a medição possa derrubá-lo.</p>
+<h3 id="o-que-o-estudo-encontra">O que o estudo encontra<a class="headerlink" href="#o-que-o-estudo-encontra" title="Permanent link">&para;</a></h3>
+<p>Os 2000 fechamentos simulados foram resumidos de duas maneiras. A primeira é a que uma equipe costuma acompanhar: o tempo do fechamento, lido em mediana e em p95, e comparado com a meta combinada com o negócio (p95 em até 2 s).</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mediana</td>
+<td>21 ms</td>
+</tr>
+<tr>
+<td>Percentil 95</td>
+<td>214 ms</td>
+</tr>
+<tr>
+<td>Meta do fechamento (percentil 95)</td>
+<td>2 s</td>
+</tr>
+</tbody>
+</table>
+<p>O p95 simulado é 214 ms, contra uma meta de 2000 ms: a meta é cumprida com folga, e a razão é <span class="arithmatex">\(2000 / 214 \approx 9{,}3\)</span>, quase dez vezes. Quem olhasse só esse indicador concluiria que a extração é barata. Acontece que o p95 só diz algo sobre os 95% de fechamentos mais rápidos. A segunda maneira olha para o resto:</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fechamentos que esperaram um <em>timeout</em> inteiro (1 s ou mais)</td>
+<td>39 (1,95%)</td>
+</tr>
+<tr>
+<td>Percentil 99</td>
+<td>1021 ms</td>
+</tr>
+<tr>
+<td>Clientes cobrados duas vezes</td>
+<td>22 (1,1%)</td>
+</tr>
+<tr>
+<td>Fechamentos terminados em "não sei se cobrou"</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>Os 39 fechamentos da primeira linha ficam acima do percentil 98, e por isso o p95 não os alcança. A terceira linha é um erro que não existia no checkpoint anterior: em <code>06-microkernel</code>, a cobrança acontecia uma vez ou não acontecia. As falácias 1 e 2 aparecem aqui com números: a rede perde mensagens, e a perda produz tanto espera quanto cobrança em dobro.</p>
+<h3 id="o-que-o-estudo-ensina-e-o-que-apenas-supoe">O que o estudo ensina e o que apenas supõe<a class="headerlink" href="#o-que-o-estudo-ensina-e-o-que-apenas-supoe" title="Permanent link">&para;</a></h3>
+<p>Dois tipos de resultado saem de uma simulação assim, e é importante não os misturar.</p>
+<p>O primeiro tipo é consequência do <strong>desenho</strong> do código e vale quase independentemente dos números. Com repetição e sem chave de idempotência, existe um caminho em que o cliente é cobrado duas vezes. Esse caminho existiria com 2% de falha e existiria com 0,1%; só a frequência muda. Aprendemos algo verdadeiro sobre o código, e o teste que o reproduz (mais adiante) não depende de sorteio nenhum.</p>
+<p>O segundo tipo é consequência dos <strong>parâmetros</strong>: 1,1% de cobranças duplicadas, 39 fechamentos na cauda, p95 de 214 ms. Esses números valem tanto quanto as hipóteses que os produziram. Afirmar que "o Orion cobraria 1% dos clientes em dobro" seria dizer o que não sabemos. O que podemos dizer é: se a rede se comportar como supomos, o desenho atual produz cerca de 1%.</p>
+<h2 id="defesa-repetir-com-seguranca">Defesa: repetir com segurança<a class="headerlink" href="#defesa-repetir-com-seguranca" title="Permanent link">&para;</a></h2>
+<p>O estudo mostrou o problema da falácia 1: quando a resposta não chega, o chamador não sabe se deve repetir. As duas subseções a seguir tratam do que fazer com isso e de como declarar o desfecho "não sei" no código sem mudar a assinatura da operação.</p>
+<h3 id="repetir-so-e-seguro-quando-a-operacao-aguenta-ser-repetida">Repetir só é seguro quando a operação aguenta ser repetida<a class="headerlink" href="#repetir-so-e-seguro-quando-a-operacao-aguenta-ser-repetida" title="Permanent link">&para;</a></h3>
+<p>A reação comum a um <em>timeout</em> é tentar de novo. Para uma consulta ao <code>Catalogo</code>, funciona: perguntar duas vezes o preço de um produto devolve a mesma resposta e não muda nada. Uma operação assim é <strong>idempotente</strong>: executá-la uma vez ou várias produz o mesmo estado.</p>
+<p>Cobrar um cartão não é. Se a primeira tentativa ocorreu e só a resposta se perdeu, a repetição cobra de novo. Em campanha, isso acontece em cerca de 1% dos fechamentos, que é a metade (as perdas na volta) dos 2% de falha:</p>
+<div class="arithmatex">\[P_{\text{duplicada}} \approx 0{,}02 \times 0{,}5 = 0{,}01\]</div>
+<p>onde <span class="arithmatex">\(0{,}02\)</span> é a taxa de falha por chamada e <span class="arithmatex">\(0{,}5\)</span> é a parcela das falhas em que o pedido chega e a resposta se perde. Lendo: de cada cem fechamentos, dois falham, e em um deles o cliente já tinha sido cobrado quando <code>compra</code> repete. O ensaio mediu 22 em 2000, ou seja, 1,1%. A diferença para 1% vem das respostas lentas demais, que também executam o servidor e perdem a resposta.</p>
+<p>A saída conhecida é tornar a operação idempotente por construção, com uma <strong>chave de idempotência</strong>: um identificador gerado por quem decide cobrar, uma vez por intenção, e enviado em todas as tentativas. O lado que cobra guarda as chaves que já viu e, diante de uma repetida, devolve o resultado anterior sem cobrar de novo. A chave não elimina a ambiguidade. Ela torna a repetição segura, e é isso que se pede dela.</p>
+<p>Duas propriedades precisam valer, e as duas custam:</p>
+<ul>
+<li>a chave nasce <strong>antes</strong> da primeira tentativa e é gerada <strong>por quem decide</strong>, não por quem transporta. Uma chave nova a cada tentativa não protege de nada;</li>
+<li>o lado que cobra passa a ter estado. Uma tabela de chaves vistas cresce, precisa expirar, e é um novo ponto de falha.</li>
+</ul>
+<h3 id="a-assinatura-que-continua-igual">A assinatura que continua igual<a class="headerlink" href="#a-assinatura-que-continua-igual" title="Permanent link">&para;</a></h3>
+<p><code>ClientePagamentos</code> satisfaz o <code>Gateway</code> do <code>05-modular</code>. <code>ServicoCheckout</code> não foi alterado para falar com ele, e esse é o ganho de ter a fronteira como <code>Protocol</code>. É também o risco: <code>cobrar(pedido) -&gt; ResultadoCobranca</code> tem a mesma cara de antes e esconde o terceiro desfecho.</p>
+<p>Há duas formas de declará-lo. Uma é acrescentar <code>INDETERMINADA</code> ao enum <code>ResultadoCobranca</code>; a outra é levantar uma exceção própria, <code>CobrancaIndeterminada</code>. Escolhemos a exceção por um motivo de significado: o enum descreve o que o provedor respondeu, e "indeterminada" é justamente a ausência de resposta. Há também um motivo de custo. Com um valor no enum, <code>deve_tentar_outro_provedor</code> teria de decidir se ele conta, e a resposta errada sai cara: o provedor de contingência, acionado depois de um <em>timeout</em>, cobraria o cliente de novo num provedor que nunca viu a chave. Com a exceção, a chamada à contingência é pulada, porque o fluxo sai antes dela.</p>
+<p>A escolha tem preço. Python não tem exceção verificada, então nada obriga um novo consumidor a tratar <code>CobrancaIndeterminada</code>. Quem chamar <code>Gateway.cobrar</code> e esquecer o <code>except</code> deixa a exceção subir até o topo do fechamento. Com o valor no enum, o esquecimento seria mais silencioso: caía em "não aprovada" e seguia como recusa, o pior tratamento para um cliente que possivelmente foi cobrado. Cada forma falha de um jeito, a exceção alto e o enum quieto, e escolhemos falhar alto. Um time cujos consumidores já usam <code>match</code> exaustivo poderia escolher o enum, e teria razão.</p>
+<h2 id="decisao-sobre-o-orion-pagamentos-atras-da-rede">Decisão sobre o Orion: Pagamentos atrás da rede<a class="headerlink" href="#decisao-sobre-o-orion-pagamentos-atras-da-rede" title="Permanent link">&para;</a></h2>
+<h3 id="quantas-arestas-cruzam-a-rede">Quantas arestas cruzam a rede<a class="headerlink" href="#quantas-arestas-cruzam-a-rede" title="Permanent link">&para;</a></h3>
+<p>Extrair <code>Pagamentos</code> corta exatamente as arestas que entram e saem dele, em número <span class="arithmatex">\(C_a + C_e = 1 + 1 = 2\)</span>, valores que o Módulo 1 mediu para <code>Pagamentos</code>:</p>
+<pre class="mermaid"><code>flowchart LR
+    Checkout -.-&gt;|rede| Pagamentos
+    Checkout --&gt; Pedidos
+    Pedidos --&gt; Notificacoes
+    Pagamentos -.-&gt;|rede| Notificacoes</code></pre>
+<p>Leitura das setas: <code>A --&gt; B</code> significa que A depende de B. A linha tracejada é a dependência que passa a atravessar a rede.</p>
+<p>O diagrama responde a uma pergunta de contagem: das 17 arestas do grafo, quantas mudam de natureza? Duas, e as outras 15 continuam sendo chamadas no mesmo processo (<span class="arithmatex">\(17 - 2 = 15\)</span>).</p>
+<p>Ele omite as outras 13 arestas e os demais componentes. Também não mostra que <code>Pagamentos --&gt; Notificacoes</code> pode sair do caminho crítico, enquanto <code>Checkout --&gt; Pagamentos</code> não pode: a cobrança precisa terminar antes de o pedido ser emitido. No Mini-Orion a conta é menor, porque <code>pagamentos</code> e <code>notificacoes</code> não se conhecem (contrato <code>independence</code>) e só a aresta <code>compra --&gt; pagamentos.api</code> atravessa a rede.</p>
+<h3 id="tres-politicas-de-repeticao">Três políticas de repetição<a class="headerlink" href="#tres-politicas-de-repeticao" title="Permanent link">&para;</a></h3>
+<p>Os mesmos 2000 fechamentos de campanha, com a mesma semente, sob três políticas:</p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Não repetir (1 tentativa)</td>
+<td>pior fechamento em 1 s; nenhuma cobrança duplicada</td>
+<td>41 fechamentos sem resposta (2,05%), 24 deles com o cliente já cobrado e sem pedido</td>
+<td>quando "cobrado sem pedido" custa mais ao negócio que um segundo de espera</td>
+</tr>
+<tr>
+<td>Repetir sem chave (2 tentativas)</td>
+<td>só 2 fechamentos sem resposta</td>
+<td>22 clientes cobrados em dobro (1,1%); pior fechamento em 2 s</td>
+<td>quando cobrar duas vezes é inaceitável, o que vale para cobrança de cartão</td>
+</tr>
+<tr>
+<td>Repetir com chave (2 tentativas)</td>
+<td>2 sem resposta, nenhuma duplicação</td>
+<td><code>pagamentos</code> guarda estado; <code>compra</code> gera a chave; pior fechamento em 2 s</td>
+<td>quando o lado que cobra não pode guardar estado, ou quando o chamador não controla a chave</td>
+</tr>
+</tbody>
+</table>
+<p>A segunda linha parece a melhor se olharmos só a coluna "o que resolve", e é a pior. Sem os 22 clientes cobrados em dobro, o relatório de erros mostraria dois fechamentos sem resposta, e a duplicação só apareceria na reclamação do cliente.</p>
+<p>Uma variante testada: com três tentativas e chave, o ensaio fecha com 1 fechamento sem resposta, e o pior caso vai a 3,00 s. Isso consome todo o <em>timeout</em> de 3 s do fechamento. A terceira tentativa compra pouco e tira a folga.</p>
+<h3 id="adr-cobranca-remota-com-repeticao-unica-e-chave-de-idempotencia">📐 ADR — Cobrança remota com repetição única e chave de idempotência<a class="headerlink" href="#adr-cobranca-remota-com-repeticao-unica-e-chave-de-idempotencia" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — Cobrança remota com repetição única e chave de idempotência</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceito para o <code>07-remoto</code>. Vale para a rede simulada; reabre com medição real.</td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td><code>Pagamentos</code> atrás de rede, em ensaio de campanha com 2000 fechamentos: sem repetição, 41 fechamentos sem resposta, 24 deles com cliente cobrado e sem pedido; repetindo sem chave, 22 cobranças duplicadas.</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td><code>ClientePagamentos</code> repete a cobrança uma vez (2 tentativas, 1 s cada). <code>compra</code> gera uma <code>ChaveIdempotencia</code> por fechamento, antes da primeira tentativa, e <code>pagamentos</code> guarda as chaves vistas. Esgotadas as tentativas, <code>fechar_pedido</code> devolve <code>cobranca_indeterminada</code>: não devolve <code>recusada</code> e não aciona o provedor de contingência.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Não repetir: simples, mas deixa 2,05% dos fechamentos sem resposta e 1,2% com o cliente cobrado sem pedido. (b) Repetir sem chave: pouco código, e 1,1% de clientes cobrados em dobro. &copy; Três tentativas com chave: reduz os sem resposta a 1 em 2000, ao custo de consumir os 3 s do <em>timeout</em> total.</td>
+</tr>
+<tr>
+<td><strong>Consequências positivas</strong></td>
+<td>Nenhuma cobrança duplicada nos 2000 fechamentos. Os fechamentos sem resposta caem de 41 para 2.</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td><code>pagamentos</code> passa a guardar estado: a tabela de chaves cresce e precisa de prazo de expiração, que o Mini-Orion não implementa. A responsabilidade pela chave é de <code>compra</code>: um chamador que a esqueça reintroduz a duplicação sem erro nenhum. Os 2 fechamentos sem resposta continuam, com cliente possivelmente cobrado e sem pedido, e ficam sem tratamento até a Aula 20. O pior fechamento passa de 1 s para 2 s.</td>
+</tr>
+<tr>
+<td><strong>Reversão</strong></td>
+<td>Barata enquanto só <code>compra</code> consumir <code>pagamentos</code>: tirar a chave devolve a duplicação, e evitá-la exigiria desligar também a repetição, voltando à primeira linha da tabela. Cara depois que um segundo consumidor depender do comportamento idempotente.</td>
+</tr>
+<tr>
+<td><strong>Condição de falseamento</strong></td>
+<td>Este ADR estaria errado se, com os parâmetros reais de campanha, houvesse cobrança duplicada mesmo com a chave (a chave não chega, ou expirou cedo), ou se os fechamentos sem resposta não ficassem pelo menos dez vezes abaixo dos da política sem repetição.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="na-pratica-python">Na prática: Python<a class="headerlink" href="#na-pratica-python" title="Permanent link">&para;</a></h3>
+<p>O código do Mini-Orion está em um repositório próprio, <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura-code">https://github.com/eduardo-da-silva/fundamentos-arquitetura-code</a>, com um checkpoint por pasta na raiz. O checkpoint <code>07-remoto/</code> parte de <code>06-microkernel/</code>. Os 17 testes herdados seguem verdes, e o <code>setup.cfg</code> ganha um contrato. O transporte simulado é o coração do que acontece com <code>compra</code>:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/mini_orion/rede/_simulada.py (recorte)</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">chamar</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">destino</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">operacao</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">carga</span><span class="p">:</span> <span class="n">Carga</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Carga</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="n">tratador</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tratadores</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">destino</span><span class="p">,</span> <span class="n">operacao</span><span class="p">))</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="k">if</span> <span class="n">tratador</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>            <span class="k">raise</span> <span class="n">DestinoDesconhecido</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">destino</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">operacao</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">chamadas</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="n">falha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proximo_desfecho</span><span class="p">()</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="n">latencia</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sortear_latencia</span><span class="p">()</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="k">if</span> <span class="n">falha</span> <span class="ow">is</span> <span class="n">Falha</span><span class="o">.</span><span class="n">PERDA_NA_IDA</span><span class="p">:</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_esgotar</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="hll">        <span class="n">resposta</span> <span class="o">=</span> <span class="n">tratador</span><span class="p">(</span><span class="n">carga</span><span class="p">)</span>  <span class="c1"># o servidor fez o trabalho</span>
+</span></span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="hll">        <span class="k">if</span> <span class="n">falha</span> <span class="ow">is</span> <span class="n">Falha</span><span class="o">.</span><span class="n">PERDA_NA_VOLTA</span> <span class="ow">or</span> <span class="n">latencia</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+</span></span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_esgotar</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_relogio</span><span class="o">.</span><span class="n">avancar</span><span class="p">(</span><span class="n">latencia</span><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="k">return</span> <span class="n">resposta</span>
+</span></code></pre></div>
+<p>Na perda na ida, o tratador nunca roda. Na perda na volta, ele roda e o chamador só vê o <em>timeout</em>. Tudo o que está entre <code>tratador(carga)</code> e <code>_esgotar</code> é a diferença entre os dois cenários do diagrama, e ela é invisível do lado de fora. O relógio é injetado e só avança quando alguém o faz avançar: nenhum teste dorme e a semente fixa torna cada rodada reproduzível.</p>
+<p>O cliente transforma o <em>timeout</em> em repetição e, esgotada, em <code>CobrancaIndeterminada</code>:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/mini_orion/pagamentos/cliente.py (recorte)</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cobrar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pedido</span><span class="p">:</span> <span class="n">PedidoCobranca</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultadoCobranca</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        <span class="n">carga</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_escrever</span><span class="p">(</span><span class="n">pedido</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tentativas</span><span class="p">):</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                <span class="n">resposta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transporte</span><span class="o">.</span><span class="n">chamar</span><span class="p">(</span><span class="n">DESTINO</span><span class="p">,</span> <span class="s2">"cobrar"</span><span class="p">,</span> <span class="n">carga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="hll">            <span class="k">except</span> <span class="n">TimeoutDeRede</span><span class="p">:</span>
+</span></span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="hll">                <span class="k">continue</span>  <span class="c1"># repetir e seguro? Depende de a cobranca ser idempotente.</span>
+</span></span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>            <span class="k">return</span> <span class="n">ResultadoCobranca</span><span class="p">(</span><span class="n">resposta</span><span class="p">[</span><span class="s2">"resultado"</span><span class="p">])</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="hll">        <span class="k">raise</span> <span class="n">CobrancaIndeterminada</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tentativas</span><span class="si">}</span><span class="s2"> tentativas sem resposta"</span><span class="p">)</span>
+</span></span></code></pre></div>
+<p>Do lado de <code>compra</code>, a chave nasce antes da primeira tentativa, e o novo desfecho tem nome próprio:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/mini_orion/compra/api.py (recorte)</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fechar_pedido</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">,</span> <span class="n">cliente</span><span class="p">:</span> <span class="n">Cliente</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>        <span class="c1"># A chave nasce aqui, uma vez por fechamento: toda repeticao da</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="c1"># mesma cobranca, em qualquer camada abaixo, leva a mesma chave.</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="n">cobranca</span> <span class="o">=</span> <span class="n">PedidoCobranca</span><span class="p">(</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="hll">            <span class="n">valor</span><span class="o">=</span><span class="n">carrinho</span><span class="o">.</span><span class="n">total</span><span class="p">,</span> <span class="n">cartao</span><span class="o">=</span><span class="n">cliente</span><span class="o">.</span><span class="n">cartao</span><span class="p">,</span> <span class="n">chave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gerar_chave</span><span class="p">()</span>
+</span></span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        <span class="p">)</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="n">resultado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobrar</span><span class="p">(</span><span class="n">cobranca</span><span class="p">)</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="k">except</span> <span class="n">CobrancaIndeterminada</span><span class="p">:</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>            <span class="c1"># Nao sabemos se cobrou. Nao emitimos, e nao dizemos "recusada".</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="hll">            <span class="k">return</span> <span class="s2">"cobranca_indeterminada"</span>
+</span></span></code></pre></div>
+<p>O "antes" e o "depois" da chave são comparáveis: o mesmo fechamento, a mesma falha forçada (resposta perdida na primeira tentativa e sucesso na segunda), e só a presença da chave muda:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/tests/test_remoto.py (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_repeticao_sem_chave_cobra_duas_vezes</span><span class="p">(</span><span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">,</span> <span class="n">cliente</span><span class="p">:</span> <span class="n">Cliente</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">cenario</span> <span class="o">=</span> <span class="n">montar_remoto</span><span class="p">(</span><span class="n">gerar_chave</span><span class="o">=</span><span class="n">sem_chave</span><span class="p">)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">cenario</span><span class="o">.</span><span class="n">rede</span><span class="o">.</span><span class="n">forcar</span><span class="p">(</span><span class="n">Falha</span><span class="o">.</span><span class="n">PERDA_NA_VOLTA</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">resultado</span> <span class="o">=</span> <span class="n">cenario</span><span class="o">.</span><span class="n">checkout</span><span class="o">.</span><span class="n">fechar_pedido</span><span class="p">(</span><span class="n">carrinho</span><span class="p">,</span> <span class="n">cliente</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="k">assert</span> <span class="n">resultado</span> <span class="o">==</span> <span class="s2">"confirmado"</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cenario</span><span class="o">.</span><span class="n">pagamentos</span><span class="o">.</span><span class="n">cobrancas_aprovadas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># o cliente pagou em dobro</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_repeticao_com_chave_cobra_uma_vez</span><span class="p">(</span><span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">,</span> <span class="n">cliente</span><span class="p">:</span> <span class="n">Cliente</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">cenario</span> <span class="o">=</span> <span class="n">montar_remoto</span><span class="p">()</span>  <span class="c1"># gera a chave por padrao</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="n">cenario</span><span class="o">.</span><span class="n">rede</span><span class="o">.</span><span class="n">forcar</span><span class="p">(</span><span class="n">Falha</span><span class="o">.</span><span class="n">PERDA_NA_VOLTA</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="n">resultado</span> <span class="o">=</span> <span class="n">cenario</span><span class="o">.</span><span class="n">checkout</span><span class="o">.</span><span class="n">fechar_pedido</span><span class="p">(</span><span class="n">carrinho</span><span class="p">,</span> <span class="n">cliente</span><span class="p">)</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="k">assert</span> <span class="n">resultado</span> <span class="o">==</span> <span class="s2">"confirmado"</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cenario</span><span class="o">.</span><span class="n">pagamentos</span><span class="o">.</span><span class="n">cobrancas_aprovadas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span></code></pre></div>
+<p>Nos dois, <code>fechar_pedido</code> devolve <code>confirmado</code>. Nada na resposta de <code>compra</code> distingue o fechamento que cobrou uma vez do que cobrou duas, e a única evidência do erro está do lado de <code>pagamentos</code>. O teste que lê o extrato do provedor é o que enxerga o problema.</p>
+<p>O contrato novo do <code>setup.cfg</code> mantém a rede como infraestrutura, sem conhecer nenhum módulo de domínio:</p>
+<div class="language-ini highlight"><span class="filename">07-remoto/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[importlinter:contract:rede-nao-conhece-dominio]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="na">mini_orion.rede</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="na">mini_orion.pagamentos</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="na">mini_orion.notificacoes</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="na">mini_orion.promocoes</span>
+</span></code></pre></div>
+<p>Para ver o contrato falhar, acrescente <code>import mini_orion.pagamentos.api</code> ao fim de <code>rede/api.py</code> e rode <code>lint-imports</code>: ele aponta a aresta proibida. O sistema continuaria funcionando, e é por isso que o contrato existe.</p>
+<h3 id="reproduzindo-o-ensaio">Reproduzindo o ensaio<a class="headerlink" href="#reproduzindo-o-ensaio" title="Permanent link">&para;</a></h3>
+<p>Tudo o que a aula apresentou como resultado sai de um script do próprio checkpoint. Com Python 3.12 ou superior:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eduardo-da-silva/fundamentos-arquitetura-code.git
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">cd</span><span class="w"> </span>fundamentos-arquitetura-code
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">   </span><span class="c1"># no Windows: .venv\Scripts\activate</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nb">cd</span><span class="w"> </span><span class="m">07</span>-remoto
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>pytest<span class="w">              </span><span class="c1"># 40 testes</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>lint-imports<span class="w">        </span><span class="c1"># 5 contratos</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>python<span class="w"> </span>ensaio.py<span class="w">    </span><span class="c1"># as tabelas desta aula</span>
+</span></code></pre></div>
+<p>A saída do último comando, com os valores desta aula (2000 fechamentos, semente 42):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>== O ensaio: 2000 fechamentos, repetir uma vez, SEM chave ==
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  mediana                             21 ms
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  percentil 95                       214 ms   (meta: 2000 ms)
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  percentil 99                      1021 ms
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  esperaram um timeout inteiro        39      (1,95%)
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  cobrados duas vezes                 22      (1,10%)
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  terminaram em 'nao sei'              2
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>== Tres politicas de repeticao, 2000 fechamentos, semente 42 ==
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  politica                      sem resposta  duplicadas  cobrado s/ pedido    pior
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>  nao repetir (1 tentativa)               41           0                 24   1.00s
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  repetir sem chave (2)                    2          22                  2   2.00s
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>  repetir com chave (2)                    2           0                  2   2.00s
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>  repetir com chave (3)                    1           0                  1   3.00s
+</span></code></pre></div>
+<p>O que vale experimentar a partir daí:</p>
+<ul>
+<li>
+<p><strong>Mudar a rodada.</strong> <code>python ensaio.py --semente 7</code> sorteia outra sequência de falhas, e <code>--fechamentos 10000</code> roda mais fechamentos. O número 22 não é uma constante: é um sorteio. <code>python ensaio.py --varrer</code> repete a política "repetir sem chave" em dez sementes:</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Semente 42 (a da aula)</th>
+<th>Faixa nas sementes 1 a 10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Percentil 95</td>
+<td>214 ms</td>
+<td>195 a 226 ms</td>
+</tr>
+<tr>
+<td>Esperaram um <em>timeout</em> inteiro</td>
+<td>1,95%</td>
+<td>1,80% a 2,50%</td>
+</tr>
+<tr>
+<td>Cobrados em dobro</td>
+<td>1,10%</td>
+<td>0,85% a 1,35%</td>
+</tr>
+</tbody>
+</table>
+<p>A leitura honesta é "cerca de 1%", e é assim que a aula o escreve. Dizer "22 em 2000" como se fosse uma propriedade do sistema seria tratar um sorteio como medida.</p>
+</li>
+<li>
+<p><strong>Mudar as hipóteses.</strong> Em <code>mini_orion/rede/api.py</code>, os parâmetros <code>CAMPANHA</code> e <code>NORMAL</code> são as hipóteses da tabela "O que supomos". Troque <code>CAMPANHA</code> por <code>NORMAL</code> em <code>ensaio.py</code> e observe que a duplicação cai, mas não vai a zero: uma resposta mais lenta que o <em>timeout</em> também executa o servidor, e isso acontece mesmo com a rede saudável.</p>
+</li>
+<li><strong>Ver o desenho, sem sorteio.</strong> Os testes <code>test_repeticao_sem_chave_cobra_duas_vezes</code> e <code>test_repeticao_com_chave_cobra_uma_vez</code>, vistos acima, forçam a falha exata com <code>rede.forcar(...)</code> e dão o mesmo resultado com qualquer parâmetro. São a prova de que a duplicação é consequência do desenho, não da hipótese.</li>
+</ul>
+<p>O arquivo <code>tests/test_ensaio.py</code> fixa os números que esta aula cita. Se o código mudar e os números mudarem, o teste falha, e a aula precisa ser revista junto.</p>
+<h2 id="trabalho-do-aluno">Trabalho do aluno<a class="headerlink" href="#trabalho-do-aluno" title="Permanent link">&para;</a></h2>
+<p>O trabalho das Aulas 16 e 17 é um só: o <a href="../projeto-extrair-ou-nao-extrair/">projeto "Extrair ou não extrair"</a>, individual ou em dupla. A <strong>parte 1</strong> usa o <code>ensaio.py</code> desta aula, para medir o custo da rede num cenário escolhido por você, e a <strong>parte 3</strong> é a leitura de um artigo (dois dos quatro propostos tratam de cauda de latência e de repetição segura). A entrega é antes da Aula 18.</p>
+<h2 id="o-que-ficou-registrado-e-a-pergunta-que-a-aula-17-abre">O que ficou registrado e a pergunta que a Aula 17 abre<a class="headerlink" href="#o-que-ficou-registrado-e-a-pergunta-que-a-aula-17-abre" title="Permanent link">&para;</a></h2>
+<p>Ficou registrado que chamar <code>Pagamentos</code> por rede é uma operação diferente da chamada local, e que a diferença é de desfechos, não só de tempo. Ficou decidido que a cobrança remota repete uma vez, com chave gerada por <code>compra</code>, e que o terceiro desfecho (não saber se cobrou) tem nome próprio no retorno do fechamento, em vez de se passar por recusa. O ADR custa estado em <code>pagamentos</code>, deixa 2 fechamentos de 2000 sem resposta e depende de ninguém esquecer a chave.</p>
+<p>Nada disso responde a quantos serviços o Orion deveria ter para pagar esse custo só onde ele compensa. Tirar apenas <code>Pagamentos</code> e manter o resto num processo é uma resposta. Um serviço por componente, que a diretoria também ouviu, é outra, e cada aresta a mais que atravessa a rede soma sua cauda e sua ambiguidade. A Aula 17 compara as duas formas pelo que cada uma otimiza e pelo que cobra.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 9 — Foundations (as falácias da computação distribuída e o que mudam em uma arquitetura).</li>
+<li>Kleppmann, Martin. <em>Designing Data-Intensive Applications</em>. Cap. 8 — The Trouble with Distributed Systems (falhas parciais, <em>timeouts</em> e relógios).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>KLEPPMANN, Martin. <em>Designing Data-Intensive Applications</em>. O'Reilly, 2017.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Visão geral do módulo">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Visão geral do módulo
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula17-service-based-e-microsservicos/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 17 — Do service-based aos microsserviços">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 17 — Do service-based aos microsserviços
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2564 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo1/aula07-metricas-governanca/">
+      
+      
+      
+        <link rel="prev" href="../aula06-connascencia/">
+      
+      
+        <link rel="next" href="../aula08-oficina-diagnostico/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 7 — Métricas e governança - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 7 — Métricas e governança
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-da-aula" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo da aula
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#competencias-desenvolvidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Competências desenvolvidas
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-empate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O empate
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#desenvolvimento-conceitual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Desenvolvimento conceitual
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Desenvolvimento conceitual">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antes-de-medir-para-que-lado-aponta-a-seta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Antes de medir: para que lado aponta a seta?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fan-in-e-fan-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fan-in e Fan-out
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstractness-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Abstractness (A)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instability-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Instability (I)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-from-main-sequence-d" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Distance from Main Sequence (D)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medindo-o-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Medindo o Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Medindo o Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-grafo-de-onde-tudo-sai" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O grafo de onde tudo sai
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculando" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Calculando
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-tabela-do-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A tabela do Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-plano-a-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O plano A × I
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O plano A × I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-caso-que-desmonta-a-metrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O caso que desmonta a métrica
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medindo-codigo-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Medindo código de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Resumo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principais-conceitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Principais conceitos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-da-aula" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo da aula
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#competencias-desenvolvidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Competências desenvolvidas
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-empate" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O empate
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#desenvolvimento-conceitual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Desenvolvimento conceitual
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Desenvolvimento conceitual">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#antes-de-medir-para-que-lado-aponta-a-seta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Antes de medir: para que lado aponta a seta?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fan-in-e-fan-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fan-in e Fan-out
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstractness-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Abstractness (A)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instability-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Instability (I)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distance-from-main-sequence-d" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Distance from Main Sequence (D)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medindo-o-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Medindo o Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Medindo o Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-grafo-de-onde-tudo-sai" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O grafo de onde tudo sai
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculando" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Calculando
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-tabela-do-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A tabela do Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-plano-a-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O plano A × I
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O plano A × I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-caso-que-desmonta-a-metrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O caso que desmonta a métrica
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medindo-codigo-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Medindo código de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Resumo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principais-conceitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Principais conceitos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 1 — Fundamentos Arquiteturais
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo1/aula07-metricas-governanca.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-7-metricas-e-governanca-arquitetural">Aula 7 — Métricas e governança arquitetural<a class="headerlink" href="#aula-7-metricas-e-governanca-arquitetural" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-da-aula">Objetivo da aula<a class="headerlink" href="#objetivo-da-aula" title="Permanent link">&para;</a></h2>
+<p>Medir a estrutura do Orion, interpretar o que os números dizem e o que eles não conseguem dizer, e transformar uma decisão arquitetural em verificação automatizada.</p>
+<h2 id="competencias-desenvolvidas">Competências desenvolvidas<a class="headerlink" href="#competencias-desenvolvidas" title="Permanent link">&para;</a></h2>
+<ul>
+<li>calcular <span class="arithmatex">\(C_a\)</span>, <span class="arithmatex">\(C_e\)</span>, <span class="arithmatex">\(A\)</span>, <span class="arithmatex">\(I\)</span> e <span class="arithmatex">\(D\)</span> a partir de um grafo de dependências;</li>
+<li>posicionar componentes no plano <span class="arithmatex">\(A \times I\)</span> e distinguir Zone of Pain de Zone of Uselessness;</li>
+<li>identificar situações em que a métrica não aponta o problema real;</li>
+<li>escrever um teste de arquitetura que impede a regressão de uma decisão.</li>
+</ul>
+<h2 id="o-empate">O empate<a class="headerlink" href="#o-empate" title="Permanent link">&para;</a></h2>
+<p>Duas propostas de refatoração disputam o mesmo trimestre no Orion.</p>
+<p>Uma equipe quer atacar o <code>Catalogo</code>: alegam que qualquer mudança lá respinga em meio sistema. A outra quer atacar o <code>Checkout</code>: alegam que é ele que cai nas campanhas e derruba a receita.</p>
+<p>As duas alegações são verdadeiras. Os dois grupos são competentes. A reunião já dura três semanas e o argumento de cada lado é a experiência de quem trabalha naquele componente — o que significa que quem falar mais alto ganha.</p>
+<p>É aqui que a medição entra. Não para dar a resposta, mas para tirar a discussão do campo da preferência e colocá-la em cima de algo que as duas equipes possam olhar juntas.</p>
+<h2 id="desenvolvimento-conceitual">Desenvolvimento conceitual<a class="headerlink" href="#desenvolvimento-conceitual" title="Permanent link">&para;</a></h2>
+<h3 id="antes-de-medir-para-que-lado-aponta-a-seta">Antes de medir: para que lado aponta a seta?<a class="headerlink" href="#antes-de-medir-para-que-lado-aponta-a-seta" title="Permanent link">&para;</a></h3>
+<p>Toda métrica desta aula depende de uma única convenção, e ela precisa estar clara antes do primeiro cálculo.</p>
+<div class="admonition important">
+<p class="admonition-title">Convenção de leitura</p>
+<p>Em todo diagrama de dependência desta disciplina, <code>A --&gt; B</code> significa <strong>A depende de B</strong>.</p>
+<p>A seta aponta na direção do conhecimento: quem tem a seta saindo é quem precisa conhecer o outro para funcionar. <code>Checkout --&gt; Pagamentos</code> porque o checkout não fecha compra sem cobrar.</p>
+</div>
+<p>Repare que dependência e fluxo de dados frequentemente apontam para lados opostos. <code>Checkout</code> depende de <code>Pagamentos</code>, mas a resposta da cobrança viaja de <code>Pagamentos</code> para <code>Checkout</code>. Se você desenhar o fluxo e contar como se fosse dependência, todos os números saem invertidos — e a análise conclui exatamente o contrário do que deveria.</p>
+<h3 id="fan-in-e-fan-out">Fan-in e Fan-out<a class="headerlink" href="#fan-in-e-fan-out" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fan-in</strong> (<span class="arithmatex">\(C_a\)</span>, acoplamento aferente): quantos componentes dependem deste. No diagrama, são as setas que <strong>chegam</strong>.</li>
+<li><strong>Fan-out</strong> (<span class="arithmatex">\(C_e\)</span>, acoplamento eferente): de quantos componentes este depende. São as setas que <strong>saem</strong>.</li>
+</ul>
+<p>Significado arquitetural:</p>
+<ul>
+<li>Fan-in alto indica componente central: muita gente quebra se ele mudar. Isso pede estabilidade, não necessariamente correção.</li>
+<li>Fan-out alto indica componente exposto: ele quebra quando qualquer um dos seus quebra.</li>
+</ul>
+<p>Um componente pode ter os dois altos. É o caso mais desconfortável, e costuma ser o que aparece nos relatórios de incidente.</p>
+<h3 id="abstractness-a">Abstractness (A)<a class="headerlink" href="#abstractness-a" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[
+A = \dfrac{N_a}{N_c}
+\]</div>
+<p>Ou seja: a fração dos elementos do componente que são contrato, e não implementação. Zero significa que tudo é concreto; um significa que o componente inteiro é feito de contratos.</p>
+<ul>
+<li><span class="arithmatex">\(N_a\)</span>: número de elementos abstratos;</li>
+<li><span class="arithmatex">\(N_c\)</span>: total de elementos do componente.</li>
+</ul>
+<p>Significado arquitetural: quanto mais abstrato, maior o potencial de extensão e substituição. Mas abstração sem consumidor é custo sem retorno — voltaremos a isso.</p>
+<div class="admonition warning">
+<p class="admonition-title">O que conta como abstrato em Python?</p>
+<p>A fórmula parece objetiva, mas <code>$N_a$</code> depende de uma decisão que a fórmula não toma. Em Java, "interface" é uma palavra da linguagem. Python não tem interface — tem <code>Protocol</code>, <code>ABC</code>, <code>Enum</code>, <code>dataclass</code>, e cabe a nós decidir o que é contrato.</p>
+<p>A convenção desta disciplina:</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Conta como abstrato?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>class X(Protocol)</code></td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>class X(ABC)</code> com ao menos um <code>@abstractmethod</code></td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code>class X(ABC)</code> sem nenhum <code>@abstractmethod</code></td>
+<td>não</td>
+</tr>
+<tr>
+<td>Classe base concreta, ainda que herdada</td>
+<td>não</td>
+</tr>
+<tr>
+<td><code>Enum</code>, <code>@dataclass</code>, <code>TypedDict</code></td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p><code>ABC</code> sem método abstrato é concreta na prática: é convenção do autor, não contrato imposto pela linguagem. A métrica mede contrato.</p>
+<p>Guarde o princípio, que vale além desta aula: <strong>toda métrica embute uma decisão de contagem.</strong> Duas equipes medindo o mesmo sistema com convenções diferentes chegam a números diferentes, e nenhuma está errada. Saber qual convenção foi usada faz parte de saber ler a métrica — e é a primeira pergunta a fazer quando alguém apresenta um número.</p>
+</div>
+<h3 id="instability-i">Instability (I)<a class="headerlink" href="#instability-i" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[
+I = \dfrac{C_e}{C_a + C_e}
+\]</div>
+<p>Ou seja: a fração das dependências do componente que apontam para fora dele. Se ele só depende dos outros e ninguém depende dele, o valor é 1.</p>
+<ul>
+<li><span class="arithmatex">\(C_a\)</span> (acoplamento aferente): dependências de entrada, o Fan-in;</li>
+<li>
+<p><span class="arithmatex">\(C_e\)</span> (acoplamento eferente): dependências de saída, o Fan-out.</p>
+</li>
+<li>
+<p><span class="arithmatex">\(I \approx 0\)</span>: componente <strong>estável</strong> — muitos dependem dele, ele depende de poucos. Estável aqui significa "difícil de mudar sem quebrar terceiros", não "bem feito".</p>
+</li>
+<li><span class="arithmatex">\(I \approx 1\)</span>: componente <strong>instável</strong> — depende de muitos, poucos dependem dele. Pode mudar à vontade.</li>
+</ul>
+<p>Instabilidade alta não é defeito. Um componente de borda <strong>deve</strong> ser instável: é ele quem absorve a variação para que o núcleo não precise mudar.</p>
+<h3 id="distance-from-main-sequence-d">Distance from Main Sequence (D)<a class="headerlink" href="#distance-from-main-sequence-d" title="Permanent link">&para;</a></h3>
+<p>A sequência principal é a reta <span class="arithmatex">\(A + I = 1\)</span>: quanto mais estável um componente, mais abstrato ele deveria ser, para que os outros possam depender de contratos em vez de implementações.</p>
+<div class="arithmatex">\[
+D = \left|A + I - 1\right|
+\]</div>
+<p>Ou seja: a distância entre onde o componente está e onde ele deveria estar nesse equilíbrio. Zero é estar exatamente em cima da reta.</p>
+<p>Os dois extremos têm nome:</p>
+<ul>
+<li><strong>Zone of Pain</strong> — abstração baixa, estabilidade alta. Concreto e com muita gente dependendo dele: mudar dói, e não há ponto de extensão.</li>
+<li><strong>Zone of Uselessness</strong> — abstração alta, estabilidade baixa. Cheio de contratos que ninguém consome.</li>
+</ul>
+<div class="admonition danger">
+<p class="admonition-title"><span class="arithmatex">\(D\)</span> sozinho não distingue as duas zonas</p>
+<p>Repare na fórmula: <span class="arithmatex">\(D\)</span> é um valor absoluto. Um componente com <span class="arithmatex">\(A = 0{,}0\)</span> e <span class="arithmatex">\(I = 0{,}0\)</span> e outro com <span class="arithmatex">\(A = 1{,}0\)</span> e <span class="arithmatex">\(I = 1{,}0\)</span> têm <strong>o mesmo <span class="arithmatex">\(D = 1\)</span></strong>, sendo problemas opostos.</p>
+<p>Um está rígido demais; o outro, abstrato à toa. As receitas são contrárias: o primeiro precisa ganhar contratos, o segundo precisa perder abstração ou ganhar consumidores.</p>
+<p>Consequência prática: <strong>uma lista ordenada por <span class="arithmatex">\(D\)</span> diz onde olhar, e nunca o que fazer.</strong> Para saber o que fazer é preciso o par <span class="arithmatex">\((A, I)\)</span> — e é por isso que a visualização desta aula é um plano de dois eixos, e não um ranking.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Nota histórica</p>
+<p>Robert Martin popularizou o uso conjunto de abstração e instabilidade como diagnóstico estrutural em nível de pacote e componente.</p>
+</div>
+<h2 id="medindo-o-orion">Medindo o Orion<a class="headerlink" href="#medindo-o-orion" title="Permanent link">&para;</a></h2>
+<h3 id="o-grafo-de-onde-tudo-sai">O grafo de onde tudo sai<a class="headerlink" href="#o-grafo-de-onde-tudo-sai" title="Permanent link">&para;</a></h3>
+<p>Todas as contas desta aula derivam do grafo de dependências do Orion. Ele é o mesmo que usamos desde a Aula 4, e nada aqui é inventado para o exercício.</p>
+<pre class="mermaid"><code>flowchart LR
+    Portal --&gt; Catalogo
+    Portal --&gt; Checkout
+    Portal --&gt; Pedidos
+    Portal --&gt; Clientes
+    Checkout --&gt; Catalogo
+    Checkout --&gt; Clientes
+    Checkout --&gt; Promocoes
+    Checkout --&gt; Pagamentos
+    Checkout --&gt; Pedidos
+    Promocoes --&gt; Catalogo
+    Pedidos --&gt; Notificacoes
+    Pedidos --&gt; Logistica
+    Pagamentos --&gt; Notificacoes
+    Logistica --&gt; Notificacoes
+    Integracoes --&gt; Catalogo
+    Integracoes --&gt; Pedidos
+    Integracoes --&gt; Notificacoes</code></pre>
+<p>Leitura das setas: <code>A --&gt; B</code> significa que <strong>A depende de B</strong>.</p>
+<p>O que este diagrama <strong>não</strong> mostra: volume de chamadas, criticidade de negócio, e quais dependências são síncronas. Três coisas que vão fazer falta na hora de priorizar — e é por isso que métrica sozinha não decide nada.</p>
+<p>São 17 arestas. Contá-las é a primeira verificação: a soma de todos os <span class="arithmatex">\(C_a\)</span> e a soma de todos os <span class="arithmatex">\(C_e\)</span> precisam dar 17 cada uma. Se não derem, há erro de leitura antes de qualquer conta.</p>
+<h3 id="calculando">Calculando<a class="headerlink" href="#calculando" title="Permanent link">&para;</a></h3>
+<p>Contar setas à mão funciona com dez componentes e erra com cinquenta. Vamos automatizar desde o começo.</p>
+<div class="language-python highlight"><span class="filename">metricas.py</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">DEPENDENCIAS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Checkout"</span><span class="p">),</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Promocoes"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pagamentos"</span><span class="p">),</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="p">(</span><span class="s2">"Promocoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Logistica"</span><span class="p">),</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="p">(</span><span class="s2">"Pagamentos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="p">(</span><span class="s2">"Logistica"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="p">]</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># (abstratos, total) por componente, pela convenção de contagem da disciplina</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="n">ELEMENTOS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="s2">"Portal"</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s2">"Checkout"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">"Catalogo"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="s2">"Clientes"</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"Promocoes"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s2">"Pagamentos"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="s2">"Pedidos"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="s2">"Logistica"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s2">"Notificacoes"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="s2">"Integracoes"</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="p">}</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="nd">@dataclass</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="k">class</span><span class="w"> </span><span class="nc">Metricas</span><span class="p">:</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="n">ca</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    <span class="n">ce</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    <span class="n">abstratos</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    <span class="nd">@property</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">instability</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ca</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ca</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ce</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.0</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>    <span class="nd">@property</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">abstractness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">abstratos</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="k">else</span> <span class="mf">0.0</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    <span class="nd">@property</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abstractness</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">instability</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</span></code></pre></div>
+<p>O cálculo em si é trivial. O trabalho de verdade é decidir o que entra em <code>DEPENDENCIAS</code> e em <code>ELEMENTOS</code> — e essas duas decisões não estão na fórmula.</p>
+<p>O <code>ELEMENTOS</code> acima resume uma contagem já feita. Abrir uma entrada dele mostra a decisão por trás do par de números, e por que duas pessoas competentes chegam a valores diferentes.</p>
+<details class="example">
+<summary>De onde saem os <code>(2, 10)</code> do <code>Checkout</code></summary>
+<p>A convenção da seção anterior, aplicada ao <code>Checkout</code> classe por classe. Vale lembrar o que ela diz: elemento é toda classe do componente, incluindo <code>Enum</code>, <code>@dataclass</code> e <code>Protocol</code>; função de módulo e constante ficam de fora; abstrato é <code>Protocol</code> ou <code>ABC</code> com pelo menos um <code>@abstractmethod</code>.</p>
+<p>O <code>Checkout</code> tem dez classes. Oito são concretas:</p>
+<ul>
+<li><code>ServicoCheckout</code>, que orquestra o fechamento da compra;</li>
+<li><code>SessaoCheckout</code>, a compra em andamento, com seu ciclo de vida;</li>
+<li><code>EstadoCheckout</code>, um <code>Enum</code> — iniciado, aguardando pagamento, confirmado, cancelado;</li>
+<li><code>ResumoValores</code> e <code>SnapshotEndereco</code>, dois <code>@dataclass</code>: os valores da compra e o endereço congelado no momento dela;</li>
+<li><code>ChaveIdempotencia</code>, que impede cobrar duas vezes o mesmo clique;</li>
+<li><code>ValidadorCarrinho</code>, que recusa carrinho inconsistente antes da cobrança;</li>
+<li><code>MontadorPedido</code>, que traduz a sessão no payload que <code>Pedidos</code> emite.</li>
+</ul>
+<p>As outras duas são contratos, e é só o que entra em <span class="arithmatex">\(N_a\)</span>:</p>
+<ul>
+<li><code>PoliticaDeCheckout</code> (<code>Protocol</code>) — as regras que mudam por região e por campanha;</li>
+<li><code>SelecaoDeGateway</code> (<code>Protocol</code>) — qual provedor de pagamento tentar primeiro.</li>
+</ul>
+<p>Daí <span class="arithmatex">\(N_a = 2\)</span>, <span class="arithmatex">\(N_c = 10\)</span> e <span class="arithmatex">\(A = 0{,}20\)</span>. Ficaram de fora <code>calcular_frete_estimado</code> e <code>formatar_recibo</code>: são código do <code>Checkout</code>, mas são funções de módulo, e a convenção conta classes.</p>
+<p>Duas decisões aconteceram antes da divisão:</p>
+<ul>
+<li><strong>O que conta como elemento.</strong> Contar aquelas duas funções levaria <span class="arithmatex">\(N_c\)</span> a 12 e <span class="arithmatex">\(A\)</span> a 0,17. Nenhuma das contagens é errada — são convenções diferentes, e quem lê a métrica precisa saber qual foi usada.</li>
+<li><strong>O que o <code>Checkout</code> contém.</strong> Isso é um modelo, não um fato. O Mini-Orion em <code>code/mini-orion/</code> é um recorte do fluxo de checkout: tem o <code>ServicoCheckout</code> e os contratos que ele consome, e nada além disso. O <code>Checkout</code> do marketplace inteiro — com sessão, idempotência e política por região — é o que a tabela mede. Mudar o modelo muda os dois números.</li>
+</ul>
+<p>No extremo oposto, o <code>Portal</code> tem <code>(0, 6)</code>: seis classes de composição de tela, nenhuma delas <code>Protocol</code> ou <code>ABC</code>. Um componente de borda sem contrato próprio é o esperado, e é o mesmo que a instabilidade <span class="arithmatex">\(I = 1{,}00\)</span> dele vai dizer adiante.</p>
+</details>
+<h3 id="a-tabela-do-orion">A tabela do Orion<a class="headerlink" href="#a-tabela-do-orion" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th><span class="arithmatex">\(C_a\)</span></th>
+<th><span class="arithmatex">\(C_e\)</span></th>
+<th><span class="arithmatex">\(I\)</span></th>
+<th><span class="arithmatex">\(N_a\)</span></th>
+<th><span class="arithmatex">\(N_c\)</span></th>
+<th><span class="arithmatex">\(A\)</span></th>
+<th><span class="arithmatex">\(D\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Portal</code></td>
+<td>0</td>
+<td>4</td>
+<td>1,00</td>
+<td>0</td>
+<td>6</td>
+<td>0,00</td>
+<td><strong>0,00</strong></td>
+</tr>
+<tr>
+<td><code>Checkout</code></td>
+<td>1</td>
+<td>5</td>
+<td>0,83</td>
+<td>2</td>
+<td>10</td>
+<td>0,20</td>
+<td><strong>0,03</strong></td>
+</tr>
+<tr>
+<td><code>Logistica</code></td>
+<td>1</td>
+<td>1</td>
+<td>0,50</td>
+<td>2</td>
+<td>5</td>
+<td>0,40</td>
+<td><strong>0,10</strong></td>
+</tr>
+<tr>
+<td><code>Pagamentos</code></td>
+<td>1</td>
+<td>1</td>
+<td>0,50</td>
+<td>2</td>
+<td>6</td>
+<td>0,33</td>
+<td><strong>0,17</strong></td>
+</tr>
+<tr>
+<td><code>Promocoes</code></td>
+<td>1</td>
+<td>1</td>
+<td>0,50</td>
+<td>1</td>
+<td>7</td>
+<td>0,14</td>
+<td><strong>0,36</strong></td>
+</tr>
+<tr>
+<td><code>Pedidos</code></td>
+<td>3</td>
+<td>2</td>
+<td>0,40</td>
+<td>1</td>
+<td>9</td>
+<td>0,11</td>
+<td><strong>0,49</strong></td>
+</tr>
+<tr>
+<td><code>Notificacoes</code></td>
+<td>4</td>
+<td>0</td>
+<td>0,00</td>
+<td>2</td>
+<td>4</td>
+<td>0,50</td>
+<td><strong>0,50</strong></td>
+</tr>
+<tr>
+<td><code>Integracoes</code></td>
+<td>0</td>
+<td>3</td>
+<td>1,00</td>
+<td>5</td>
+<td>6</td>
+<td>0,83</td>
+<td><strong>0,83</strong></td>
+</tr>
+<tr>
+<td><code>Catalogo</code></td>
+<td>4</td>
+<td>0</td>
+<td>0,00</td>
+<td>1</td>
+<td>10</td>
+<td>0,10</td>
+<td><strong>0,90</strong></td>
+</tr>
+<tr>
+<td><code>Clientes</code></td>
+<td>2</td>
+<td>0</td>
+<td>0,00</td>
+<td>0</td>
+<td>5</td>
+<td>0,00</td>
+<td><strong>1,00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Confira: <span class="arithmatex">\(\sum C_a = 17\)</span> e <span class="arithmatex">\(\sum C_e = 17\)</span>, iguais ao número de arestas.</p>
+<h2 id="o-plano-a-i">O plano A × I<a class="headerlink" href="#o-plano-a-i" title="Permanent link">&para;</a></h2>
+<p>Ordenar por <span class="arithmatex">\(D\)</span> produz o ranking acima. Mas já vimos que <span class="arithmatex">\(D\)</span> não distingue os dois tipos de problema. Este é o gráfico que distingue.</p>
+<p><svg viewBox="0 0 500 400" role="img" aria-label="Plano Abstractness versus Instability dos componentes do Orion" style="max-width:100%;height:auto;color:inherit">
+  <g fill="none" stroke="currentColor" stroke-opacity="0.35">
+    <path d="M70 350 L460 350 M70 350 L70 50"/>
+  </g>
+  <circle cx="70" cy="350" r="62" fill="#e53935" fill-opacity="0.14"/>
+  <circle cx="460" cy="50" r="62" fill="#8e24aa" fill-opacity="0.14"/>
+  <path d="M70 50 L460 350" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="6 4" fill="none"/>
+  <g fill="currentColor" font-size="12" font-family="system-ui,sans-serif">
+    <text x="265" y="386" text-anchor="middle" fill-opacity="0.75">Instability (I) →</text>
+    <text x="24" y="200" text-anchor="middle" fill-opacity="0.75" transform="rotate(-90 24 200)">Abstractness (A) →</text>
+    <text x="70" y="368" text-anchor="middle" fill-opacity="0.6">0</text>
+    <text x="460" y="368" text-anchor="middle" fill-opacity="0.6">1</text>
+    <text x="58" y="354" text-anchor="end" fill-opacity="0.6">0</text>
+    <text x="58" y="54" text-anchor="end" fill-opacity="0.6">1</text>
+    <text x="200" y="172" fill-opacity="0.55" transform="rotate(37.6 200 172)">sequência principal</text>
+    <text x="76" y="330" font-size="11" font-weight="600" fill="#e53935">ZONE OF PAIN</text>
+    <text x="454" y="76" font-size="11" font-weight="600" text-anchor="end" fill="#8e24aa">ZONE OF USELESSNESS</text>
+  </g>
+  <g fill="currentColor">
+    <circle cx="460" cy="350" r="5"/><circle cx="393" cy="290" r="5"/>
+    <circle cx="265" cy="230" r="5"/><circle cx="265" cy="251" r="5"/>
+    <circle cx="265" cy="308" r="5"/><circle cx="226" cy="317" r="5"/>
+    <circle cx="70" cy="200" r="5"/><circle cx="70" cy="320" r="6" fill="#e53935"/>
+    <circle cx="70" cy="350" r="6" fill="#e53935"/><circle cx="460" cy="101" r="6" fill="#8e24aa"/>
+  </g>
+  <g fill="currentColor" font-size="12" font-family="system-ui,sans-serif">
+    <text x="452" y="340" text-anchor="end">Portal</text>
+    <text x="385" y="281" text-anchor="end">Checkout</text>
+    <text x="274" y="226">Logistica</text>
+    <text x="274" y="262">Pagamentos</text>
+    <text x="274" y="312">Promocoes</text>
+    <text x="218" y="333" text-anchor="end">Pedidos</text>
+    <text x="80" y="196">Notificacoes</text>
+    <text x="82" y="316">Catalogo</text>
+    <text x="82" y="346">Clientes</text>
+    <text x="450" y="95" text-anchor="end">Integracoes</text>
+  </g>
+</svg></p>
+<p>A linha tracejada é a sequência principal. Quanto mais longe dela, maior o <span class="arithmatex">\(D\)</span> — mas agora o <strong>lado</strong> importa.</p>
+<p>Compare os dois componentes mais distantes:</p>
+<ul>
+<li><strong><code>Catalogo</code></strong> (<span class="arithmatex">\(A = 0{,}10\)</span>, <span class="arithmatex">\(I = 0{,}00\)</span>, <span class="arithmatex">\(D = 0{,}90\)</span>) está no canto inferior esquerdo. Quatro componentes dependem dele e ele quase não oferece contrato. É a Zone of Pain: qualquer mudança propaga, e não há ponto de extensão para absorvê-la.</li>
+<li><strong><code>Integracoes</code></strong> (<span class="arithmatex">\(A = 0{,}83\)</span>, <span class="arithmatex">\(I = 1{,}00\)</span>, <span class="arithmatex">\(D = 0{,}83\)</span>) está no canto superior direito. Foi construído há um ano para padronizar toda integração com parceiro, é quase inteiro feito de contratos — e <strong>nenhum time adotou</strong>. <code>Pagamentos</code> e <code>Logistica</code> continuaram falando direto com seus provedores. É a Zone of Uselessness: abstração paga e não consumida.</li>
+</ul>
+<p>Os dois têm <span class="arithmatex">\(D\)</span> praticamente igual. As receitas são opostas: <code>Catalogo</code> precisa ganhar contratos, <code>Integracoes</code> precisa perder abstração ou ganhar consumidores. <strong>Num gráfico de barras de <span class="arithmatex">\(D\)</span>, eles seriam vizinhos indistinguíveis.</strong></p>
+<h3 id="o-caso-que-desmonta-a-metrica">O caso que desmonta a métrica<a class="headerlink" href="#o-caso-que-desmonta-a-metrica" title="Permanent link">&para;</a></h3>
+<p>Olhe <code>Checkout</code>: <span class="arithmatex">\(D = 0{,}03\)</span>. Praticamente em cima da sequência principal — o melhor número da tabela depois do <code>Portal</code>.</p>
+<p>E <code>Checkout</code> é o componente que mais causa incidente no Orion.</p>
+<p>Fan-out 5, no caminho crítico da receita, sensível à indisponibilidade de qualquer um dos cinco. Nada disso aparece em <span class="arithmatex">\(D\)</span>, porque <span class="arithmatex">\(D\)</span> não sabe o que é caminho crítico nem o que é receita.</p>
+<div class="admonition important">
+<p class="admonition-title">O que levar desta aula</p>
+<p><strong>Métrica é sintoma, não veredito.</strong> Ela diz onde olhar, com que urgência comparar, e serve para tirar a discussão do campo da preferência pessoal.</p>
+<p>Ela não sabe o que o componente faz para o negócio. Uma tabela de métricas que contradiz o relatório de incidentes não está errada — está incompleta, e o relatório de incidentes é a parte que falta.</p>
+</div>
+<p>Repare também no <code>Portal</code>: <span class="arithmatex">\(I = 1{,}00\)</span>, o mais instável de todos, e <span class="arithmatex">\(D = 0{,}00\)</span>, perfeito. Componente de borda deve ser volátil, e nenhum número aqui é motivo de alarme.</p>
+<h2 id="medindo-codigo-de-verdade">Medindo código de verdade<a class="headerlink" href="#medindo-codigo-de-verdade" title="Permanent link">&para;</a></h2>
+<p>Até aqui os números vieram de um grafo que alguém desenhou. Num sistema real ninguém desenha o grafo: ele é extraído do código, porque o desenho e o código divergem em questão de semanas.</p>
+<p>No Mini-Orion, o grafo sai do próprio <code>import</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pydeps<span class="w"> </span>import-linter
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pydeps<span class="w"> </span>mini_orion<span class="w"> </span>--max-bacon<span class="o">=</span><span class="m">2</span><span class="w"> </span>--cluster
+</span></code></pre></div>
+<p>Mais interessante que medir é <strong>impedir a regressão</strong>. Na Aula 5 tiramos a notificação do caminho crítico do checkout. Nada garante que ela não volte — exceto um teste:</p>
+<div class="language-ini highlight"><span class="filename">setup.cfg</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">[importlinter]</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">root_package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mini_orion</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">[importlinter:contract:checkout-nao-notifica]</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Checkout nao pode depender de Notificacoes</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mini_orion.checkout</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mini_orion.notificacoes</span>
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>lint-imports<span class="w">    </span><span class="c1"># falha se alguem reintroduzir o import</span>
+</span></code></pre></div>
+<p>Isso muda a natureza da decisão arquitetural: ela deixa de ser um acordo verbal que decai com a rotatividade do time e passa a ser uma verificação que roda na CI. É a mesma ideia que o Módulo 4 vai levar adiante sob o nome de <em>fitness function</em>.</p>
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<p>Use a tabela do Orion desta aula. Confira suas respostas antes de seguir.</p>
+<ol>
+<li>
+<p><strong>Calcule.</strong> <code>Catalogo</code> e <code>Notificacoes</code> têm ambos <span class="arithmatex">\(C_e = 0\)</span> e portanto <span class="arithmatex">\(I = 0\)</span>. Por que o <span class="arithmatex">\(D\)</span> deles é tão diferente — 0,90 contra 0,50?</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>Porque <span class="arithmatex">\(I\)</span> é só metade da conta. Os dois são igualmente estáveis, mas <code>Notificacoes</code> tem <span class="arithmatex">\(A = 0{,}50\)</span> (2 de 4 elementos são contrato) e <code>Catalogo</code> tem <span class="arithmatex">\(A = 0{,}10\)</span> (1 de 10).</p>
+<p>Um componente estável precisa ser abstrato na mesma medida, para que os dependentes se apoiem em contratos. <code>Notificacoes</code> cumpre metade disso; <code>Catalogo</code> quase nada. Daí <span class="arithmatex">\(D = |0{,}50 + 0 - 1| = 0{,}50\)</span> contra <span class="arithmatex">\(D = |0{,}10 + 0 - 1| = 0{,}90\)</span>.</p>
+<p>Concretamente: os quatro dependentes do <code>Catalogo</code> estão amarrados à implementação dele.</p>
+</details>
+</li>
+<li>
+<p><strong>Calcule.</strong> Um componente tem <span class="arithmatex">\(C_a = 6\)</span>, <span class="arithmatex">\(C_e = 2\)</span>, <span class="arithmatex">\(N_a = 2\)</span>, <span class="arithmatex">\(N_c = 10\)</span>. Encontre <span class="arithmatex">\(A\)</span>, <span class="arithmatex">\(I\)</span> e <span class="arithmatex">\(D\)</span> e diga em que região do plano ele cai.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><span class="arithmatex">\(I = \frac{2}{6+2} = 0{,}25\)</span> — bastante estável. <span class="arithmatex">\(A = \frac{2}{10} = 0{,}20\)</span> — pouco abstrato. <span class="arithmatex">\(D = |0{,}20 + 0{,}25 - 1| = 0{,}55\)</span>.</p>
+<p>No plano, canto inferior esquerdo: estável e concreto. Caminhando para a Zone of Pain, ainda que sem o extremo do <code>Clientes</code>. Seis componentes dependem dele e ele oferece dois pontos de extensão.</p>
+</details>
+</li>
+<li>
+<p><strong>Analise.</strong> Recalcule <span class="arithmatex">\(I\)</span> do <code>Checkout</code> supondo que a dependência com <code>Promocoes</code> seja eliminada. O que acontece com <span class="arithmatex">\(D\)</span>? Isso torna o <code>Checkout</code> melhor?</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><span class="arithmatex">\(C_e\)</span> cai de 5 para 4, então <span class="arithmatex">\(I = \frac{4}{1+4} = 0{,}80\)</span> e <span class="arithmatex">\(D = |0{,}20 + 0{,}80 - 1| = 0{,}00\)</span>. O <span class="arithmatex">\(D\)</span> melhora — de 0,03 para 0,00.</p>
+<p>E o ganho é irrelevante. O <code>Checkout</code> já estava praticamente sobre a sequência principal; a métrica não tinha o que apontar nem antes nem depois. O ganho real de remover a dependência, se houver, está em outro lugar: uma indisponibilidade a menos no caminho crítico da compra.</p>
+<p>A lição: otimizar o número é fácil e frequentemente inútil. A pergunta certa nunca é "como melhoro o <span class="arithmatex">\(D\)</span>".</p>
+</details>
+</li>
+<li>
+<p><strong>Julgue.</strong> Você tem orçamento para atacar <strong>um</strong> componente neste trimestre. <code>Catalogo</code> (<span class="arithmatex">\(D = 0{,}90\)</span>), <code>Clientes</code> (<span class="arithmatex">\(D = 1{,}00\)</span>) ou <code>Checkout</code> (<span class="arithmatex">\(D = 0{,}03\)</span>)?</p>
+<p>Não há resposta única. Uma boa resposta nomeia o critério de escolha — risco de propagação, frequência de mudança, impacto em receita — e diz o que está abrindo mão ao não escolher os outros dois. Uma resposta que apenas pega o maior <span class="arithmatex">\(D\)</span> não usou nada desta aula.</p>
+</li>
+</ol>
+<h2 id="atividade-em-grupo">Atividade em grupo<a class="headerlink" href="#atividade-em-grupo" title="Permanent link">&para;</a></h2>
+<p>Sobre o recorte do seu Orion Evolution Lab:</p>
+<ol>
+<li>Extraia o grafo de dependências e confira que <span class="arithmatex">\(\sum C_a = \sum C_e\)</span> = número de arestas.</li>
+<li>Monte a tabela completa: <span class="arithmatex">\(C_a\)</span>, <span class="arithmatex">\(C_e\)</span>, <span class="arithmatex">\(I\)</span>, <span class="arithmatex">\(N_a\)</span>, <span class="arithmatex">\(N_c\)</span>, <span class="arithmatex">\(A\)</span>, <span class="arithmatex">\(D\)</span>. Declare a convenção de contagem usada.</li>
+<li>Posicione os componentes no plano <span class="arithmatex">\(A \times I\)</span>.</li>
+<li>Escreva a leitura arquitetural, obrigatoriamente incluindo:<ul>
+<li>o componente que a métrica aponta como pior, e o que fazer com ele;</li>
+<li><strong>um caso em que a métrica não aponta o problema real</strong> — como o <code>Checkout</code> desta aula.</li>
+</ul>
+</li>
+<li>Proponha no máximo três ações, em ordem, com o critério de priorização explícito.</li>
+</ol>
+<p>O item 4 é o que separa uma entrega mecânica de uma análise. Ver os pesos em <a href="../../orion/">Avaliação</a>.</p>
+<h2 id="resumo">Resumo<a class="headerlink" href="#resumo" title="Permanent link">&para;</a></h2>
+<p>Medimos o Orion e descobrimos duas coisas. A primeira é que a medição tira a discussão do campo da opinião: <code>Catalogo</code> e <code>Clientes</code> estão objetivamente rígidos, e isso não é mais uma impressão de quem trabalha neles.</p>
+<p>A segunda é mais desconfortável. O componente com o melhor número da tabela é o que mais causa incidente, e o gráfico que ordena por <span class="arithmatex">\(D\)</span> esconde a diferença entre estar rígido demais e estar abstrato à toa. A métrica não erra — ela responde exatamente à pergunta que a fórmula faz, e essa pergunta é mais estreita do que a nossa.</p>
+<p>Temos agora vocabulário qualitativo, evidência quantitativa e um teste que impede a regressão. Falta usar tudo junto sobre um sistema inteiro, sob restrição de orçamento e prazo. É o que a Aula 8 faz.</p>
+<p>E o empate do começo da aula? Continua empatado — mas agora as duas equipes discutem sobre a mesma tabela, e a decisão final terá que dizer qual critério prevaleceu. Isso é o máximo que uma métrica entrega, e já é muito.</p>
+<h2 id="principais-conceitos">Principais conceitos<a class="headerlink" href="#principais-conceitos" title="Permanent link">&para;</a></h2>
+<ul>
+<li>acoplamento aferente (<span class="arithmatex">\(C_a\)</span>) e eferente (<span class="arithmatex">\(C_e\)</span>);</li>
+<li>Abstractness (<span class="arithmatex">\(A\)</span>), Instability (<span class="arithmatex">\(I\)</span>), Distance from Main Sequence (<span class="arithmatex">\(D\)</span>);</li>
+<li>sequência principal, Zone of Pain, Zone of Uselessness;</li>
+<li>convenção de contagem como parte da métrica;</li>
+<li>limites da medição;</li>
+<li>teste de arquitetura como governança.</li>
+</ul>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 4 — Architecture Characteristics Defined, e a seção de métricas de modularidade do Cap. 3.</li>
+<li>Martin, Robert C. <em>Agile Software Development, Principles, Patterns, and Practices</em>. Cap. 20 — Principles of Package Design.</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>MARTIN, Robert C. <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula06-connascencia/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 6 — Connascência">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 6 — Connascência
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula08-oficina-diagnostico/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 8 — Oficina de Diagnóstico">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 8 — Oficina de Diagnóstico
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

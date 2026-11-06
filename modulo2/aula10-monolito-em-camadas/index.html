@@ -1,0 +1,2442 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo2/aula10-monolito-em-camadas/">
+      
+      
+      
+        <link rel="prev" href="../aula09-monolito-nao-e-o-problema/">
+      
+      
+        <link rel="next" href="../exercicios-fixacao-aulas-9-10/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 10 — Monólito em camadas - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 10 — Monólito em camadas
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dois-desenhos-da-mesma-arquitetura" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dois desenhos da mesma arquitetura
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-arquitetura-em-camadas-corte-por-papel-tecnologico" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A arquitetura em camadas: corte por papel tecnológico
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A arquitetura em camadas: corte por papel tecnológico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-quatro-camadas-canonicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quatro camadas canônicas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-regra-de-dependencia-fluxo-em-runtime-versus-dependencia-estatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A Regra de Dependência: fluxo em runtime versus dependência estática
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camadas-fechadas-versus-camadas-abertas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Camadas fechadas versus camadas abertas
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Camadas fechadas versus camadas abertas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-camadas-fechadas-e-o-architecture-sinkhole-anti-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Camadas Fechadas e o <em>Architecture Sinkhole Anti-Pattern</em>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-camadas-abertas-e-o-risco-de-vazamento-bypass-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Camadas Abertas e o Risco de Vazamento (<em>Bypass Risk</em>)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#governanca-automatizada-nao-combinado-verbal" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Governança automatizada, não combinado verbal
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-diagnostico-onde-a-camada-falha-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagnóstico: onde a camada falha no Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O diagnóstico: onde a camada falha no Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-mudanca-de-negocio-desce-na-vertical" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A mudança de negócio desce na vertical
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coesao-por-camada-e-coesao-fraca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Coesão por camada é coesão fraca
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-paradoxo-das-metricas-medidas-por-camada" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O paradoxo das métricas medidas por camada
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connascencia-que-atravessa-as-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Connascência que atravessa as camadas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-orion-04-camadas-a-regra-virada-em-contrato-de-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-Orion 04-camadas: a regra virada em contrato de CI
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mini-Orion 04-camadas: a regra virada em contrato de CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-arquivo-de-governanca-setupcfg" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O arquivo de governança: setup.cfg
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provocando-uma-violacao-arquitetural" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Provocando uma violação arquitetural
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registro-de-diagnostico-onde-a-camada-entrega-e-onde-ela-cobra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Registro de diagnóstico: onde a camada entrega e onde ela cobra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo-orion-evolution-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo: Orion Evolution Lab
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintese-e-o-proximo-passo-a-porta-do-dominio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Síntese e o próximo passo: a porta do domínio
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dois-desenhos-da-mesma-arquitetura" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dois desenhos da mesma arquitetura
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-arquitetura-em-camadas-corte-por-papel-tecnologico" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A arquitetura em camadas: corte por papel tecnológico
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A arquitetura em camadas: corte por papel tecnológico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-quatro-camadas-canonicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quatro camadas canônicas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-regra-de-dependencia-fluxo-em-runtime-versus-dependencia-estatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A Regra de Dependência: fluxo em runtime versus dependência estática
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#camadas-fechadas-versus-camadas-abertas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Camadas fechadas versus camadas abertas
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Camadas fechadas versus camadas abertas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-camadas-fechadas-e-o-architecture-sinkhole-anti-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Camadas Fechadas e o <em>Architecture Sinkhole Anti-Pattern</em>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-camadas-abertas-e-o-risco-de-vazamento-bypass-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Camadas Abertas e o Risco de Vazamento (<em>Bypass Risk</em>)
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#governanca-automatizada-nao-combinado-verbal" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Governança automatizada, não combinado verbal
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-diagnostico-onde-a-camada-falha-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagnóstico: onde a camada falha no Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O diagnóstico: onde a camada falha no Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-mudanca-de-negocio-desce-na-vertical" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A mudança de negócio desce na vertical
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coesao-por-camada-e-coesao-fraca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Coesão por camada é coesão fraca
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-paradoxo-das-metricas-medidas-por-camada" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O paradoxo das métricas medidas por camada
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connascencia-que-atravessa-as-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Connascência que atravessa as camadas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-orion-04-camadas-a-regra-virada-em-contrato-de-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-Orion 04-camadas: a regra virada em contrato de CI
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mini-Orion 04-camadas: a regra virada em contrato de CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-arquivo-de-governanca-setupcfg" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O arquivo de governança: setup.cfg
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provocando-uma-violacao-arquitetural" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Provocando uma violação arquitetural
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registro-de-diagnostico-onde-a-camada-entrega-e-onde-ela-cobra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Registro de diagnóstico: onde a camada entrega e onde ela cobra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo-orion-evolution-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo: Orion Evolution Lab
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintese-e-o-proximo-passo-a-porta-do-dominio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Síntese e o próximo passo: a porta do domínio
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 2 — Arquiteturas Monolíticas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo2/aula10-monolito-em-camadas.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-10-monolito-em-camadas-o-que-governa-e-o-que-nao-isola">Aula 10 — Monólito em camadas: o que governa e o que não isola<a class="headerlink" href="#aula-10-monolito-em-camadas-o-que-governa-e-o-que-nao-isola" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao final desta aula, você deve conseguir:</p>
+<ul>
+<li>classificar a direção de dependência entre camadas como permitida ou proibida pela regra de dependência;</li>
+<li>comparar camadas fechadas e abertas, avaliando o trade-off entre isolamento vertical e o anti-padrão de repasse (<em>sinkhole</em>);</li>
+<li>reconhecer que a regra de dependência só se sustenta com verificação automatizada, e situar onde o Python — via <code>import-linter</code> — se encaixa entre os mecanismos que outros ecossistemas usam para o mesmo fim;</li>
+<li>ler e configurar contratos de governança estática (como <code>type = layers</code> e <code>type = forbidden</code> no <code>setup.cfg</code>);</li>
+<li>traçar o caminho de uma mudança de negócio pelas camadas técnicas e explicar por que a separação horizontal não contém alterações funcionais;</li>
+<li>apontar em um mapa de componentes elementos que não se encaixam na hierarquia de camadas.</li>
+</ul>
+<h2 id="dois-desenhos-da-mesma-arquitetura">Dois desenhos da mesma arquitetura<a class="headerlink" href="#dois-desenhos-da-mesma-arquitetura" title="Permanent link">&para;</a></h2>
+<p>Na retrospectiva de arquitetura do Marketplace Orion, dois integrantes da equipe vão ao quadro desenhar o sistema. Os desenhos não batem.</p>
+<p>O primeiro desenha três faixas horizontais bem delineadas — apresentação em cima, lógica de negócio no centro e infraestrutura na base — distribuindo os componentes canônicos nessas caixas. O segundo desenha as dez caixas e as dezessete setas do grafo de dependências oficial (Aula 7), sem faixa nenhuma, afirmando categoricamente que camada ali é ficção: não há no código nada que impeça qualquer arquivo de chamar qualquer outro.</p>
+<p>Os dois estão olhando para a mesma base de código. A divergência ilustra a distância comum entre a intenção arquitetural e a realidade estrutural do software:</p>
+<ol>
+<li><strong>O desenho com camadas é uma aspiração de organização</strong>: expressa como os desenvolvedores gostariam que o sistema estivesse ordenado em papéis tecnológicos.</li>
+<li><strong>O grafo oficial sem camadas é o fato observável</strong>: reflete o que uma análise de dependências estáticas de fato encontra. O grafo mostra <code>Portal --&gt; Catalogo</code> direto, sem passar por nenhuma abstração intermediária de aplicação, e <code>Checkout</code> sustentando conexões simultâneas com cinco componentes de naturezas distintas (<code>Catalogo</code>, <code>Clientes</code>, <code>Promocoes</code>, <code>Pagamentos</code>, <code>Pedidos</code>).</li>
+</ol>
+<p>A fragilidade dessa "camada informal" é posta à prova semanas depois, quando a equipe recebe uma demanda comercial típica: <em>"implementar cupom de frete grátis vinculado à campanha promocional que estiver ativa"</em>.</p>
+<p>À primeira vista, trata-se de uma regra simples de promoção. Na prática, para colocá-la em produção, a equipe precisa alterar:
+- <code>Portal</code>, para exibir o selo de frete grátis na vitrine enquanto a campanha estiver ativa;
+- <code>Promocoes</code>, para checar se o carrinho contém item elegível à campanha e calcular o abatimento;
+- <code>Checkout</code>, para consultar essa elegibilidade durante o fechamento e consolidar o total;
+- <code>Pedidos</code>, para registrar no pedido emitido que a isenção de frete foi concedida via cupom de campanha.</p>
+<p>Quatro componentes alterados para atender a uma única regra de negócio. Nenhum deles pertence à mesma faixa horizontal. Para entender por que isso acontece — e por que essa é a dinâmica inevitável desse estilo arquitetural —, precisamos examinar a mecânica formal da arquitetura em camadas.</p>
+<h2 id="a-arquitetura-em-camadas-corte-por-papel-tecnologico">A arquitetura em camadas: corte por papel tecnológico<a class="headerlink" href="#a-arquitetura-em-camadas-corte-por-papel-tecnologico" title="Permanent link">&para;</a></h2>
+<p>A <strong>arquitetura em camadas</strong> (<em>layered architecture</em>, ou arquitetura <em>N-Tier</em>) organiza os artefatos de software agrupando-os por <strong>papel tecnológico</strong>. O princípio orientador é a separação de preocupações técnicas (<em>separation of technical concerns</em>): elementos responsáveis por capturar entrada e renderizar respostas ficam juntos; elementos responsáveis por coordenar fluxos de execução ficam juntos; elementos que expressam regras conceituais ficam juntos; e elementos que conversam com banco de dados ou redes externas ficam juntos.</p>
+<p>Trata-se de um corte fundamentalmente <strong>horizontal</strong> do sistema.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────┐
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│ 1. Apresentação (Interface, Web, CLI, Serialização)        │
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└──────────────────────────────┬──────────────────────────────┘
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                               │  (dependência desce)
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>┌──────────────────────────────▼──────────────────────────────┐
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│ 2. Aplicação (Orquestração de casos de uso, transações)     │
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>└──────────────────────────────┬──────────────────────────────┘
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                               │  (dependência desce)
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>┌──────────────────────────────▼──────────────────────────────┐
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│ 3. Domínio (Entidades, regras de negócio, contratos)        │
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>└──────────────────────────────┬──────────────────────────────┘
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                               │  (dependência desce / inverte)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>┌──────────────────────────────▼──────────────────────────────┐
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│ 4. Infraestrutura (Bancos de dados, filas, APIs externas)   │
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>└─────────────────────────────────────────────────────────────┘
+</span></code></pre></div>
+<h3 id="as-quatro-camadas-canonicas">As quatro camadas canônicas<a class="headerlink" href="#as-quatro-camadas-canonicas" title="Permanent link">&para;</a></h3>
+<p>Embora o número de camadas varie entre projetos, a divisão clássica de quatro níveis estabelece responsabilidades bem delimitadas:</p>
+<table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>Responsabilidade principal</th>
+<th>O que não deve conter</th>
+<th>No Mini-Orion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Apresentação</strong></td>
+<td>Ponto de entrada, recepção de requisições, validação de payload, tradução de DTOs para o cliente externo</td>
+<td>Regras de cálculo comercial ou acesso direto a bancos</td>
+<td><code>apresentacao/app.py</code> (composição da aplicação)</td>
+</tr>
+<tr>
+<td><strong>Aplicação</strong></td>
+<td>Coordenação e orquestração do caso de uso; abertura de transações; orquestração da sequência de passos</td>
+<td>Regras de cálculo intrínsecas de negócio ou SQL/chamadas HTTP</td>
+<td><code>aplicacao/checkout.py</code> (<code>ServicoCheckout.fechar_pedido</code>)</td>
+</tr>
+<tr>
+<td><strong>Domínio</strong></td>
+<td>Entidades fundamentais, regras de cálculo, invariantes do negócio, contratos abstratos de serviços</td>
+<td>Detalhes de frameworks web, bibliotecas de serialização ou drivers</td>
+<td><code>dominio/</code> (<code>PedidoCobranca</code>, <code>ResultadoCobranca</code>, protocolos)</td>
+</tr>
+<tr>
+<td><strong>Infraestrutura</strong></td>
+<td>Implementações concretas de acesso a dados, mensageria, integração com gateways e serviços externos</td>
+<td>Decisão sobre regras de negócio ou orquestração do fluxo</td>
+<td><code>infraestrutura/</code> (<code>GatewayPagamentoX</code>, <code>RepositorioPedidos</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-regra-de-dependencia-fluxo-em-runtime-versus-dependencia-estatica">A Regra de Dependência: fluxo em runtime versus dependência estática<a class="headerlink" href="#a-regra-de-dependencia-fluxo-em-runtime-versus-dependencia-estatica" title="Permanent link">&para;</a></h3>
+<p>O pilar central da arquitetura em camadas moderna é a <strong>Regra de Dependência</strong>:</p>
+<blockquote>
+<p><em>As dependências de código-fonte devem apontar exclusivamente para dentro (ou para baixo), em direção às políticas de negócio de mais alto nível.</em></p>
+</blockquote>
+<p>Isso exige separar dois conceitos que frequentemente se confundem:</p>
+<ol>
+<li><strong>Fluxo de execução em tempo de execução (<em>Control Flow</em>)</strong>: Quando um usuário final clica em "Comprar", o fluxo começa na Apresentação (<code>app.py</code>), desce para a Aplicação (<code>checkout.py</code>), consulta o Domínio (<code>modelos.py</code>), desce até a Infraestrutura (<code>pagamentos.py</code> chamando uma API HTTP externa) e retorna com o resultado subindo a pilha. O fluxo de controle desce e sobe.</li>
+<li><strong>Direção da dependência estática (<em>Source Code Dependency</em>)</strong>: Em tempo de compilação ou importação, a camada de Domínio <strong>não conhece</strong> a camada de Infraestrutura nem a de Apresentação. O Domínio define apenas uma abstração pura (uma interface ou <code>Protocol</code>). A camada de Infraestrutura depende do Domínio para implementar esse contrato, ou a camada de Aplicação depende do contrato definido no Domínio.</li>
+</ol>
+<p>Quem orquestra a fiação (<em>wiring</em>) das implementações concretas aos contratos de domínio é a raiz de composição, geralmente localizada na borda da aplicação (na Apresentação). A inversão de dependência impede que mudanças em tecnologias de infraestrutura (como trocar o driver de banco de dados ou o parceiro de pagamento) forcem alterações nas regras de negócio.</p>
+<h3 id="camadas-fechadas-versus-camadas-abertas">Camadas fechadas versus camadas abertas<a class="headerlink" href="#camadas-fechadas-versus-camadas-abertas" title="Permanent link">&para;</a></h3>
+<p>Ao formalizar uma arquitetura em camadas, a decisão central não é apenas o número de camadas, mas se cada camada é <strong>fechada</strong> (<em>closed layer</em>) ou <strong>aberta</strong> (<em>open layer</em>):</p>
+<ul>
+<li><strong>Camada Fechada</strong>: uma camada superior só pode se comunicar com a camada imediatamente inferior. A requisição é estritamente sequencial: Apresentação precisa passar por Aplicação para alcançar o Domínio.</li>
+<li><strong>Camada Aberta</strong>: uma camada superior pode "saltar" níveis e acessar diretamente camadas mais profundas. Por exemplo, a Apresentação pode invocar o Domínio diretamente para ler dados, ignorando a camada de Aplicação.</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>      CAMADA FECHADA                           CAMADA ABERTA
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>┌─────────────────────────┐             ┌─────────────────────────┐
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│      Apresentação       │             │      Apresentação       │
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>└────────────┬────────────┘             └──────┬────────────┬─────┘
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>             │                                 │            │ (salto)
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>┌────────────▼────────────┐             ┌──────▼─────┐      │
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│        Aplicação        │             │ Aplicação  │      │
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>└────────────┬────────────┘             └──────┬─────┘      │
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>             │                                 │            │
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>┌────────────▼────────────┐             ┌──────▼────────────▼─────┐
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│         Domínio         │             │         Domínio         │
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>└─────────────────────────┘             └─────────────────────────┘
+</span></code></pre></div>
+<p>Essa escolha envolve um trade-off arquitetural direto:</p>
+<h4 id="1-camadas-fechadas-e-o-architecture-sinkhole-anti-pattern">1. Camadas Fechadas e o <em>Architecture Sinkhole Anti-Pattern</em><a class="headerlink" href="#1-camadas-fechadas-e-o-architecture-sinkhole-anti-pattern" title="Permanent link">&para;</a></h4>
+<p>A camada fechada proporciona <strong>alto isolamento vertical</strong>: se o Domínio sofrer uma grande reformulação de tipos, apenas a camada de Aplicação precisa ser inspecionada e adaptada; a Apresentação permanece resguardada.</p>
+<p>No entanto, quando adotada de forma rígida em sistemas que realizam muitas consultas ou operações sem orquestração complexa, surge o <strong>Architecture Sinkhole Anti-Pattern</strong> (Richards &amp; Ford):
+- Desenvolvedores criam centenas de métodos na camada de Aplicação que só pegam a chamada da Apresentação e a repassam intacta para o repositório ou serviço de Domínio, sem executar nenhuma regra, autorização ou transformação.
+- Se 80% do código de uma camada apenas repassa chamadas sem agregar valor computacional ou de negócio, essa camada virou um "ralo" de processamento e manutenção desnecessária.</p>
+<h4 id="2-camadas-abertas-e-o-risco-de-vazamento-bypass-risk">2. Camadas Abertas e o Risco de Vazamento (<em>Bypass Risk</em>)<a class="headerlink" href="#2-camadas-abertas-e-o-risco-de-vazamento-bypass-risk" title="Permanent link">&para;</a></h4>
+<p>Camadas abertas eliminam o código inútil de repasse, tornando operações de leitura direta muito mais ágeis. </p>
+<p>O preço cobrado é a <strong>perda de isolamento</strong>: a camada de Apresentação passa a criar laços de acoplamento direto com estruturas internas do Domínio. Quando uma entidade de domínio muda, telas e contratos de API externa quebram simultaneamente. Além disso, torna-se fácil contornar regras de negócio, pois desenvolvedores podem esquecer de chamar a orquestração da Aplicação quando deveriam.</p>
+<h3 id="governanca-automatizada-nao-combinado-verbal">Governança automatizada, não combinado verbal<a class="headerlink" href="#governanca-automatizada-nao-combinado-verbal" title="Permanent link">&para;</a></h3>
+<p>Uma restrição de camada que exista só em documentação ou em combinado verbal é violada em poucas semanas — em equipe dinâmica, mais cedo do que se imagina. Por isso a regra de dependência precisa de um mecanismo que a torne inegociável, e cada ecossistema resolve isso de um jeito. Python não tem modificador de acesso nem compilador que bloqueie um <code>import</code>, então a verificação sai do compilador e vai para uma ferramenta de análise estática rodando no CI: é o papel do <code>import-linter</code>, lendo contratos declarativos em <code>setup.cfg</code> e falhando o build quando uma aresta proibida aparece. Java resolve o mesmo problema com <code>ArchUnit</code> testando a estrutura de pacotes ou de módulos JPMS; .NET, com <code>NetArchTest</code> sobre assemblies e o modificador <code>internal</code>; monorepos TypeScript, com as tags de módulo do Nx ou o <code>dependency-cruiser</code>. A ferramenta muda; o papel se repete em todas — transformar uma decisão de camada em teste que quebra o build, não em regra que só existe na cabeça de quem lembra dela.</p>
+<h2 id="o-diagnostico-onde-a-camada-falha-no-orion">O diagnóstico: onde a camada falha no Orion<a class="headerlink" href="#o-diagnostico-onde-a-camada-falha-no-orion" title="Permanent link">&para;</a></h2>
+<p>Com esses conceitos estabelecidos, podemos voltar ao Marketplace Orion e analisar criticamente o que a camada resolve e o que ela é incapaz de conter.</p>
+<h3 id="a-mudanca-de-negocio-desce-na-vertical">A mudança de negócio desce na vertical<a class="headerlink" href="#a-mudanca-de-negocio-desce-na-vertical" title="Permanent link">&para;</a></h3>
+<p>Retomemos o cupom de frete grátis vinculado à campanha ativa. Quando rastreamos as alterações necessárias na base de código, observamos o seguinte traçado estrutural:</p>
+<pre class="mermaid"><code>flowchart TD
+    apresentacao["Apresentação\n(Portal: banner e vitrine)"]
+    aplicacao["Aplicação\n(Checkout: orquestração de compra)"]
+    dominio["Domínio\n(Promocoes: regra de desconto)\n(Pedidos: registro de frete grátis)"]
+
+    apresentacao --&gt; aplicacao
+    aplicacao --&gt; dominio
+    apresentacao --&gt; dominio</code></pre>
+<blockquote>
+<p><strong>Convenção de leitura das setas</strong>: <code>A --&gt; B</code> significa que <strong>A depende estaticamente de B</strong> (A importa B).
+<strong>O que o diagrama não mostra</strong>: componentes de infraestrutura (gateways externos, bancos de dados) e o fluxo de dados em runtime, que percorre a direção oposta.</p>
+</blockquote>
+<p>Ao analisar o diagrama, a limitação intrínseca da camada fica evidente:</p>
+<ol>
+<li><strong>A camada governa a direção, não a extensão da mudança</strong>: Todas as setas apontam para baixo. Em momento nenhum o Domínio importou a Aplicação, e a Aplicação não importou a Apresentação. O contrato de camadas está 100% satisfeito e verde.</li>
+<li><strong>A mudança corta o sistema de ponta a ponta</strong>: Como a funcionalidade é um conceito de negócio, ela precisa se manifestar na tela (Apresentação), no fluxo de fechamento (Aplicação) e no cálculo/armazenamento do pedido (Domínio). </li>
+</ol>
+<p>A arquitetura em camadas fatia o sistema por similaridade de tecnologia, mas as demandas de negócio fatiam o sistema por domínio funcional. Elas são perpendiculares: <strong>a camada é horizontal; a feature é vertical</strong>.</p>
+<h3 id="coesao-por-camada-e-coesao-fraca">Coesão por camada é coesão fraca<a class="headerlink" href="#coesao-por-camada-e-coesao-fraca" title="Permanent link">&para;</a></h3>
+<p>Na Aula 5, definimos coesão como a medida de quanto os elementos dentro de um mesmo módulo pertencem uns aos outros. Classificamos a coesão técnica (ou acidental) como <strong>fraca</strong>:
+- Colocar <code>Pagamentos</code>, <code>Notificacoes</code>, <code>Logistica</code> e <code>Integracoes</code> na mesma camada de "Infraestrutura" une componentes que não compartilham motivos de mudança de negócio.
+- O adaptador de pagamentos muda quando a operadora de cartão altera o formato de webhook; o adaptador de notificações muda quando o provedor de SMS migra de protocolo. Eles moram juntos apenas porque ambos usam sockets de rede.</p>
+<p>Em contrapartida, a coesão forte une elementos que <strong>mudam juntos pelo mesmo motivo de negócio</strong>. Na arquitetura em camadas pura, elementos altamente coesos de um mesmo assunto (como a regra do cupom em <code>Promocoes</code> e o anúncio do cupom no <code>Portal</code>) são forçados a viver separados por fronteiras de camada.</p>
+<h3 id="o-paradoxo-das-metricas-medidas-por-camada">O paradoxo das métricas medidas por camada<a class="headerlink" href="#o-paradoxo-das-metricas-medidas-por-camada" title="Permanent link">&para;</a></h3>
+<p>Na Aula 7, aprendemos a calcular o acoplamento aferente (<span class="arithmatex">\(C_a\)</span>), eferente (<span class="arithmatex">\(C_e\)</span>), instabilidade (<span class="arithmatex">\(I\)</span>) e distância da sequência principal (<span class="arithmatex">\(D\)</span>). Se aplicarmos essas métricas considerando cada camada inteira como uma unidade estrutural:</p>
+<ul>
+<li><strong>Apresentação</strong>: <span class="arithmatex">\(C_a = 0\)</span>, <span class="arithmatex">\(C_e = 2\)</span>, <span class="arithmatex">\(I = 1{,}0\)</span> (máxima instabilidade, adequado para borda).</li>
+<li><strong>Aplicação</strong>: <span class="arithmatex">\(C_a = 1\)</span>, <span class="arithmatex">\(C_e = 1\)</span>, <span class="arithmatex">\(I = 0{,}5\)</span> (equilíbrio intermediário).</li>
+<li><strong>Domínio</strong>: <span class="arithmatex">\(C_a = 2\)</span>, <span class="arithmatex">\(C_e = 0\)</span>, <span class="arithmatex">\(I = 0{,}0\)</span> (estabilidade máxima, nenhum acoplamento de saída).</li>
+</ul>
+<p>O grafo entre camadas é limpo, estritamente acíclico e exibe métricas aparentemente impecáveis. No entanto, essas métricas agregadas criam uma ilusão estatística: elas medem a higiene da direção entre papéis técnicos, mas são completamente cegas à quantidade de assuntos de negócio que atravessam essas faixas. É a mesma lição que o componente <code>Checkout</code> nos deu no Módulo 1: ter métricas matemáticas elegantes não significa ter uma arquitetura imune a incidentes ou custos elevados de alteração.</p>
+<h3 id="connascencia-que-atravessa-as-camadas">Connascência que atravessa as camadas<a class="headerlink" href="#connascencia-que-atravessa-as-camadas" title="Permanent link">&para;</a></h3>
+<p>A ferramenta de precisão introduzida na Aula 6 — a connascência — permite diagnosticar o tipo de acoplamento residual que a camada mantém:</p>
+<ul>
+<li><strong>Connascência de Nome (Fraca, Estática)</strong>: A Apresentação precisa conhecer o nome do atributo <code>frete_gratis_aplicado</code> retornado pelo Domínio. Essa forma fraca é perfeitamente tolerada entre camadas, pois linters e verificadores de tipo identificam renomeações instantaneamente.</li>
+<li><strong>Connascência de Execução (Forte, Dinâmica)</strong>: Se para aplicar o cupom a Apresentação precisasse chamar primeiro <code>validar_elegibilidade()</code> no Domínio, depois <code>preparar_carrinho()</code> na Aplicação e finalmente <code>cobrar()</code> na Infraestrutura, na ordem exata, teríamos uma forma forte de connascência cruzando três níveis de camadas. A regra pedagógica da Aula 6 é taxativa: <em>connascência forte só é aceitável quando a localidade é máxima (dentro de uma mesma função ou módulo)</em>. Quando a connascência de execução cruza camadas, a arquitetura se torna frágil.</li>
+</ul>
+<hr />
+<h2 id="mini-orion-04-camadas-a-regra-virada-em-contrato-de-ci">Mini-Orion 04-camadas: a regra virada em contrato de CI<a class="headerlink" href="#mini-orion-04-camadas-a-regra-virada-em-contrato-de-ci" title="Permanent link">&para;</a></h2>
+<p>No repositório do Mini-Orion, o checkpoint <code>04-camadas</code> refatora a estrutura plana anterior em pacotes técnicos explícitos:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mini_orion/
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    apresentacao/    app.py (montagem do sistema)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    aplicacao/       checkout.py (ServicoCheckout)
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    dominio/         modelos.py, contratos.py
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    infraestrutura/  pagamentos.py, pedidos.py, notificacoes.py
+</span></code></pre></div>
+<h3 id="o-arquivo-de-governanca-setupcfg">O arquivo de governança: setup.cfg<a class="headerlink" href="#o-arquivo-de-governanca-setupcfg" title="Permanent link">&para;</a></h3>
+<p>Para que a hierarquia não decaia em combinados verbais, dois contratos estáticos foram inseridos no <code>setup.cfg</code>:</p>
+<div class="language-ini highlight"><span class="filename">code/mini-orion/04-camadas/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">[importlinter:contract:camadas]</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Regra de dependencia: nenhuma camada importa uma acima</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">layers</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">layers</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="na">mini_orion.apresentacao</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="na">mini_orion.aplicacao</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="na">mini_orion.dominio</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="k">[importlinter:contract:dominio-nao-conhece-infra]</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Dominio e aplicacao nao conhecem infraestrutura</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="na">mini_orion.dominio</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="na">mini_orion.aplicacao</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="na">mini_orion.infraestrutura</span>
+</span></code></pre></div>
+<p>Analisando a mecânica de cada contrato:</p>
+<ol>
+<li><strong><code>type = layers</code></strong>: define uma ordenação estrita. Módulos listados acima podem importar módulos listados abaixo. Ele implementa camadas <strong>abertas</strong>: <code>apresentacao</code> pode importar <code>dominio</code> diretamente (como ocorre em <code>app.py</code> para tipar dependências via <code>Protocol</code>), sem que o linter aponte violação. O que ele proíbe rigorosamente é a subida (<code>dominio</code> importar <code>aplicacao</code> ou <code>apresentacao</code>).</li>
+<li><strong><code>type = forbidden</code></strong>: complementa a regra de camadas. Como <code>infraestrutura</code> não faz parte da pilha sequencial de negócio (ela contém os adaptadores de saída), o contrato proíbe explicitamente que <code>dominio</code> ou <code>aplicacao</code> importem classes concretas de infraestrutura.</li>
+</ol>
+<p>Ao executar a verificação estática, o resultado comprova a conformidade:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ lint-imports
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Regra de dependencia: nenhuma camada importa uma acima KEPT
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Dominio e aplicacao nao conhecem infraestrutura KEPT
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Contracts: 2 kept, 0 broken.
+</span></code></pre></div>
+<h3 id="provocando-uma-violacao-arquitetural">Provocando uma violação arquitetural<a class="headerlink" href="#provocando-uma-violacao-arquitetural" title="Permanent link">&para;</a></h3>
+<p>Para observar o papel de evidência do linter, imagine que um desenvolvedor decida "reaproveitar" uma constante ou método auxiliar presente no driver de pagamentos dentro de <code>dominio/contratos.py</code>:</p>
+<div class="language-python highlight"><span class="filename">mini_orion/dominio/contratos.py (violacao intencional)</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Import proibido: camada interna acessando infraestrutura</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.infraestrutura.pagamentos</span><span class="w"> </span><span class="kn">import</span> <span class="n">GatewayPagamentoX</span>
+</span></code></pre></div>
+<p>Ao rodar a verificação na esteira de integração contínua:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$ lint-imports
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Regra de dependencia: nenhuma camada importa uma acima KEPT
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Dominio e aplicacao nao conhecem infraestrutura BROKEN
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Contracts: 1 kept, 1 broken.
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>Broken contract: Dominio e aplicacao nao conhecem infraestrutura
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>----------------------------------------------------------------
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>mini_orion.dominio.contratos imports mini_orion.infraestrutura.pagamentos:
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  mini_orion.dominio.contratos -&gt; mini_orion.infraestrutura.pagamentos (l. 3)
+</span></code></pre></div>
+<p>A violação não depende de revisão manual em pull request. O build é rejeitado automaticamente pelo analisador estático.</p>
+<h3 id="registro-de-diagnostico-onde-a-camada-entrega-e-onde-ela-cobra">Registro de diagnóstico: onde a camada entrega e onde ela cobra<a class="headerlink" href="#registro-de-diagnostico-onde-a-camada-entrega-e-onde-ela-cobra" title="Permanent link">&para;</a></h3>
+<p>Avaliando o checkpoint <code>04-camadas</code> de forma honesta diante de trade-offs de engenharia:</p>
+<table>
+<thead>
+<tr>
+<th>Onde a camada entrega valor concreto</th>
+<th>Onde a camada não resolve ou cobra preço</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direção verificável da dependência</strong>: Nenhuma regra de negócio corre o risco de se acoplar a drivers concretos de banco ou frameworks de entrega.</td>
+<td><strong>Não contém a mudança de negócio</strong>: O cupom de desconto continua exigindo commits em arquivos espalhados por três pastas distintas.</td>
+</tr>
+<tr>
+<td><strong>Facilidade para substituir adaptadores externos</strong>: Adicionar um novo provedor (<code>GatewayPagamentoY</code>) alterou apenas <code>infraestrutura/pagamentos.py</code> e a raiz de composição em <code>app.py</code>. A lógica de checkout em <code>aplicacao/checkout.py</code> permaneceu intacta.</td>
+<td><strong>Dificuldade para testar regras unitárias isoladas</strong>: Para testar a regra "compra com cartão acima do limite é recusada", o teste ainda é obrigado a instanciar o caso de uso inteiro, simulando repositório e notificador.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Classificação de dependências.</strong> Considerando a hierarquia do Mini-Orion (<code>apresentacao &gt; aplicacao &gt; dominio</code>, com <code>infraestrutura</code> isolada por regra <code>forbidden</code>), avalie cada declaração de importação abaixo, dizendo se é <strong>permitida</strong> ou <strong>proibida</strong>, e qual contrato é responsável por essa validação:</p>
+<p>a. Em <code>mini_orion/aplicacao/checkout.py</code>: <code>from mini_orion.dominio.contratos import Gateway</code><br />
+b. Em <code>mini_orion/dominio/modelos.py</code>: <code>from mini_orion.aplicacao.checkout import ServicoCheckout</code><br />
+c. Em <code>mini_orion/apresentacao/app.py</code>: <code>from mini_orion.dominio.modelos import Pedido</code><br />
+d. Em <code>mini_orion/dominio/contratos.py</code>: <code>from mini_orion.infraestrutura.pedidos import RepositorioPedidos</code></p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — Permitida.</strong> A camada de Aplicação depende da camada de Domínio, que está abaixo dela na hierarquia definida em <code>type = layers</code>.</p>
+<p><strong>b — Proibida.</strong> O Domínio está tentando importar a camada de Aplicação, que está acima dele. O contrato <code>type = layers</code> acusa a violação imediatamente.</p>
+<p><strong>c — Permitida.</strong> O contrato <code>type = layers</code> adota o modelo de camadas abertas por padrão. Portanto, a Apresentação pode "saltar" a Aplicação e importar diretamente os tipos de dados do Domínio.</p>
+<p><strong>d — Proibida.</strong> O Domínio não pode importar classes da Infraestrutura. Quem acusa essa quebra não é o contrato <code>camadas</code> (pois a infraestrutura não faz parte da pilha hierárquica <code>layers</code>), mas sim o contrato explícito <code>type = forbidden</code> (<code>dominio-nao-conhece-infra</code>).</p>
+</details>
+</li>
+<li>
+<p><strong>Identificação de contrato.</strong> Durante uma refatoração, um membro da equipe tenta injetar um serviço de mensageria diretamente em uma entidade do domínio para disparar e-mails automáticos ao alterar o estado do pedido. O linter emite:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>mini_orion.dominio.modelos imports mini_orion.infraestrutura.notificacoes
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Contracts: 1 kept, 1 broken.
+</span></code></pre></div>
+<p>Explique por que o contrato quebrado foi o <code>forbidden</code> e não o <code>layers</code>, e discuta o perigo arquitetural dessa dependência se ela fosse permitida.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>O contrato <code>layers</code> analisa apenas a relação de precedência entre os módulos explicitamente listados na diretiva (<code>apresentacao</code>, <code>aplicacao</code>, <code>dominio</code>). Como <code>infraestrutura</code> não é um degrau dentro dessa lista hierárquica, o contrato <code>layers</code> ignora o import. É o contrato <code>forbidden</code> que fiscaliza e bloqueia as arestas entre o domínio/aplicação e a infraestrutura.</p>
+<p>O perigo arquitetural: permitir que entidades de domínio importem infraestrutura concreta faz com que regras conceituais passem a depender de bibliotecas de transporte (como clientes de e-mail ou drivers de banco). Isso impede a execução de testes unitários rápidos em memória e propaga qualquer mudança de protocolo externo diretamente para o coração do negócio.</p>
+</details>
+</li>
+<li>
+<p><strong>Rastreamento de mudança vertical.</strong> Imagine o seguinte requisito no Marketplace Orion: <em>"O prazo estimado de entrega deve ser recalculado e armazenado caso o endereço do cliente mude após a emissão do pedido"</em>.
+    Mapeie quais camadas e quais componentes do Orion seriam afetados por essa alteração, indicando sucintamente o papel de cada um.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>A alteração é uma demanda de negócio que corta três camadas técnicas:
+- <strong>Apresentação (<code>Portal</code>)</strong>: necessita expor a opção de alteração de endereço no painel de pedidos e exibir a confirmação com o novo prazo.
+- <strong>Aplicação (<code>Checkout</code> ou caso de uso de Pós-Venda)</strong>: orquestra a sequência: recebe o novo endereço, consulta o serviço logístico para obter a nova estimativa e aciona a atualização do pedido.
+- <strong>Domínio (<code>Pedidos</code>, <code>Clientes</code>, <code>Logistica</code>)</strong>: <code>Clientes</code> valida as regras do novo endereço; <code>Logistica</code> calcula o novo prazo com base na tabela de frete; <code>Pedidos</code> atualiza o estado da entidade pedido com o novo snapshot e novo prazo.
+- <strong>Infraestrutura</strong>: adaptadores de persistência de <code>Pedidos</code> salvam a alteração no banco; adaptadores de <code>Notificacoes</code> enviam o e-mail comunicando a alteração.</p>
+<p>A constatação central: a hierarquia técnica em camadas organiza a direção do código, mas não impede que quatro ou cinco componentes precisem ser modificados conjuntamente.</p>
+</details>
+</li>
+<li>
+<p><strong>Julgamento de trade-off: camadas abertas versus fechadas.</strong> Em um debate técnico, um engenheiro propõe: <em>"Devemos transformar todas as camadas do Orion em camadas estritamente fechadas. Nenhum componente da apresentação poderá tocar no domínio; tudo deverá passar obrigatoriamente por uma classe na camada de aplicação."</em>
+    Defenda ou conteste essa proposta, apontando o critério arquitetural decisivo, os riscos envolvidos e o que você observaria no código em seis meses para avaliar se a decisão foi correta.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>Não existe resposta absoluta; avalia-se a consistência do critério e o reconhecimento dos custos:
+- <strong>Se você defende o fechamento estrito</strong>: o critério é o isolamento máximo do Domínio contra vazamento de detalhes para interfaces de usuário ou APIs REST externas. Em seis meses, você observaria se a camada de apresentação permaneceu desacoplada de mudanças de modelagem interna do domínio.
+- <strong>Se você contesta o fechamento estrito</strong>: o critério é a produtividade e a prevenção do anti-padrão <em>Architecture Sinkhole</em>. O Orion possui diversas operações que são simples consultas (ex.: buscar detalhes do catálogo ou histórico de pedidos). Forçar a criação de classes de aplicação para métodos que apenas repassam chamadas criará dezenas de classes ocas ("pass-through").
+- <strong>Sinal observável em 6 meses</strong>: a proporção de métodos da camada de aplicação que não possuem lógica condicional, cálculo ou coordenação transacional. Se mais de 50% dos métodos apenas chamarem <code>return self._repo.buscar(id)</code>, a arquitetura caiu no <em>Sinkhole Anti-Pattern</em>.</p>
+</details>
+</li>
+</ol>
+<hr />
+<h2 id="atividade-em-grupo-orion-evolution-lab">Atividade em grupo: Orion Evolution Lab<a class="headerlink" href="#atividade-em-grupo-orion-evolution-lab" title="Permanent link">&para;</a></h2>
+<p>No recorte arquitetural adotado pelo seu grupo:</p>
+<ol>
+<li><strong>Atribuição de camadas</strong>: classifique cada componente do recorte em uma das quatro camadas canônicas (Apresentação, Aplicação, Domínio ou Infraestrutura). Registre em um parágrafo o critério adotado para componentes ambíguos.</li>
+<li><strong>Auditoria de direção</strong>: analise as dependências atuais do seu recorte e aponte se existe alguma dependência estática que aponte de baixo para cima (violação da regra de dependência).</li>
+<li><strong>Traçado vertical</strong>: selecione uma mudança de negócio plausível para o seu recorte (ex.: cancelamento de compra, alteração de meio de pagamento, campanha de cashback) e rastreie todas as camadas que seriam tocadas para implementá-la.</li>
+<li><strong>O componente sem camada (Obrigatório)</strong>: identifique qual componente do seu recorte <strong>não se encaixa perfeitamente</strong> na hierarquia de camadas (por exemplo, componentes como <code>Integracoes</code>, que tentam atuar como infraestrutura genérica mas não possuem consumidores, ou componentes que misturam apresentação e regra). Explique por que a arquitetura em camadas não é suficiente para acomodá-lo.</li>
+</ol>
+<hr />
+<h2 id="sintese-e-o-proximo-passo-a-porta-do-dominio">Síntese e o próximo passo: a porta do domínio<a class="headerlink" href="#sintese-e-o-proximo-passo-a-porta-do-dominio" title="Permanent link">&para;</a></h2>
+<p>A arquitetura em camadas cumpre o que promete: ela <strong>governa a direção da dependência</strong>. Com contratos verificáveis em CI, ela impede que detalhes tecnológicos de infraestrutura contaminem regras conceituais e torna a substituição de adaptadores externos uma tarefa previsível e isolada.</p>
+<p>No entanto, ela é incapaz de conter mudanças funcionais. Como as camadas agrupam elementos por semelhança tecnológica, cada nova regra de negócio precisa atravessar a apresentação, a aplicação e o domínio. A coesão por camada é fraca, e as métricas horizontais de <span class="arithmatex">\(C_a\)</span> e <span class="arithmatex">\(C_e\)</span> mascaram a complexidade vertical que cada caso de uso carrega.</p>
+<p>Isso nos coloca diante da pergunta fundamental que abre a <strong>Aula 11</strong>:
+<em>E se, em vez de cortarmos o sistema em faixas horizontais de papéis tecnológicos, nós o cortássemos em blocos verticais por assunto de negócio — garantindo que cada domínio tenha uma porta única e inviolável?</em></p>
+<hr />
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture</em>. O'Reilly, 2020. Cap. 10 — <em>Layered Architecture Style</em> (análise formal de camadas abertas vs. fechadas e o <em>Architecture Sinkhole Anti-Pattern</em>).</li>
+<li>MARTIN, Robert C. <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. Cap. 22 — <em>The Clean Architecture</em> (a regra de dependência apontando para dentro).</li>
+<li>EVANS, Eric. <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em>. Addison-Wesley, 2003. Cap. 4 — <em>Isolating the Domain</em> (a separação clássica entre apresentação, aplicação, domínio e infraestrutura).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>BASS, Len; CLEMENTS, Paul; KAZMAN, Rick. <em>Software Architecture in Practice</em>. 4. ed. Addison-Wesley, 2021.</li>
+<li>MARTIN, Robert C. <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017.</li>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula09-monolito-nao-e-o-problema/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 9 — O monólito não é o problema">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 9 — O monólito não é o problema
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../exercicios-fixacao-aulas-9-10/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Exercícios de fixação (Aulas 9 e 10)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Exercícios de fixação (Aulas 9 e 10)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2470 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo3/aula19-propriedade-do-dado/">
+      
+      
+      
+        <link rel="prev" href="../aula18-granularidade/">
+      
+      
+        <link rel="next" href="../aula20-consistencia-e-saga/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 19 — Propriedade do dado e acesso entre serviços - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 19 — Propriedade do dado e acesso entre serviços
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ja-sabemos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que já sabemos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ponto-de-partida-um-relatorio-que-deixa-de-caber-numa-consulta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ponto de partida: um relatório que deixa de caber numa consulta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#de-quem-e-o-dado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        De quem é o dado
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="De quem é o dado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dono-do-dado-e-os-tres-cenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dono do dado e os três cenários
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-banco-compartilhado-como-contrato-sem-verificador" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O banco compartilhado como contrato sem verificador
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-se-perde-ao-dividir-o-dado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que se perde ao dividir o dado
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-ler-um-dado-que-mudou-de-dono" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como ler um dado que mudou de dono
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como ler um dado que mudou de dono">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#escolher-entre-as-tres" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Escolher entre as três
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duplicar-e-uma-decisao-e-a-copia-tem-dono" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Duplicar é uma decisão, e a cópia tem dono
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-copia-responde-e-o-que-ela-deixa-sem-resposta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a cópia responde e o que ela deixa sem resposta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-a-conciliacao-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: a conciliação de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: a conciliação de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-relatorio-que-fecha-com-diferenca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O relatório que fecha com diferença
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-tres-alternativas-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As três alternativas, no Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-mesma-perda-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A mesma perda, no Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quem-e-dono-de-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quem é dono de quê
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-dado-de-pagamentos-e-de-pagamentos-copia-local-gravada-na-cobranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Dado de pagamentos é de pagamentos: cópia local gravada na cobrança
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-20-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 20 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ja-sabemos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que já sabemos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ponto-de-partida-um-relatorio-que-deixa-de-caber-numa-consulta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ponto de partida: um relatório que deixa de caber numa consulta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#de-quem-e-o-dado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        De quem é o dado
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="De quem é o dado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dono-do-dado-e-os-tres-cenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dono do dado e os três cenários
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-banco-compartilhado-como-contrato-sem-verificador" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O banco compartilhado como contrato sem verificador
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-se-perde-ao-dividir-o-dado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que se perde ao dividir o dado
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-ler-um-dado-que-mudou-de-dono" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como ler um dado que mudou de dono
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como ler um dado que mudou de dono">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#escolher-entre-as-tres" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Escolher entre as três
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duplicar-e-uma-decisao-e-a-copia-tem-dono" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Duplicar é uma decisão, e a cópia tem dono
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-copia-responde-e-o-que-ela-deixa-sem-resposta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a cópia responde e o que ela deixa sem resposta
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-a-conciliacao-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: a conciliação de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: a conciliação de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-relatorio-que-fecha-com-diferenca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O relatório que fecha com diferença
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-tres-alternativas-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As três alternativas, no Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-mesma-perda-no-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A mesma perda, no Orion
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quem-e-dono-de-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quem é dono de quê
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-dado-de-pagamentos-e-de-pagamentos-copia-local-gravada-na-cobranca" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Dado de pagamentos é de pagamentos: cópia local gravada na cobrança
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-20-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 20 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 3 — Arquiteturas Distribuídas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo3/aula19-propriedade-do-dado.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-19-propriedade-do-dado-e-acesso-entre-servicos">Aula 19 — Propriedade do dado e acesso entre serviços<a class="headerlink" href="#aula-19-propriedade-do-dado-e-acesso-entre-servicos" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>definir <strong>dono do dado</strong> pela regra de quem o escreve, e distinguir os três cenários de propriedade (única, comum e conjunta) com a saída de cada um;</li>
+<li>explicar por que um banco compartilhado é um acoplamento por esquema, sem verificador e sem versão, e por que ele liga os serviços num quantum só mesmo sem chamada entre eles;</li>
+<li>dizer o que se perde ao dar a cada serviço o seu dado (o <em>join</em>, a integridade referencial e a transação) e o que pode substituir cada um;</li>
+<li>comparar três maneiras de ler um dado que mudou de dono (banco compartilhado, composição na borda e cópia local), com o custo de cada uma, e escolher entre elas com um critério explícito;</li>
+<li>decidir quais campos copiar e quais não copiar, e dizer quem corrige a cópia quando ela fica velha;</li>
+<li>distinguir uma pergunta que a cópia local responde de uma que ela deixa sem resposta;</li>
+<li>aplicar tudo isso a um caso: a conciliação de <code>Pagamentos</code> do Mini-Orion, que roda sem <code>compra</code>, com um contrato do <code>import-linter</code> que falha quando a independência é desfeita.</li>
+</ul>
+<h2 id="o-que-ja-sabemos">O que já sabemos<a class="headerlink" href="#o-que-ja-sabemos" title="Permanent link">&para;</a></h2>
+<p>Quatro ideias das aulas anteriores sustentam este capítulo.</p>
+<p>A primeira é que <strong>a fronteira lógica verifica <code>import</code>s, e não o banco</strong>. As Aulas 11 e 12 separaram módulos e fizeram o <code>import-linter</code> acusar quem importava o que não devia. Dois módulos que nunca se importam podem, ainda assim, ler e escrever as mesmas tabelas, e nenhum verificador de dependências de código enxerga isso.</p>
+<p>A segunda é que <strong>as relações entre dados são uma força de integração</strong> (Aula 18). Se duas partes usam as mesmas tabelas, separar os processos mantém o acoplamento por esquema, e separar o dado cria cópias para manter. A Aula 18 enunciou a pergunta; esta responde.</p>
+<p>A terceira é que <strong>um banco compartilhado liga os serviços num quantum só</strong> (Aula 17). Ele tem a sua própria cadência de <em>deploy</em>, a migração de esquema, e todos os serviços atrás dele dependem dela, mesmo sem nenhum chamar o outro.</p>
+<p>A quarta é que <strong>uma chamada remota custa</strong> (Aulas 16 e 17). Ela tem um terceiro desfecho, o de não sabermos se a operação aconteceu; a latência tem cauda; e a disponibilidade de serviços em série se multiplica. Tudo o que antes era uma leitura de tabela e passa a ser uma chamada herda esse custo.</p>
+<p>A connascência (Aula 6) completa o vocabulário: duas partes que dependem do nome e do significado de uma coluna compartilham connascência de nome e de significado, sem o verificador de tipos para acusar quem esqueceu.</p>
+<h2 id="ponto-de-partida-um-relatorio-que-deixa-de-caber-numa-consulta">Ponto de partida: um relatório que deixa de caber numa consulta<a class="headerlink" href="#ponto-de-partida-um-relatorio-que-deixa-de-caber-numa-consulta" title="Permanent link">&para;</a></h2>
+<p>Retomamos o cenário da Aula 18, de fora do Orion. O portal de cursos (<strong>A</strong>) e o serviço de assinaturas (<strong>B</strong>) vivem hoje no mesmo banco. O portal guarda as matrículas; o serviço guarda as assinaturas. A cada mês, o financeiro pede um relatório simples: quais alunos têm matrícula em curso mas uma assinatura que não está ativa. Com um banco só, é uma consulta:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">aluno_id</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">curso_id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">situacao</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">matriculas</span><span class="w"> </span><span class="n">m</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">assinaturas</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">assinatura_id</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">situacao</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s1">'ativa'</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Três coisas tornam essa consulta possível, e todas vêm do banco único. O <em><strong>join</strong></em> cruza duas tabelas em uma operação. A <strong>chave estrangeira</strong> (<code>matriculas.assinatura_id</code> aponta para <code>assinaturas.id</code>) garante que nenhuma matrícula aponte para uma assinatura que não existe. E a <strong>transação</strong> garante que, ao matricular um aluno novo, a assinatura e a matrícula sejam criadas juntas ou nenhuma delas.</p>
+<p>Suponha agora que o serviço de assinaturas seja separado e passe a ter o seu próprio banco. O diagrama mostra o que sobra.</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Portal de cursos A] --&gt; M[(matriculas)]
+    B[Servico de assinaturas B] --&gt; S[(assinaturas)]
+    A -.-&gt;|o join deixa de existir| S</code></pre>
+<p>Leitura das setas: <code>X --&gt; Y</code> significa que X lê e escreve em Y. A seta tracejada é a que existia e deixa de existir. O diagrama omite a rede entre A e B e o que cada um faz além do dado, para mostrar uma ideia só: <strong>cada tabela passou a ter um dono, e o relatório depende de duas</strong>. O que A faz agora para responder à pergunta do financeiro? E quem decide se a coluna <code>situacao</code> pode ser renomeada?</p>
+<h2 id="de-quem-e-o-dado">De quem é o dado<a class="headerlink" href="#de-quem-e-o-dado" title="Permanent link">&para;</a></h2>
+<h3 id="dono-do-dado-e-os-tres-cenarios">Dono do dado e os três cenários<a class="headerlink" href="#dono-do-dado-e-os-tres-cenarios" title="Permanent link">&para;</a></h3>
+<p>Chamamos de <strong>dono do dado</strong> o componente que o escreve e que decide a forma como ele é guardado. Ford, Richards, Sadalage e Dehghani (<em>Software Architecture: The Hard Parts</em>, Cap. 9) dão a regra de bolso: o serviço que escreve numa tabela é o dono dela. A regra resolve o caso mais simples e se complica quando mais de um serviço escreve na mesma tabela. Por isso o livro distingue três cenários.</p>
+<table>
+<thead>
+<tr>
+<th>Cenário</th>
+<th>Quando ocorre</th>
+<th>Saída</th>
+<th>No cenário de cursos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Propriedade única</strong></td>
+<td>só um serviço escreve na tabela</td>
+<td>esse serviço é o dono; os demais leem por ele</td>
+<td><code>matriculas</code>: só o portal escreve</td>
+</tr>
+<tr>
+<td><strong>Propriedade comum</strong></td>
+<td>quase todos os serviços escrevem na mesma tabela</td>
+<td>um serviço dedicado é o único dono, e os outros lhe enviam o que querem gravar</td>
+<td>uma tabela de auditoria em que todos registram ações</td>
+</tr>
+<tr>
+<td><strong>Propriedade conjunta</strong></td>
+<td>dois ou três serviços do mesmo domínio escrevem na mesma tabela</td>
+<td>dividir a tabela, juntar os serviços num domínio de dados ou delegar a escrita a um só</td>
+<td><code>cursos</code>, escrita pelo portal (título) e por assinaturas (preço)</td>
+</tr>
+</tbody>
+</table>
+<p>Os autores recomendam resolver a propriedade única primeiro, porque ela limpa o terreno para os dois casos difíceis. O Orion, nesta aula, está no caso mais simples: a tabela de cobranças é escrita só por <code>pagamentos</code>.</p>
+<h3 id="o-banco-compartilhado-como-contrato-sem-verificador">O banco compartilhado como contrato sem verificador<a class="headerlink" href="#o-banco-compartilhado-como-contrato-sem-verificador" title="Permanent link">&para;</a></h3>
+<p>Um banco compartilhado esconde a pergunta de quem é o dono, porque qualquer módulo com acesso ao banco pode ler (e às vezes escrever) em qualquer tabela. No cenário de cursos, o time de assinaturas renomeia a coluna <code>situacao</code> para <code>situacao_cobranca</code>, porque descobriu que a palavra também servia a outro sentido. O serviço de assinaturas continua funcionando. O relatório do portal passa a falhar com uma coluna que não existe, e o erro aparece quando alguém reclama.</p>
+<p>O nome técnico é <strong>acoplamento por esquema</strong> (<em>common coupling</em>, nos termos de Newman): dois componentes dependem da estrutura de um dado comum, e qualquer mudança na estrutura atinge os dois ao mesmo tempo. É o mesmo problema do contrato remoto da Aula 18, com duas diferenças que o pioram: o esquema não tem versão, e não há um arquivo de contrato nem um verificador que acuse a quebra antes do <em>deploy</em>. Newman observa que dados compartilhados assim tendem a ser muito difíceis de mudar, justamente por isso.</p>
+<p>Daí vem a consequência para a independência. Um banco compartilhado faz todos os serviços atrás dele formarem um quantum só, mesmo sem nenhum chamar o outro, porque a migração de esquema é um <em>deploy</em> de que todos dependem. A Aula 17 mostrou que o <em>service-based</em> de banco único continua com um quantum nas duas versões, e que só a forma com um banco por serviço passa a dois quanta quando as chamadas síncronas são trocadas por filas. A divisão do dado é a segunda metade da independência. A primeira é a rede.</p>
+<h2 id="o-que-se-perde-ao-dividir-o-dado">O que se perde ao dividir o dado<a class="headerlink" href="#o-que-se-perde-ao-dividir-o-dado" title="Permanent link">&para;</a></h2>
+<p>Dar a cada serviço o seu dado tira três coisas que o banco único dava de graça.</p>
+<table>
+<thead>
+<tr>
+<th>O que o banco único fazia</th>
+<th>Depois da divisão</th>
+<th>O que pode substituir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em><strong>Join</strong></em> entre tabelas, em uma consulta</td>
+<td>cada serviço enxerga só as suas tabelas</td>
+<td>juntar em memória, ou guardar o campo necessário localmente</td>
+</tr>
+<tr>
+<td><strong>Integridade referencial</strong> (a chave estrangeira que impede apontar para o que não existe)</td>
+<td>o banco de um serviço não sabe o que há no banco do outro</td>
+<td>verificação na escrita, tolerância a referência órfã, rotina de conferência</td>
+</tr>
+<tr>
+<td><strong>Transação</strong> entre tabelas (tudo vale ou nada vale)</td>
+<td>criar a assinatura e a matrícula estão em bancos diferentes</td>
+<td>compensação (Aula 20)</td>
+</tr>
+</tbody>
+</table>
+<p>A perda é desigual. O <em>join</em> se resolve com engenharia, a um custo conhecido. A integridade referencial se troca por conferência, e é preciso decidir o que acontece quando ela falha: a matrícula que aponta para uma assinatura que sumiu é erro, ou é um estado a tolerar? A transação não tem substituto direto, e é a pergunta da próxima aula. Newman trata das três ao falar de decomposição de dados, e sobre o <em>join</em> faz uma observação que usaremos adiante: a junção continua acontecendo logicamente, só que no código da aplicação em vez de no banco, e dificilmente com a mesma eficiência.</p>
+<h2 id="como-ler-um-dado-que-mudou-de-dono">Como ler um dado que mudou de dono<a class="headerlink" href="#como-ler-um-dado-que-mudou-de-dono" title="Permanent link">&para;</a></h2>
+<p>O relatório do financeiro precisa de <code>situacao</code>, que o portal não guarda. Há três maneiras de dar a ele o que precisa, e todas têm defensores competentes. Ford e coautores (Cap. 10) tratam as duas últimas como padrões de acesso a dados distribuídos.</p>
+<p><strong>A. Manter o banco compartilhado.</strong> O serviço de assinaturas sai do processo, mas o portal continua lendo a tabela <code>assinaturas</code> no banco comum. A consulta acima continua valendo, sem mudança. Cobra o que a seção anterior descreveu: acoplamento por esquema, um quantum só e migrações que passam a exigir os dois times no mesmo dia.</p>
+<p><strong>B. Compor a consulta na borda</strong> (<em>Interservice Communication</em>, no vocabulário do livro). O portal chama o serviço de assinaturas e junta o resultado em memória.</p>
+<div class="language-python highlight"><span class="filename">Snippet ilustrativo: composição na borda</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">alunos_com_assinatura_inativa</span><span class="p">(</span><span class="n">portal</span><span class="p">,</span> <span class="n">assinaturas</span><span class="p">):</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">achados</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">for</span> <span class="n">matricula</span> <span class="ow">in</span> <span class="n">portal</span><span class="o">.</span><span class="n">matriculas_em_curso</span><span class="p">():</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="n">assinatura</span> <span class="o">=</span> <span class="n">assinaturas</span><span class="o">.</span><span class="n">buscar</span><span class="p">(</span><span class="n">matricula</span><span class="o">.</span><span class="n">assinatura_id</span><span class="p">)</span>  <span class="c1"># uma chamada remota por linha</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="k">if</span> <span class="n">assinatura</span><span class="o">.</span><span class="n">situacao</span> <span class="o">!=</span> <span class="s2">"ativa"</span><span class="p">:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>            <span class="n">achados</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">matricula</span><span class="o">.</span><span class="n">aluno_id</span><span class="p">,</span> <span class="n">matricula</span><span class="o">.</span><span class="n">curso_id</span><span class="p">,</span> <span class="n">assinatura</span><span class="o">.</span><span class="n">situacao</span><span class="p">))</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="k">return</span> <span class="n">achados</span>
+</span></code></pre></div>
+<p>O custo está visível na linha comentada: <code>n</code> matrículas viram <code>n</code> chamadas, cada uma com a sua cauda de latência (Aula 16). Uma chamada em lote (<code>buscar_varias(ids)</code>) reduz o número de chamadas, se o serviço a oferecer. A composição exige ainda que os dois serviços estejam no ar na hora do relatório (a disponibilidade em série da Aula 17), e o dado que ela devolve é o <strong>atual</strong>, o que às vezes é exatamente o que se quer.</p>
+<p><strong>C. Guardar uma cópia local</strong> (<em>Column Schema Replication</em>, no livro). O portal grava, na matrícula, os campos de que o relatório vai precisar, e passa a responder só com eles. Elimina a chamada e a dependência de disponibilidade do outro lado. Cobra <strong>duplicação</strong>: o mesmo fato agora existe em dois lugares, e a cópia pode ficar velha.</p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. Banco compartilhado</td>
+<td>o <em>join</em> e a integridade continuam</td>
+<td>acoplamento por esquema, quantum único, migração coordenada</td>
+<td>quando a independência de <em>deploy</em> é o motivo do corte</td>
+</tr>
+<tr>
+<td>B. Composição na borda</td>
+<td>nenhum dado duplicado; dado sempre atual</td>
+<td>uma chamada por consulta, os dois serviços no ar, lento em lote</td>
+<td>quando o volume é grande ou a janela é curta</td>
+</tr>
+<tr>
+<td>C. Cópia local</td>
+<td>leitura sem chamada e sem dependência do outro serviço</td>
+<td>dado duplicado que pode envelhecer, e alguém precisa corrigi-lo</td>
+<td>quando o campo muda com frequência depois de copiado</td>
+</tr>
+</tbody>
+</table>
+<h3 id="escolher-entre-as-tres">Escolher entre as três<a class="headerlink" href="#escolher-entre-as-tres" title="Permanent link">&para;</a></h3>
+<p>A escolha não precisa ser de preferência. Duas perguntas a organizam: o relatório quer o valor <strong>atual</strong> ou o valor <strong>do momento do fato</strong>? E o volume e a janela permitem uma chamada por linha?</p>
+<pre class="mermaid"><code>flowchart TD
+    Q{Quer o valor atual ou o valor no momento do fato?}
+    Q -- atual --&gt; V{Volume pequeno e o outro servico no ar?}
+    Q -- no momento do fato --&gt; C[C: copia gravada no fato]
+    V -- sim --&gt; B[B: compor na borda]
+    V -- nao --&gt; N[C com aviso de mudanca do dono, ou rever o corte]</code></pre>
+<p>O diagrama deixa de fora a alternativa A, que não é uma saída do corte, e sim a decisão de não cortar o dado; ela só é a melhor se a independência de <em>deploy</em> não for o motivo da separação. Por isso o fluxo termina em "rever o corte" quando nenhuma das outras serve.</p>
+<h3 id="duplicar-e-uma-decisao-e-a-copia-tem-dono">Duplicar é uma decisão, e a cópia tem dono<a class="headerlink" href="#duplicar-e-uma-decisao-e-a-copia-tem-dono" title="Permanent link">&para;</a></h3>
+<p>Os autores de <em>The Hard Parts</em> tratam a cópia com cautela para o caso geral de leitura entre serviços: os dois problemas centrais são a sincronização e a dificuldade de governar quem é dono do dado. Reservam-na para situações como relatórios e agregações, grandes volumes ou exigências altas de tolerância a falha. A duplicação que ela cria é <strong>intencional</strong> quando o dado duplicado é escolhido, delimitado e tem um dono que o corrige. Copiar sem esses três cuidados é só uma cópia perdida, e o resultado costuma ser a pior mistura dos dois mundos.</p>
+<p>A primeira pergunta é <strong>o quê copiar</strong>. Cada campo copiado é um campo a mais para manter, para proteger e para atualizar, e o critério é o da menor cópia suficiente: só o que a pergunta exige. A segunda é <strong>quando a cópia fica velha</strong>. O cenário de cursos mostra a diferença entre três campos:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Muda depois de copiado?</th>
+<th>Copiar?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assinatura_id</code></td>
+<td>não</td>
+<td>sim: é a chave</td>
+</tr>
+<tr>
+<td><code>plano</code> contratado na matrícula</td>
+<td>só se o aluno trocar de plano, e aí é outro fato</td>
+<td>sim, como fato histórico: "o plano na data da matrícula"</td>
+</tr>
+<tr>
+<td><code>situacao</code></td>
+<td>sim, a cada cobrança recusada ou paga</td>
+<td>não, a menos que o dono avise a cada mudança</td>
+</tr>
+</tbody>
+</table>
+<p>Copiar a <code>situacao</code> seria o erro típico: a cópia responderia "ativa" a quem já foi suspenso há uma semana, e o relatório do financeiro estaria errado sem acusar nada. O que a cópia ajuda a responder é "qual era o plano na matrícula?"; a pergunta sobre a situação <strong>atual</strong> continua sendo do dono. A terceira pergunta é <strong>quem corrige</strong>. A cópia é do portal: escrita por ele, no momento da matrícula, e lida só por ele. O dono do dado original e o dono da cópia são serviços distintos, e por isso o aviso de mudança, que a Aula 20 trata, é o que mantém a cópia honesta. Uma cópia espalhada em vários serviços, cada um a corrigir do seu jeito, é o banco compartilhado de volta, agora sem o banco.</p>
+<h3 id="o-que-a-copia-responde-e-o-que-ela-deixa-sem-resposta">O que a cópia responde e o que ela deixa sem resposta<a class="headerlink" href="#o-que-a-copia-responde-e-o-que-ela-deixa-sem-resposta" title="Permanent link">&para;</a></h3>
+<p>O <em>join</em> antigo respondia, com uma consulta, duas perguntas diferentes. A primeira é <strong>histórica</strong>: que plano o aluno contratou ao se matricular? Para essa, o portal tem tudo, e a cópia local responde. A segunda é <strong>atual</strong>: a assinatura dele está ativa hoje? A resposta mora no serviço de assinaturas, e a cópia não a tem nem poderia ter, porque a situação muda <strong>depois</strong> da matrícula.</p>
+<p>Esta é uma perda real do corte, e ela aponta para a aula seguinte: a pergunta que o <em>join</em> respondia sozinho passa a depender de uma conversa entre dois serviços, com tempo e com falha.</p>
+<h2 id="estudo-de-caso-a-conciliacao-de-pagamentos">Estudo de caso: a conciliação de <code>Pagamentos</code><a class="headerlink" href="#estudo-de-caso-a-conciliacao-de-pagamentos" title="Permanent link">&para;</a></h2>
+<p>O Orion encontra o mesmo problema pela conciliação, e em sua forma mais simples: a propriedade das tabelas é única. O diagrama mostra o recorte depois do corte de <code>Pagamentos</code>.</p>
+<pre class="mermaid"><code>flowchart LR
+    C[Compra] --&gt; P[(pedidos)]
+    G[Pagamentos] --&gt; B[(cobrancas)]
+    G --&gt; E[Provedor: extrato]
+    G -.-&gt;|join perdido| P</code></pre>
+<p>Leitura das setas: <code>X --&gt; Y</code> significa que X lê ou escreve em Y. O diagrama omite <code>Notificacoes</code> e os demais componentes do Orion. Mostra uma ideia só: <code>compra</code> é dona de <code>pedidos</code>, <code>pagamentos</code> é dona de <code>cobrancas</code>, e a conciliação, que mora em <code>pagamentos</code>, precisava dos dois.</p>
+<h3 id="o-relatorio-que-fecha-com-diferenca">O relatório que fecha com diferença<a class="headerlink" href="#o-relatorio-que-fecha-com-diferenca" title="Permanent link">&para;</a></h3>
+<p>A conciliação de <code>Pagamentos</code> é o motivo pelo qual o Orion considera cortar. Ela cruza o que o Orion registrou de cobranças com o extrato que o provedor reporta, procura diferença e entrega o relatório do mês ao financeiro. Hoje, dentro do monólito, ela faz isso com uma consulta só: lê a tabela de cobranças, junta (<em>join</em>) com a tabela de pedidos pelo identificador e compara valores. A consulta fecha, porque os dois dados vivem no mesmo banco e mudam na mesma transação.</p>
+<p>Suponha o corte feito. <code>Pagamentos</code> agora é um serviço, e a conciliação roda no processo dele, com a janela e o ritmo próprios que motivaram tudo. Quem escreveu o código da conciliação o copiou do monólito e trocou o acesso ao banco pelas chamadas que sobraram. No primeiro ensaio de campanha, o relatório do financeiro fecha com diferença: das 2000 cobranças aprovadas do extrato, nenhuma casa com o que o Orion registrou. O provedor está certo, o dinheiro entrou, e o relatório acusa tudo. Nada falhou no sentido de uma exceção: a consulta antiga dependia de um dado que <strong>mudou de dono</strong> sem que a conciliação percebesse.</p>
+<h3 id="as-tres-alternativas-no-orion">As três alternativas, no Orion<a class="headerlink" href="#as-tres-alternativas-no-orion" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Na conciliação</th>
+<th>Por que cabe ou não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. Banco compartilhado</td>
+<td><code>pagamentos</code> sai do processo e continua lendo <code>pedidos</code></td>
+<td>cabe tecnicamente, mas desfaz o motivo do corte: a independência de <em>deploy</em></td>
+</tr>
+<tr>
+<td>B. Composição na borda</td>
+<td>uma chamada a <code>compra</code> por cobrança</td>
+<td>a conciliação processa o mês inteiro; 2000 cobranças no ensaio seriam 2000 chamadas, e <code>compra</code> teria de estar no ar</td>
+</tr>
+<tr>
+<td>C. Cópia local</td>
+<td><code>pagamentos</code> grava na cobrança o que a conciliação lê</td>
+<td>cabe: é relatório em lote, volume grande, e o valor da cobrança não muda depois de gravado</td>
+</tr>
+</tbody>
+</table>
+<p>A alternativa C é o caso que os autores reservam à cópia: relatórios, grandes volumes, tolerância a falha. E o critério da seção anterior a sustenta: a conciliação pergunta pelo valor <strong>no momento do fato</strong>, e esse não muda. A conciliação compara cobranças com o extrato, e para isso precisa da chave, do valor e do resultado. Não precisa do nome do cliente, dos itens do carrinho nem do endereço, e basta o final do cartão (quatro dígitos) para a conferência. Cada campo copiado é um campo a mais para proteger, e a Aula 16 já lembrou o que acontece com o número do cartão em trânsito.</p>
+<p>No Mini-Orion, o valor da cobrança não muda depois de gravado, e por isso a cópia dura. No sistema real, um estorno parcial ou um ajuste faria a cópia envelhecer, e o remédio é o dono avisar a cada mudança, matéria da Aula 20. A conciliação tem um sinal para o caso: o relatório separa <strong>valor divergente</strong> de <strong>só no provedor</strong> e de <strong>só no Orion</strong>, e uma cópia velha aparece como divergência de valor.</p>
+<h3 id="a-mesma-perda-no-orion">A mesma perda, no Orion<a class="headerlink" href="#a-mesma-perda-no-orion" title="Permanent link">&para;</a></h3>
+<p>A conciliação antiga fazia, com o <em>join</em>, duas perguntas diferentes. A primeira é <strong>financeira</strong>: o que o Orion registrou de cobranças bate com o que o provedor reporta? Para essa, <code>pagamentos</code> tem tudo: o registro da cobrança e o extrato. A cópia local responde. A segunda é <strong>de negócio</strong>: toda cobrança aprovada tem um pedido emitido? A resposta mora na tabela de pedidos, que é de <code>compra</code>, e não está na cópia, porque o pedido só é emitido <strong>depois</strong> da cobrança aprovada. O que <code>pagamentos</code> sabe é que cobrou.</p>
+<p>O ensaio da Aula 16, com 2000 fechamentos em campanha, tem exatamente esse caso. Dos 2000, 1998 terminaram em pedido confirmado e 2 terminaram em <code>cobranca_indeterminada</code>: a cobrança foi aprovada, a resposta se perdeu duas vezes, e o fechamento não emitiu o pedido. O cliente foi cobrado e não tem pedido. Com o <em>join</em> antigo, a conciliação apontaria essas duas cobranças. Com a cópia local, o relatório financeiro <strong>fecha</strong>: as 2000 cobranças casam com o extrato, e as duas sem pedido passam despercebidas. A cópia respondeu bem à pergunta que podia responder, e a outra pergunta ficou sem dono. É a mesma perda do cenário de cursos, e é ela que a próxima aula trata.</p>
+<h3 id="quem-e-dono-de-que">Quem é dono de quê<a class="headerlink" href="#quem-e-dono-de-que" title="Permanent link">&para;</a></h3>
+<p>Para o recorte do Mini-Orion, a divisão do dado fica assim:</p>
+<table>
+<thead>
+<tr>
+<th>Dado</th>
+<th>Dono</th>
+<th>Quem lê</th>
+<th>Como lê depois do corte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cobranças e seu resultado</td>
+<td><code>pagamentos</code></td>
+<td><code>pagamentos</code> (a conciliação)</td>
+<td>direto, no repositório próprio</td>
+</tr>
+<tr>
+<td>Extrato do provedor</td>
+<td>o provedor</td>
+<td><code>pagamentos</code></td>
+<td>recebido e comparado com o repositório próprio</td>
+</tr>
+<tr>
+<td>Pedidos emitidos</td>
+<td><code>compra</code></td>
+<td><code>compra</code></td>
+<td>direto; <code>pagamentos</code> não os enxerga</td>
+</tr>
+<tr>
+<td>Valor e chave da cobrança, para a conciliação</td>
+<td><code>pagamentos</code></td>
+<td><code>pagamentos</code></td>
+<td>cópia gravada na cobrança, com cartão mascarado</td>
+</tr>
+</tbody>
+</table>
+<p>Essa tabela descreve o recorte do Mini-Orion. No Orion Evolution Lab, a tabela equivalente é do grupo.</p>
+<h3 id="adr-dado-de-pagamentos-e-de-pagamentos-copia-local-gravada-na-cobranca">📐 ADR — Dado de pagamentos é de pagamentos: cópia local gravada na cobrança<a class="headerlink" href="#adr-dado-de-pagamentos-e-de-pagamentos-copia-local-gravada-na-cobranca" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — Dado de pagamentos é de pagamentos: cópia local gravada na cobrança</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceito para o <code>08-dados</code>.</td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td>A conciliação de <code>Pagamentos</code> cruzava cobranças e pedidos por um <em>join</em>. Com o corte, a tabela de pedidos é de <code>compra</code>. Um porte direto do código antigo faz o relatório acusar diferença em todas as cobranças (2000 de 2000 no ensaio).</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td><code>pagamentos</code> tem repositório próprio e grava, no momento da cobrança, uma cópia com a chave, o valor, os quatro últimos dígitos do cartão e o resultado. A conciliação lê só essa cópia e o extrato do provedor. <code>compra</code> não lê os dados de <code>pagamentos</code>, e a conciliação não importa <code>compra</code>; dois contratos de <code>import-linter</code> verificam isso.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Manter o banco compartilhado: preserva o <em>join</em> e deixa o acoplamento por esquema e o quantum único. (b) Compor na borda: sem duplicação, mas uma chamada por cobrança, inviável para a conciliação em lote. &copy; Cópia local, como acima.</td>
+</tr>
+<tr>
+<td><strong>Consequências positivas</strong></td>
+<td>A conciliação roda sem <code>compra</code> e sem depender de outro serviço no ar. O esquema dos dados de <code>pagamentos</code> pode mudar sem atingir ninguém de fora.</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td>A cópia pode ficar velha se o valor da cobrança mudar depois de gravado; o Mini-Orion não tem essa mudança e o sistema real terá. A pergunta "toda cobrança tem pedido?" deixa de ser respondida pela conciliação e fica sem dono (2 cobranças sem pedido em 2000, no ensaio). O <em>join</em> é perdido de vez.</td>
+</tr>
+<tr>
+<td><strong>Reversão</strong></td>
+<td>Cara depois que o esquema próprio estiver em uso: refazer o banco único exige migrar os dados e desfazer os contratos.</td>
+</tr>
+<tr>
+<td><strong>Condição de falseamento</strong></td>
+<td>O ADR estaria errado se, em produção, a cópia divergisse do extrato com frequência por mudança posterior do valor (o dado muda mais do que se supôs), ou se o financeiro precisasse da pergunta "cobrança sem pedido" no mesmo relatório e nenhum mecanismo a atendesse.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="na-pratica-python">Na prática: Python<a class="headerlink" href="#na-pratica-python" title="Permanent link">&para;</a></h3>
+<p>O checkpoint <code>08-dados/</code> do repositório de código (<a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura-code">https://github.com/eduardo-da-silva/fundamentos-arquitetura-code</a>) parte de <code>07-remoto/</code>. Os testes herdados seguem verdes, e o <code>setup.cfg</code> ganha dois contratos. O dado de <code>pagamentos</code> mora em um arquivo interno:</p>
+<div class="language-python highlight"><span class="filename">08-dados/mini_orion/pagamentos/_cobrancas.py (recorte)</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">RegistroCobranca</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">chave</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">valor</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">cartao_final</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># so os quatro ultimos digitos: a conciliacao nao precisa do resto</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">resultado</span><span class="p">:</span> <span class="n">ResultadoCobranca</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">RepositorioCobrancas</span><span class="p">:</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_registros</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RegistroCobranca</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">gravar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registro</span><span class="p">:</span> <span class="n">RegistroCobranca</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_registros</span><span class="p">[</span><span class="n">registro</span><span class="o">.</span><span class="n">chave</span><span class="p">]</span> <span class="o">=</span> <span class="n">registro</span>
+</span></code></pre></div>
+<p>A cópia é gravada no momento da cobrança, dentro do servidor de <code>pagamentos</code>:</p>
+<div class="language-python highlight"><span class="filename">08-dados/mini_orion/pagamentos/_servidor.py (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>        <span class="k">if</span> <span class="n">pedido</span><span class="o">.</span><span class="n">chave</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_respostas_por_chave</span><span class="p">[</span><span class="n">pedido</span><span class="o">.</span><span class="n">chave</span><span class="o">.</span><span class="n">valor</span><span class="p">]</span> <span class="o">=</span> <span class="n">resultado</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="hll">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gravar_copia</span><span class="p">:</span>
+</span></span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                <span class="c1"># Copia local, no momento da cobranca: so o que a conciliacao le.</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="hll">                <span class="bp">self</span><span class="o">.</span><span class="n">repositorio</span><span class="o">.</span><span class="n">gravar</span><span class="p">(</span>
+</span></span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                    <span class="n">RegistroCobranca</span><span class="p">(</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                        <span class="n">chave</span><span class="o">=</span><span class="n">pedido</span><span class="o">.</span><span class="n">chave</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                        <span class="n">valor</span><span class="o">=</span><span class="n">pedido</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                        <span class="n">cartao_final</span><span class="o">=</span><span class="n">pedido</span><span class="o">.</span><span class="n">cartao</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:],</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>                        <span class="n">resultado</span><span class="o">=</span><span class="n">resultado</span><span class="p">,</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>                    <span class="p">)</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                <span class="p">)</span>
+</span></code></pre></div>
+<p>O parâmetro <code>gravar_copia</code> existe para reproduzir o porte descuidado do início da aula: com <code>False</code>, o servidor não grava nada e a conciliação não tem com que comparar. Em produção, ele ficaria ligado. A conciliação em si recebe os registros e o extrato como dados e devolve um relatório com quatro listas:</p>
+<div class="language-python highlight"><span class="filename">08-dados/mini_orion/pagamentos/conciliacao.py (recorte)</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@dataclass</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">RelatorioConciliacao</span><span class="p">:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">conferem</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">valor_divergente</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">so_no_provedor</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># cobrado, sem registro no Orion</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">so_no_orion</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># registrado como aprovado, sem lancamento</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="nd">@property</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fecha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valor_divergente</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">so_no_provedor</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">so_no_orion</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Os dois contratos do <code>import-linter</code> transformam a decisão do ADR em verificação:</p>
+<div class="language-ini highlight"><span class="filename">08-dados/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">[importlinter:contract:conciliacao-nao-importa-compra]</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">A conciliacao roda sem Compra</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="na">mini_orion.pagamentos.conciliacao</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">[importlinter:contract:compra-nao-le-os-dados-de-pagamentos]</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Compra nao le os dados de Pagamentos</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="na">mini_orion.pagamentos._cobrancas</span>
+</span></code></pre></div>
+<p>O primeiro garante a metade de <code>pagamentos</code> na decisão: se a conciliação voltar a importar <code>compra</code>, direta ou indiretamente, o contrato quebra. O segundo garante a metade de <code>compra</code>: ler <code>_cobrancas</code> seria reabrir o acoplamento por esquema com outro nome. Há também um teste que não depende do linter: <code>test_a_conciliacao_roda_sem_carregar_compra</code> importa o módulo num processo limpo e confere que nenhum módulo de <code>compra</code> foi carregado.</p>
+<p>O ensaio que fundamenta as duas faces desta aula, com 2000 fechamentos em campanha, semente 42 e as mesmas hipóteses de rede da Aula 16:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>gravar_copia=False   aprovadas: 2000   conferem: 0      so_no_provedor: 2000   fecha: False
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>gravar_copia=True    aprovadas: 2000   conferem: 2000   so_no_provedor: 0      fecha: True
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>fechamentos: 1998 confirmados, 2 cobranca_indeterminada (cobrados, sem pedido)
+</span></code></pre></div>
+<p>A terceira linha é o que o relatório com cópia não vê. O teste <code>test_a_copia_local_nao_enxerga_a_cobranca_sem_pedido</code> a fixa: o relatório fecha mesmo com duas cobranças sem pedido.</p>
+<p>Para rodar, com o ambiente das aulas anteriores:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">cd</span><span class="w"> </span>fundamentos-arquitetura-code/08-dados
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>pytest<span class="w"> </span>tests/test_dados.py<span class="w">   </span><span class="c1"># 9 testes</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>pytest<span class="w">                       </span><span class="c1"># 66 testes, com os herdados</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>lint-imports<span class="w">                 </span><span class="c1"># 8 contratos</span>
+</span></code></pre></div>
+<p>O que vale experimentar:</p>
+<ul>
+<li><strong>Ver o relatório de cada lado.</strong> Os testes <code>test_sem_a_copia_o_relatorio_fecha_com_diferenca</code> e <code>test_com_a_copia_o_relatorio_fecha</code> mudam um único parâmetro. Leia os dois juntos antes de rodar.</li>
+<li><strong>Provocar uma divergência.</strong> <code>test_a_conciliacao_aponta_valor_divergente_e_registro_sem_lancamento</code> monta o caso à mão. Escreva um teste em que o provedor reporta uma cobrança que o Orion não conhece e confira em qual lista ela cai.</li>
+<li><strong>Desfazer a independência.</strong> Acrescente <code>import mini_orion.compra.api</code> ao topo de <code>mini_orion/pagamentos/conciliacao.py</code> e rode <code>lint-imports</code>. O primeiro contrato quebra, e a conciliação continua funcionando.</li>
+</ul>
+<h2 id="o-que-ficou-decidido-e-o-que-a-aula-20-pergunta">O que ficou decidido e o que a Aula 20 pergunta<a class="headerlink" href="#o-que-ficou-decidido-e-o-que-a-aula-20-pergunta" title="Permanent link">&para;</a></h2>
+<p>Ficou decidido que o dado de <code>pagamentos</code> é de <code>pagamentos</code>: repositório próprio, cópia local gravada na cobrança, só com os campos de que a conciliação precisa, e dois contratos que impedem a independência de se desfazer sem aviso. Ficou registrado também o que isso custa: o <em>join</em> acabou, a cópia pode envelhecer, e a pergunta "toda cobrança tem pedido?" não tem mais quem a responda sozinha.</p>
+<p>Essa última perda é a mais séria, porque aponta para algo que o ensaio já mostrou duas vezes em cada 2000 fechamentos. Com os dados separados, cobrar e emitir o pedido já não cabem numa transação. A cobrança é aprovada e a emissão falha, ou o <em>timeout</em> acontece depois de a cobrança ter ocorrido, e o cliente foi cobrado e não tem pedido. Hoje alguém do suporte estorna à mão, quando percebe. O que existe entre os dois passos, e como se desfaz o que já foi feito? A Aula 20 responde.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 2 — How to Model Microservices (seção sobre acoplamento, incluindo o acoplamento por dados comuns).</li>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 3 — Splitting the Monolith (seção "Data Decomposition Concerns": desempenho do <em>join</em> deslocado para a aplicação).</li>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 17 — Microservices Architecture (o dado por serviço e a observação sobre o banco compartilhado).</li>
+<li>Ford, Neal; Richards, Mark; Sadalage, Pramod; Dehghani, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021. Cap. 9 — Data Ownership and Distributed Transactions (propriedade única, comum e conjunta do dado).</li>
+<li>Ford, Neal; Richards, Mark; Sadalage, Pramod; Dehghani, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021. Cap. 10 — Distributed Data Access (os padrões <em>Interservice Communication</em> e <em>Column Schema Replication</em>, com suas vantagens e desvantagens).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>NEWMAN, Sam. <em>Building Microservices</em>. 2. ed. O'Reilly, 2021.</li>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>FORD, Neal; RICHARDS, Mark; SADALAGE, Pramod; DEHGHANI, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula18-granularidade/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 18 — Granularidade">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 18 — Granularidade
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula20-consistencia-e-saga/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 20 — Consistência e saga">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 20 — Consistência e saga
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

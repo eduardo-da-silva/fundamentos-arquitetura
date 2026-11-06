@@ -1,0 +1,2261 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo2/aula12-reorganizar-o-grafo/">
+      
+      
+      
+        <link rel="prev" href="../aula11-monolito-modular/">
+      
+      
+        <link rel="next" href="../exercicios-fixacao-aulas-11-12/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 12 — Reorganizar o grafo do Orion - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 12 — Reorganizar o grafo do Orion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dezessete-arestas-e-todas-com-o-mesmo-peso" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dezessete arestas, e todas com o mesmo peso
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-agrupamento-que-torna-a-conta-possivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O agrupamento que torna a conta possível
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O agrupamento que torna a conta possível">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duas-ficam-em-casa-quinze-cruzam-a-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Duas ficam em casa, quinze cruzam a fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quinze-de-dezessete-o-grafo-mal-e-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quinze de dezessete: o grafo mal é modular
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-aparece-em-cinco-das-quinze" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Checkout aparece em cinco das quinze
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciclo-entre-modulos-trava-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ciclo entre módulos trava a extração
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integracoes-de-novo-quem-ninguem-importa-nao-e-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Integracoes de novo: quem ninguém importa não é fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-a-tabela-de-arestas-inter-modulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: a tabela de arestas inter-módulo
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: a tabela de arestas inter-módulo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#05-modular-como-referencia-nenhum-ciclo-entre-os-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        05-modular como referência: nenhum ciclo entre os módulos
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-quinze-arestas-e-a-fronteira-de-cada-uma" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quinze arestas e a fronteira de cada uma
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-medido-e-o-proximo-formato-de-monolito" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou medido e o próximo formato de monólito
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dezessete-arestas-e-todas-com-o-mesmo-peso" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dezessete arestas, e todas com o mesmo peso
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-agrupamento-que-torna-a-conta-possivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O agrupamento que torna a conta possível
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O agrupamento que torna a conta possível">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#duas-ficam-em-casa-quinze-cruzam-a-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Duas ficam em casa, quinze cruzam a fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quinze-de-dezessete-o-grafo-mal-e-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quinze de dezessete: o grafo mal é modular
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-aparece-em-cinco-das-quinze" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Checkout aparece em cinco das quinze
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciclo-entre-modulos-trava-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ciclo entre módulos trava a extração
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integracoes-de-novo-quem-ninguem-importa-nao-e-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Integracoes de novo: quem ninguém importa não é fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-a-tabela-de-arestas-inter-modulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: a tabela de arestas inter-módulo
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: a tabela de arestas inter-módulo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#05-modular-como-referencia-nenhum-ciclo-entre-os-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        05-modular como referência: nenhum ciclo entre os módulos
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-quinze-arestas-e-a-fronteira-de-cada-uma" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quinze arestas e a fronteira de cada uma
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-medido-e-o-proximo-formato-de-monolito" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou medido e o próximo formato de monólito
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 2 — Arquiteturas Monolíticas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo2/aula12-reorganizar-o-grafo.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-12-reorganizar-o-grafo-do-orion">Aula 12 — Reorganizar o grafo do Orion<a class="headerlink" href="#aula-12-reorganizar-o-grafo-do-orion" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao terminar esta aula, temos condições de:</p>
+<ul>
+<li>separar as arestas do grafo oficial em internas e inter-módulo usando o agrupamento de módulos de domínio da Aula 11;</li>
+<li>contar as arestas inter-módulo de um recorte e conferir a conta contra o total (<code>internas + inter-módulo = arestas do recorte</code>);</li>
+<li>reconhecer um ciclo entre módulos e dizer o que custaria removê-lo;</li>
+<li>reler um componente da <em>Zone of Uselessness</em> como problema de modularização, e não como categoria de métrica;</li>
+<li>montar a tabela de arestas inter-módulo de um recorte, com a fronteira que cada aresta exigiria.</li>
+</ul>
+<h2 id="dezessete-arestas-e-todas-com-o-mesmo-peso">Dezessete arestas, e todas com o mesmo peso<a class="headerlink" href="#dezessete-arestas-e-todas-com-o-mesmo-peso" title="Permanent link">&para;</a></h2>
+<p>A Aula 11 deixou oito módulos de domínio desenhados por cima do mapa do Orion. O grafo por baixo continua o de sempre — dez componentes, dezessete arestas, o mesmo que a Aula 7 mediu —, só que agora cada componente carrega um módulo declarado:</p>
+<div class="admonition tip">
+<p class="admonition-title">Lembrete — os oito módulos de domínio</p>
+<table>
+<thead>
+<tr>
+<th>Módulo de domínio</th>
+<th>Componentes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Borda</td>
+<td><code>Portal</code></td>
+</tr>
+<tr>
+<td>Vitrine</td>
+<td><code>Catalogo</code>, <code>Promocoes</code></td>
+</tr>
+<tr>
+<td>Compra</td>
+<td><code>Checkout</code>, <code>Pedidos</code></td>
+</tr>
+<tr>
+<td>Financeiro</td>
+<td><code>Pagamentos</code></td>
+</tr>
+<tr>
+<td>Distribuição</td>
+<td><code>Logistica</code></td>
+</tr>
+<tr>
+<td>Comunicação</td>
+<td><code>Notificacoes</code></td>
+</tr>
+<tr>
+<td>Identidade</td>
+<td><code>Clientes</code></td>
+</tr>
+<tr>
+<td>Integração</td>
+<td><code>Integracoes</code></td>
+</tr>
+</tbody>
+</table>
+<p>Esse agrupamento é decisão da disciplina — existe para dar ao exercício de reorganização uma resposta verificável, não porque seja a única leitura defensável do domínio (a Aula 11 já registrou isso).</p>
+</div>
+<p>Na revisão do mapa, alguém faz a pergunta que esse agrupamento deixou em aberto: das dezessete dependências oficiais, quais ele tornou caras e quais ele tornou invisíveis? Sem os módulos, <code>Checkout --&gt; Pagamentos</code> e <code>Checkout --&gt; Pedidos</code> são a mesma coisa: duas setas. Com os módulos, a tabela acima diz que uma cruza de Compra para Financeiro e a outra não sai de Compra.</p>
+<p>Alguém conta à mão, aresta por aresta, e chega a um número que parece um diagnóstico ruim: das dezessete arestas do grafo oficial, só duas ficam dentro de um módulo. As outras quinze atravessam fronteira. A reação imediata é achar que o agrupamento está errado — que um corte que deixa 15 de 17 dependências cruzando fronteira não pode ser um bom corte.</p>
+<p>O diagrama abaixo é esse grafo oficial completo — as mesmas dez caixas e dezessete setas da Aula 7 —, com cada componente já dentro do módulo da tabela acima. Ele responde à pergunta que acabamos de fazer: quais das dezessete arestas ficam dentro de um módulo, e quais cruzam fronteira?</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Borda
+        Portal
+    end
+    subgraph Vitrine
+        Catalogo
+        Promocoes
+    end
+    subgraph Compra
+        Checkout
+        Pedidos
+    end
+    subgraph Financeiro
+        Pagamentos
+    end
+    subgraph Distribuicao
+        Logistica
+    end
+    subgraph Comunicacao
+        Notificacoes
+    end
+    subgraph Identidade
+        Clientes
+    end
+    subgraph Integracao
+        Integracoes
+    end
+
+    Promocoes --&gt; Catalogo
+    Checkout --&gt; Pedidos
+
+    Portal ==&gt; Catalogo
+    Portal ==&gt; Checkout
+    Portal ==&gt; Pedidos
+    Portal ==&gt; Clientes
+    Checkout ==&gt; Catalogo
+    Checkout ==&gt; Clientes
+    Checkout ==&gt; Promocoes
+    Checkout ==&gt; Pagamentos
+    Pedidos ==&gt; Notificacoes
+    Pedidos ==&gt; Logistica
+    Pagamentos ==&gt; Notificacoes
+    Logistica ==&gt; Notificacoes
+    Integracoes ==&gt; Catalogo
+    Integracoes ==&gt; Pedidos
+    Integracoes ==&gt; Notificacoes</code></pre>
+<blockquote>
+<p><strong>Convenção de leitura das setas</strong>: <code>A --&gt; B</code> significa que <strong>A depende de B</strong>. A seta fina (<code>--&gt;</code>) é aresta interna, dentro de um módulo; a seta grossa (<code>==&gt;</code>) é aresta inter-módulo — a distinção é de forma, não de cor. Contando: duas finas e quinze grossas, dezessete no total.
+<strong>O que o diagrama omite</strong>: a direção em que uma mudança de negócio se propaga pelo grafo, a frequência com que cada dependência muda, o volume de chamadas em produção e as classes dentro de cada componente.</p>
+</blockquote>
+<p>Esta aula mostra que o número não é o agrupamento falhando. É a medição funcionando.</p>
+<h2 id="o-agrupamento-que-torna-a-conta-possivel">O agrupamento que torna a conta possível<a class="headerlink" href="#o-agrupamento-que-torna-a-conta-possivel" title="Permanent link">&para;</a></h2>
+<h3 id="duas-ficam-em-casa-quinze-cruzam-a-fronteira">Duas ficam em casa, quinze cruzam a fronteira<a class="headerlink" href="#duas-ficam-em-casa-quinze-cruzam-a-fronteira" title="Permanent link">&para;</a></h3>
+<p>O agrupamento de módulos da Aula 11, recapitulado na caixa acima, é fixo pelo mesmo motivo já registrado ali. Aplicado ao grafo oficial, ele parte as dezessete arestas em dois grupos.</p>
+<p>Ficam dentro de um módulo:</p>
+<ul>
+<li><code>Checkout --&gt; Pedidos</code> — os dois em Compra;</li>
+<li><code>Promocoes --&gt; Catalogo</code> — os dois em Vitrine.</li>
+</ul>
+<p>As outras quinze ligam componentes de módulos diferentes. Podemos derivar a separação a partir da mesma lista de dependências da Aula 7, só acrescentando o mapa componente → módulo:</p>
+<div class="language-python highlight"><span class="filename">arestas_inter_modulo.py</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># As 17 arestas sao as do grafo oficial (Aula 7); nada novo aqui.</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">DEPENDENCIAS</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Checkout"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Promocoes"</span><span class="p">),</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pagamentos"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Promocoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Logistica"</span><span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">(</span><span class="s2">"Pagamentos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Logistica"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">]</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">MODULO</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="s2">"Portal"</span><span class="p">:</span> <span class="s2">"Borda"</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="s2">"Catalogo"</span><span class="p">:</span> <span class="s2">"Vitrine"</span><span class="p">,</span>      <span class="s2">"Promocoes"</span><span class="p">:</span> <span class="s2">"Vitrine"</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="s2">"Checkout"</span><span class="p">:</span> <span class="s2">"Compra"</span><span class="p">,</span>       <span class="s2">"Pedidos"</span><span class="p">:</span> <span class="s2">"Compra"</span><span class="p">,</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="s2">"Pagamentos"</span><span class="p">:</span> <span class="s2">"Financeiro"</span><span class="p">,</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="s2">"Logistica"</span><span class="p">:</span> <span class="s2">"Distribuicao"</span><span class="p">,</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="s2">"Notificacoes"</span><span class="p">:</span> <span class="s2">"Comunicacao"</span><span class="p">,</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="s2">"Clientes"</span><span class="p">:</span> <span class="s2">"Identidade"</span><span class="p">,</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="s2">"Integracoes"</span><span class="p">:</span> <span class="s2">"Integracao"</span><span class="p">,</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="p">}</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="n">internas</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">DEPENDENCIAS</span> <span class="k">if</span> <span class="n">MODULO</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">==</span> <span class="n">MODULO</span><span class="p">[</span><span class="n">b</span><span class="p">]]</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="n">inter</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">DEPENDENCIAS</span> <span class="k">if</span> <span class="n">MODULO</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">!=</span> <span class="n">MODULO</span><span class="p">[</span><span class="n">b</span><span class="p">]]</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">internas</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">DEPENDENCIAS</span><span class="p">)</span> <span class="o">==</span> <span class="mi">17</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">internas</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">inter</span><span class="p">))</span>   <span class="c1"># -&gt; 2 15</span>
+</span></code></pre></div>
+<p>O bloco é script de análise sobre o grafo oficial — não é código do Mini-Orion e não usa nomes dele. A conta que ele fecha, <code>2 + 15 = 17</code>, é a mesma verificação que a soma dos <span class="arithmatex">\(C_a\)</span> da Aula 7 já obedecia.</p>
+<p>A técnica não depende de Python nem do <code>import-linter</code>: qualquer ferramenta que exporte um grafo de dependência — <code>pydeps</code> aqui, <code>madge</code> num projeto Node, o grafo de <code>Nx</code> num monorepo TypeScript, a saída de <code>ArchUnit</code> em Java — dá a mesma lista de arestas para colorir de interna ou inter-módulo. O que muda de projeto para projeto é quem gera a lista; a contagem que a divide em dois grupos é a mesma conta.</p>
+<h3 id="quinze-de-dezessete-o-grafo-mal-e-modular">Quinze de dezessete: o grafo mal é modular<a class="headerlink" href="#quinze-de-dezessete-o-grafo-mal-e-modular" title="Permanent link">&para;</a></h3>
+<p>Quinze arestas inter-módulo em dezessete é a informação central da aula, e precisa ser lida sem eufemismo: <strong>o grafo atual do Orion mal é modular.</strong> Quase toda dependência do sistema cruza uma fronteira de módulo. Uma aresta inter-módulo é o que se paga — é a dependência que, para virar fronteira de verdade, precisaria de uma API publicada, um contrato no <code>import-linter</code> e a disciplina de não alcançar o interior do outro módulo.</p>
+<p>O ponto que costuma passar despercebido: esse 15 de 17 <strong>não é o exercício mal montado</strong>. O agrupamento não criou o problema; ele o tornou contável. Antes, "o Orion é pouco modular" era impressão. Agora é um número que fecha com o grafo, e um número que se acompanha: se uma reorganização baixar de quinze para dez arestas inter-módulo, isso é progresso mensurável; se subir, é regressão.</p>
+<div class="admonition warning">
+<p class="admonition-title">15 de 17 não é o agrupamento falhando</p>
+<p>Um corte diferente — separar <code>Pedidos</code> de <code>Checkout</code>, juntar <code>Financeiro</code> e <code>Distribuição</code> num módulo de pós-venda — mudaria a contagem, e nenhum desses cortes estaria errado. O que não se admite é trocar de agrupamento a cada revisão só para o número ficar menor: contagens de agrupamentos diferentes não são comparáveis entre si. A base tem de ser fixa para a medição significar alguma coisa.</p>
+</div>
+<h3 id="checkout-aparece-em-cinco-das-quinze">Checkout aparece em cinco das quinze<a class="headerlink" href="#checkout-aparece-em-cinco-das-quinze" title="Permanent link">&para;</a></h3>
+<p>Das quinze arestas inter-módulo, <code>Checkout</code> está em cinco: quatro saindo (<code>--&gt; Catalogo</code>, <code>--&gt; Clientes</code>, <code>--&gt; Promocoes</code>, <code>--&gt; Pagamentos</code>) e uma entrando (<code>Portal --&gt; Checkout</code>). É o hub do grafo.</p>
+<p>É o mesmo <code>Checkout</code> da Aula 7 com <span class="arithmatex">\(D = 0{,}03\)</span> — praticamente sobre a sequência principal, o melhor número da tabela depois do <code>Portal</code> — e o componente que mais causa incidente em produção. O contraexemplo do Módulo 1 reaparece com outra roupa: a métrica de distância não vê o caminho crítico, e o agrupamento em módulos também não vê o caminho crítico, mas vê o hub. Modularizar <code>Checkout</code> significa definir cinco contratos de fronteira ao mesmo tempo, e é por <code>Checkout</code> que passaria qualquer ciclo capaz de travar a extração do módulo Compra inteiro.</p>
+<h3 id="ciclo-entre-modulos-trava-a-extracao">Ciclo entre módulos trava a extração<a class="headerlink" href="#ciclo-entre-modulos-trava-a-extracao" title="Permanent link">&para;</a></h3>
+<p>A Aula 11 deixou a regra: extrair exige fronteira pronta. Um ciclo entre módulos é o caso em que a fronteira existe no desenho mas não separa nada — se o módulo A depende do B e o B depende do A, nenhum dos dois sai de dentro do processo sem o outro. A dependência mútua atravessa a fronteira nos dois sentidos, e a heurística da Aula 6 é direta: forma forte cruzando fronteira é dívida.</p>
+<p>Sob o agrupamento de módulos da Aula 11, o grafo do Orion <strong>não tem ciclo entre módulos</strong> — as quinze arestas inter-módulo, contraídas ao nível de módulo, formam um grafo acíclico: Borda e Integração no topo, Comunicação no fim, ninguém apontando de volta. Essa é a única boa notícia da conta. O que trava a modularização do Orion hoje não é um ciclo; é o volume (quinze) e o hub (<code>Checkout</code> em cinco).</p>
+<p>Um ciclo pode aparecer, no entanto, conforme o corte. O recorte legado da Aula 5 — quando <code>Checkout</code>, <code>Promocoes</code> e parte de <code>Pedidos</code> viviam num <code>CoreService</code> que tinha ciclo com <code>Promocoes</code> — é exatamente isso: um agrupamento em que a seta volta. Quebrá-lo custou dividir o <code>CoreService</code> em três e inverter uma direção de dependência por contrato. O Exercício 3 devolve essa situação num recorte pequeno.</p>
+<h3 id="integracoes-de-novo-quem-ninguem-importa-nao-e-fronteira">Integracoes de novo: quem ninguém importa não é fronteira<a class="headerlink" href="#integracoes-de-novo-quem-ninguem-importa-nao-e-fronteira" title="Permanent link">&para;</a></h3>
+<p><code>Integracoes</code> foi construído há um ano para padronizar toda integração com parceiro. Foi projetado de forma altamente abstrata — cinco dos seis elementos são contrato, <span class="arithmatex">\(A = 0{,}83\)</span> — e nenhum time adotou: <code>Pagamentos</code> e <code>Logistica</code> continuaram falando direto com seus provedores. Hoje ele depende de três componentes (<span class="arithmatex">\(C_e = 3\)</span>) e <strong>ninguém depende dele</strong> (<span class="arithmatex">\(C_a = 0\)</span>). Na Aula 7 isso o pôs na <em>Zone of Uselessness</em>, com <span class="arithmatex">\(D = 0{,}83\)</span> — abstração paga e não consumida.</p>
+<p>Relido como módulo, o diagnóstico fica mais concreto. O módulo Integração aporta três das quinze arestas inter-módulo: <code>Integracoes --&gt; Catalogo</code>, <code>Integracoes --&gt; Pedidos</code>, <code>Integracoes --&gt; Notificacoes</code>. Uma fronteira de módulo existe para proteger quem está do outro lado — quem importa o módulo passa a depender de um contrato em vez da implementação. Um módulo que ninguém importa não protege ninguém. Aquelas três arestas são custo de fronteira sem o retorno da fronteira: três dependências a manter, zero módulos servidos. <code>Integracoes</code> não é uma fronteira mal desenhada; é peso morto que a reorganização precisa nomear como tal, e a decisão sobre ele não é "melhorar o contrato", é "dissolver ou dar consumidores".</p>
+<h2 id="decisao-sobre-o-orion-a-tabela-de-arestas-inter-modulo">Decisão sobre o Orion: a tabela de arestas inter-módulo<a class="headerlink" href="#decisao-sobre-o-orion-a-tabela-de-arestas-inter-modulo" title="Permanent link">&para;</a></h2>
+<p>O artefato desta aula é a tabela das quinze arestas inter-módulo do grafo oficial, cada uma com a fronteira que precisaria existir para a dependência deixar de ser custo solto. O formato é o da seção <em>Tabela de arestas inter-módulo</em> do <a href="../../orion/">Orion Evolution Lab</a>.</p>
+<h3 id="05-modular-como-referencia-nenhum-ciclo-entre-os-modulos">05-modular como referência: nenhum ciclo entre os módulos<a class="headerlink" href="#05-modular-como-referencia-nenhum-ciclo-entre-os-modulos" title="Permanent link">&para;</a></h3>
+<p>O <code>code/mini-orion/05-modular/</code> é a versão resolvida em pequena escala. Três módulos de domínio — <code>compra</code>, <code>pagamentos</code>, <code>notificacoes</code> — mais o <code>nucleo</code> como <em>shared kernel</em>, e nenhum ciclo entre eles: o contrato <code>independence</code> garante que <code>pagamentos</code> e <code>notificacoes</code> não se conhecem, e o <code>forbidden</code> garante que nenhum dos dois olha para <code>compra</code>. Introduzir um ciclo ali exigiria quebrar <code>lint-imports</code>. A contagem de arestas inter-módulo desse checkpoint é pequena e acíclica; o grafo do Orion inteiro é o contraste — a mesma leitura, quinze vezes.</p>
+<p>Não convém confundir as duas escalas. As duas arestas internas de que esta aula fala são as do grafo oficial do Orion (<code>Checkout --&gt; Pedidos</code> e <code>Promocoes --&gt; Catalogo</code>), as mesmas do diagrama no início desta aula. O <code>05-modular/</code> é um exemplo menor e separado; o que ele demonstra é a ausência de ciclo, não um número de arestas para somar ao do Orion.</p>
+<p>A tabela abaixo detalha, aresta por aresta, o mesmo grafo que o diagrama do início já mostrou agrupado. Vale a ressalva feita ali: o diagrama e a tabela mostram estrutura, não prioridade. Frequência de mudança, volume de chamadas em produção e as classes dentro de cada componente pesam mais do que a contagem na hora de decidir qual fronteira introduzir primeiro — a estrutura é sintoma, não veredito, a mesma lição da Aula 7.</p>
+<h3 id="as-quinze-arestas-e-a-fronteira-de-cada-uma">As quinze arestas e a fronteira de cada uma<a class="headerlink" href="#as-quinze-arestas-e-a-fronteira-de-cada-uma" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aresta</th>
+<th>Fronteira (módulo → módulo)</th>
+<th>O que a fronteira teria de impor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Portal --&gt; Catalogo</code></td>
+<td>Borda → Vitrine</td>
+<td>API de leitura de vitrine; <code>Portal</code> não conhece o modelo interno de <code>Catalogo</code></td>
+</tr>
+<tr>
+<td><code>Portal --&gt; Checkout</code></td>
+<td>Borda → Compra</td>
+<td>API de sessão de compra; <code>Portal</code> abre e acompanha, não orquestra</td>
+</tr>
+<tr>
+<td><code>Portal --&gt; Pedidos</code></td>
+<td>Borda → Compra</td>
+<td>API de consulta de pedido, somente leitura</td>
+</tr>
+<tr>
+<td><code>Portal --&gt; Clientes</code></td>
+<td>Borda → Identidade</td>
+<td>API de identificação e endereços; <code>Portal</code> exibe, não altera cadastro</td>
+</tr>
+<tr>
+<td><code>Checkout --&gt; Catalogo</code></td>
+<td>Compra → Vitrine</td>
+<td>mesma API de vitrine; conferência de preço e disponibilidade no fechamento</td>
+</tr>
+<tr>
+<td><code>Checkout --&gt; Clientes</code></td>
+<td>Compra → Identidade</td>
+<td>API de identidade; snapshot de endereço no momento da compra</td>
+</tr>
+<tr>
+<td><code>Checkout --&gt; Promocoes</code></td>
+<td>Compra → Vitrine</td>
+<td>API de desconto (Aula 11, Ex. 3); <code>Checkout</code> pede um desconto, não o calcula</td>
+</tr>
+<tr>
+<td><code>Checkout --&gt; Pagamentos</code></td>
+<td>Compra → Financeiro</td>
+<td>contrato <code>Gateway</code> do <code>05-modular</code>; <code>Checkout</code> pede cobrança, não escolhe provedor</td>
+</tr>
+<tr>
+<td><code>Pedidos --&gt; Notificacoes</code></td>
+<td>Compra → Comunicação</td>
+<td>contrato <code>Notificador</code> e evento de confirmação; <code>Pedidos</code> publica, não formata</td>
+</tr>
+<tr>
+<td><code>Pedidos --&gt; Logistica</code></td>
+<td>Compra → Distribuição</td>
+<td>API de despacho; <code>Pedidos</code> solicita envio, <code>Logistica</code> decide rota e parceiro</td>
+</tr>
+<tr>
+<td><code>Pagamentos --&gt; Notificacoes</code></td>
+<td>Financeiro → Comunicação</td>
+<td>mesmo contrato <code>Notificador</code>; aviso de cobrança e estorno como evento</td>
+</tr>
+<tr>
+<td><code>Logistica --&gt; Notificacoes</code></td>
+<td>Distribuição → Comunicação</td>
+<td>mesmo contrato <code>Notificador</code>; aviso de rastreio como evento</td>
+</tr>
+<tr>
+<td><code>Integracoes --&gt; Catalogo</code></td>
+<td>Integração → Vitrine</td>
+<td>nada a impor — módulo que ninguém importa; ver seção anterior</td>
+</tr>
+<tr>
+<td><code>Integracoes --&gt; Pedidos</code></td>
+<td>Integração → Compra</td>
+<td>idem</td>
+</tr>
+<tr>
+<td><code>Integracoes --&gt; Notificacoes</code></td>
+<td>Integração → Comunicação</td>
+<td>idem</td>
+</tr>
+</tbody>
+</table>
+<p>Cinco linhas envolvem <code>Checkout</code> (uma como destino, quatro como origem). Três têm <code>Integracoes</code> como origem — e são as únicas da tabela sem fronteira a justificar, porque não há do outro lado ninguém que a fronteira proteja. Das doze restantes, três convergem em <code>Comunicação</code> com o mesmo contrato (<code>Notificador</code>), o que sugere que a primeira fronteira a valer o esforço talvez seja a de <code>Notificacoes</code>: uma API, três dependentes vivos (<code>Pedidos</code>, <code>Pagamentos</code>, <code>Logistica</code>) atendidos por um contrato só. Contando também <code>Integracoes</code>, <code>Notificacoes</code> tem quatro dependentes (<span class="arithmatex">\(C_a = 4\)</span>) — mas a quarta aresta é justamente a de peso morto, e não é ela que a fronteira precisa servir.</p>
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Interna ou inter-módulo?</strong> Para cada uma das arestas abaixo, diga se ela fica dentro de um módulo ou atravessa fronteira, pelo agrupamento da Aula 11, e nomeie os módulos dos dois lados.</p>
+<p>a. <code>Promocoes --&gt; Catalogo</code>
+b. <code>Checkout --&gt; Pagamentos</code>
+c. <code>Checkout --&gt; Pedidos</code>
+d. <code>Pedidos --&gt; Notificacoes</code></p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — interna.</strong> <code>Promocoes</code> e <code>Catalogo</code> estão os dois em Vitrine. É uma das duas arestas internas do grafo.</p>
+<p><strong>b — inter-módulo.</strong> <code>Checkout</code> (Compra) → <code>Pagamentos</code> (Financeiro).</p>
+<p><strong>c — interna.</strong> <code>Checkout</code> e <code>Pedidos</code> estão os dois em Compra. É a outra aresta interna.</p>
+<p><strong>d — inter-módulo.</strong> <code>Pedidos</code> (Compra) → <code>Notificacoes</code> (Comunicação).</p>
+</details>
+</li>
+<li>
+<p><strong>Conte e confira.</strong> Considere o recorte <code>{Portal, Checkout, Catalogo, Promocoes}</code> com as arestas do grafo oficial que ligam esses quatro componentes. Liste as arestas do recorte, separe internas de inter-módulo pelo agrupamento da Aula 11, e confirme que <code>internas + inter-módulo</code> bate com o total de arestas do recorte.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>Cinco arestas ligam os quatro componentes: <code>Portal --&gt; Catalogo</code>, <code>Portal --&gt; Checkout</code>, <code>Checkout --&gt; Catalogo</code>, <code>Checkout --&gt; Promocoes</code>, <code>Promocoes --&gt; Catalogo</code>.</p>
+<p>Interna: só <code>Promocoes --&gt; Catalogo</code> (Vitrine → Vitrine). As outras quatro atravessam fronteira: <code>Portal --&gt; Catalogo</code> (Borda → Vitrine), <code>Portal --&gt; Checkout</code> (Borda → Compra), <code>Checkout --&gt; Catalogo</code> (Compra → Vitrine), <code>Checkout --&gt; Promocoes</code> (Compra → Vitrine).</p>
+<p>Conta: <code>1 interna + 4 inter-módulo = 5 arestas</code>, igual ao total do recorte. É a mesma verificação que <code>2 + 15 = 17</code> faz no grafo inteiro.</p>
+</details>
+</li>
+<li>
+<p><strong>Ache o ciclo e precifique.</strong> Um grupo propõe, para o recorte <code>{Portal, Checkout, Catalogo, Promocoes}</code>, este agrupamento: módulo <code>Entrada</code> = <code>{Portal, Catalogo}</code> ("é o que o cliente vê primeiro"), módulo <code>Fechamento</code> = <code>{Checkout, Promocoes}</code>. Contraia as arestas do recorte ao nível de módulo. Há ciclo entre <code>Entrada</code> e <code>Fechamento</code>? Se houver, diga o que custaria removê-lo.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>Contraindo as cinco arestas: <code>Portal --&gt; Catalogo</code> fica interna a <code>Entrada</code>; <code>Checkout --&gt; Promocoes</code> fica interna a <code>Fechamento</code>; sobram <code>Portal --&gt; Checkout</code> (<code>Entrada → Fechamento</code>), mais <code>Checkout --&gt; Catalogo</code> e <code>Promocoes --&gt; Catalogo</code> (as duas <code>Fechamento → Entrada</code>).</p>
+<p><code>Entrada → Fechamento</code> e <code>Fechamento → Entrada</code>: há ciclo. Nenhum dos dois módulos se extrai sem o outro.</p>
+<p>Remover o ciclo custa uma de duas coisas. Ou se muda o agrupamento — tirar <code>Catalogo</code> de <code>Entrada</code> e pô-lo junto de <code>Promocoes</code> (que é o corte Vitrine da Aula 11), o que dissolve o módulo <code>Entrada</code> e o critério "o que o cliente vê primeiro". Ou se inverte <code>Portal --&gt; Checkout</code>, fazendo <code>Checkout</code> publicar um evento que <code>Portal</code> lê — mudança maior do que o agrupamento vale. O ciclo apareceu porque o corte foi por papel de apresentação, não por assunto de negócio; é a mesma diferença de coesão que separa a Aula 10 da Aula 11.</p>
+</details>
+</li>
+<li>
+<p><strong>Julgue: o agrupamento de módulos da Aula 11 é bom?</strong> Ele deixa 15 de 17 arestas atravessando fronteira e concentra cinco delas em <code>Checkout</code>. Um corte alternativo — separar <code>Pedidos</code> de <code>Checkout</code>, ou juntar <code>Financeiro</code>, <code>Distribuição</code> e <code>Comunicação</code> num módulo de pós-venda — produziria outra contagem.</p>
+<p>Mais de uma resposta é aceitável, e os dois lados têm defensores competentes. O que se avalia: se a sua resposta define o <strong>critério</strong> de "bom" que está usando — número de arestas inter-módulo? alinhamento de cada módulo a um time? tamanho da API pública que cada fronteira exigiria? número de módulos servidos por fronteira? —, aplica esse critério aos dois cortes e reconhece o que o corte que você não escolheu tem de defensável. Uma resposta que só diz "15 de 17 é ruim, logo o agrupamento é ruim" confunde a medição com o que ela mede: o número alto é do grafo, não do corte. Resposta sem critério nomeado não conta como resposta técnica.</p>
+</li>
+</ol>
+<h2 id="atividade-em-grupo">Atividade em grupo<a class="headerlink" href="#atividade-em-grupo" title="Permanent link">&para;</a></h2>
+<p>Sobre o recorte do seu grupo no Orion Evolution Lab, partindo do mapa com os módulos de domínio já marcados (Aula 11):</p>
+<ol>
+<li>Preencham a <strong>tabela de arestas inter-módulo</strong> do recorte, no formato da seção 2 do <a href="../../orion/">Orion Evolution Lab</a>: origem (módulo), destino (módulo) e a fronteira que cada aresta exigiria — a API ou o contrato, não a implementação.</li>
+<li>Confiram a conta: <code>arestas internas + arestas inter-módulo = total de arestas do recorte</code>. Se não fechar, há erro de leitura antes de qualquer análise.</li>
+<li>Verifiquem se há <strong>ciclo entre módulos</strong>. Se houver, nomeiem o ciclo e o custo de removê-lo — inverter uma dependência por contrato, mover um componente de módulo, ou fundir dois módulos. Ciclo não nomeado é pendência escondida.</li>
+<li><strong>Obrigatório:</strong> apontem a aresta inter-módulo do recorte que o grupo <strong>não consegue justificar como fronteira</strong> — aquela em que não dá para dizer que API o outro lado publicaria, ou em que um dos módulos não tem quem o importe. Digam o que isso revela: um módulo mal traçado, um componente no módulo errado, ou um componente que, como <code>Integracoes</code>, é peso morto e não fronteira.</li>
+</ol>
+<p>O item 4 é o ponto da atividade. Todo agrupamento tem uma aresta que ele organiza no desenho mas não sustenta como fronteira real; achar qual é diz mais sobre o recorte do que a lista limpa das arestas que se justificam sozinhas.</p>
+<h2 id="o-que-ficou-medido-e-o-proximo-formato-de-monolito">O que ficou medido e o próximo formato de monólito<a class="headerlink" href="#o-que-ficou-medido-e-o-proximo-formato-de-monolito" title="Permanent link">&para;</a></h2>
+<p>A reorganização do grafo do Orion produziu três fatos, todos verificáveis contra o grafo oficial. Das dezessete arestas, quinze atravessam fronteira de módulo e duas ficam dentro — o sistema mal é modular, e agora isso é um número que se acompanha, não uma impressão. O agrupamento de módulos da Aula 11 é acíclico ao nível de módulo: nenhuma extração está travada por ciclo. E <code>Checkout</code> é o hub, presente em cinco das quinze arestas inter-módulo, enquanto <code>Integracoes</code> aporta três fronteiras que não protegem ninguém, porque nenhum módulo o importa.</p>
+<p>Nada disso mudou o empacotamento. O Orion "modular" desta aula é o mesmo processo único das Aulas 9 a 11, com fronteiras que existem no diagrama e valeriam contratos de <code>import-linter</code> se fossem introduzidas. Camadas governam a direção da dependência; módulos de domínio governam o encapsulamento. Nenhum dos dois diz nada sobre um sistema cuja forma é uma sequência fixa — no Mini-Orion, <code>fechar_pedido</code> percorre sempre a mesma ordem: validar, montar, cobrar, emitir, notificar — nem sobre um sistema construído em torno de um núcleo estável com regras que entram e saem, como <code>Promocoes</code>, que recebe um tipo novo de desconto quase todo trimestre e obriga o deploy do sistema inteiro. Existe forma de monólito que responda a isso? É o que a Aula 13 examina.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 3 — Modularity (métricas de acoplamento entre módulos; connascência na fronteira); Cap. 8 — Component-Based Thinking (particionar por domínio e o efeito no acoplamento).</li>
+<li>Martin, Robert C. <em>Clean Architecture</em>. Cap. 14 — Component Cohesion; Cap. 15 — Component Coupling (o princípio das dependências acíclicas).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>MARTIN, Robert C. <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula11-monolito-modular/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 11 — Monólito modular">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 11 — Monólito modular
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../exercicios-fixacao-aulas-11-12/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Exercícios de fixação (Aulas 11 e 12)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Exercícios de fixação (Aulas 11 e 12)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

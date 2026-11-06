@@ -1,0 +1,2232 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo2/aula14-quando-o-monolito-deixa-de-servir/">
+      
+      
+      
+        <link rel="prev" href="../aula13-pipeline-e-microkernel/">
+      
+      
+        <link rel="next" href="../exercicios-fixacao-aulas-13-14/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 14 — Quando o monólito deixa de servir - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 14 — Quando o monólito deixa de servir
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-conciliacao-que-pede-outro-relogio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A conciliação que pede outro relógio
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ler-o-sinal-antes-de-mexer-na-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ler o sinal antes de mexer na fronteira
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ler o sinal antes de mexer na fronteira">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quatro-sinais-que-pesam-a-favor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quatro sinais que pesam a favor
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-que-nao-sustentam-a-decisao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três que não sustentam a decisão
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nao-se-extrai-o-que-nao-tem-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Não se extrai o que não tem fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-extracao-cobra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a extração cobra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-gatilho-do-adr-009-relido" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O gatilho do ADR-009, relido
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-pagamentos-como-candidato-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: Pagamentos como candidato a extração
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: Pagamentos como candidato a extração">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-tres-respostas-na-mesa" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As três respostas na mesa
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-diagrama-dois-eixos-que-separam-o-candidato" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagrama: dois eixos que separam o candidato
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-pagamentos-como-candidato-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Pagamentos como candidato a extração
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-a-conta-que-o-modulo-3-abre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e a conta que o Módulo 3 abre
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-conciliacao-que-pede-outro-relogio" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A conciliação que pede outro relógio
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ler-o-sinal-antes-de-mexer-na-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Ler o sinal antes de mexer na fronteira
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ler o sinal antes de mexer na fronteira">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quatro-sinais-que-pesam-a-favor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quatro sinais que pesam a favor
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-que-nao-sustentam-a-decisao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três que não sustentam a decisão
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nao-se-extrai-o-que-nao-tem-fronteira" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Não se extrai o que não tem fronteira
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-extracao-cobra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a extração cobra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-gatilho-do-adr-009-relido" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O gatilho do ADR-009, relido
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-pagamentos-como-candidato-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: Pagamentos como candidato a extração
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: Pagamentos como candidato a extração">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-tres-respostas-na-mesa" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As três respostas na mesa
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-diagrama-dois-eixos-que-separam-o-candidato" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagrama: dois eixos que separam o candidato
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-pagamentos-como-candidato-a-extracao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Pagamentos como candidato a extração
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-a-conta-que-o-modulo-3-abre" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e a conta que o Módulo 3 abre
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 2 — Arquiteturas Monolíticas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo2/aula14-quando-o-monolito-deixa-de-servir.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-14-quando-o-monolito-deixa-de-servir">Aula 14 — Quando o monólito deixa de servir<a class="headerlink" href="#aula-14-quando-o-monolito-deixa-de-servir" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>separar um sinal legítimo de extração — escala própria, cadência de release própria, isolamento de falha, autonomia de time — de um sinal que não sustenta a decisão: moda, estética, "monólito é feio";</li>
+<li>usar os contratos de um checkpoint modular como evidência de que a fronteira lógica de um módulo já está pronta para virar fronteira física;</li>
+<li>nomear o que a extração cobra — a transação local que passa a ser distribuída, o deploy único que vira dois deploys coordenados, o teste que rodava sem rede e passa a precisar de uma;</li>
+<li>redigir um ADR de candidato a extração com gatilho mensurável e condição de falseamento;</li>
+<li>dizer, para um módulo dado, o que ainda não justifica extraí-lo.</li>
+</ul>
+<h2 id="a-conciliacao-que-pede-outro-relogio">A conciliação que pede outro relógio<a class="headerlink" href="#a-conciliacao-que-pede-outro-relogio" title="Permanent link">&para;</a></h2>
+<p>A Aula 13 fechou com uma condição: adiar a distribuição é de graça enquanto todas as partes do Orion toleram o mesmo ritmo operacional — um deploy, uma janela de manutenção, uma escala. Esta aula parte do primeiro ponto em que essa condição deixa de valer.</p>
+<p><code>Pagamentos</code> responde por cobrança, estorno e conciliação com provedores. A cobrança acontece no fluxo síncrono do fechamento de compra, junto com o checkout. A conciliação, não: ela cruza o que o Orion registrou com o que cada provedor reporta, e em campanha esse volume acumula depressa. O time de conciliação precisa reprocessar em lote, num ritmo que ele controla, e derrubar temporariamente o processamento para ajustar uma regra de casamento de transação — uma janela de manutenção que não pode cair no horário de pico do checkout.</p>
+<p>Hoje <code>Pagamentos</code> sobe e desce junto com o checkout. Não há como dar à conciliação uma janela própria sem parar o fechamento de compra, nem como reprocessar um lote grande sem disputar recurso com o tráfego interativo. É o primeiro caso no Orion em que uma parte tem um requisito operacional genuinamente diferente do resto — não "mais carga", que todo o sistema tem em campanha, mas <em>outro ritmo</em>.</p>
+<p>O Módulo 1 mediu <code>Pagamentos</code> com <span class="arithmatex">\(C_a = 1\)</span> e <span class="arithmatex">\(C_e = 1\)</span>: um dos menores acoplamentos do grafo de dez componentes. Isso torna a extração <em>possível</em>. Não é o que a <em>justifica</em> — acoplamento baixo é pré-condição, não motivo.</p>
+<h2 id="ler-o-sinal-antes-de-mexer-na-fronteira">Ler o sinal antes de mexer na fronteira<a class="headerlink" href="#ler-o-sinal-antes-de-mexer-na-fronteira" title="Permanent link">&para;</a></h2>
+<h3 id="quatro-sinais-que-pesam-a-favor">Quatro sinais que pesam a favor<a class="headerlink" href="#quatro-sinais-que-pesam-a-favor" title="Permanent link">&para;</a></h3>
+<p>Um módulo é candidato legítimo a virar processo próprio quando aparece ao menos um destes, medido e não suposto:</p>
+<ul>
+<li><strong>escala própria</strong> — a carga do módulo cresce por uma causa que não é a do resto do sistema. A conciliação de <code>Pagamentos</code> em campanha é isso; o volume de <code>Notificacoes</code>, que cresce na mesma proporção dos pedidos, não é.</li>
+<li><strong>cadência de release própria</strong> — o módulo precisa entregar correções num ritmo que o deploy compartilhado atrasa. Um contrato novo com provedor de pagamento sai quando o provedor manda, não quando o trem de release do Orion passa.</li>
+<li><strong>isolamento de falha</strong> — uma falha no módulo precisa parar de derrubar os outros. Hoje um erro em <code>Pagamentos</code> que trave o processo leva o checkout junto.</li>
+<li><strong>autonomia de time</strong> — um time dono do módulo precisa decidir sozinho sobre stack, schema e deploy, e a fronteira compartilhada obriga coordenação a cada mudança.</li>
+</ul>
+<p>Nenhum dos quatro é sobre o código ser feio. Todos são sobre o módulo e o resto do sistema terem passado a viver em relógios diferentes.</p>
+<h3 id="tres-que-nao-sustentam-a-decisao">Três que não sustentam a decisão<a class="headerlink" href="#tres-que-nao-sustentam-a-decisao" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>moda</strong> — as arquiteturas de referência do ano são distribuídas. Isso descreve o circuito de conferência, não o Orion.</li>
+<li><strong>estética</strong> — "o monólito é grande e desconfortável de ler". Um monólito modular se lê pela API de cada módulo; se não se lê, o problema é fronteira interna, e a Aula 11 já tratou disso sem rede.</li>
+<li><strong>"monólito não escala"</strong> — a frase que abriu a Aula 9. Sem um componente apontado e uma carga descrita, ela não aponta para lugar nenhum.</li>
+</ul>
+<div class="admonition question">
+<p class="admonition-title">Pausa</p>
+<p>A diretoria pediu, na Aula 9, um plano de migração para microsserviços. O sintoma desta aula — a conciliação precisando de outro ritmo — atende ao pedido da diretoria, ou é outra coisa que por acaso caminha na mesma direção?</p>
+</div>
+<h3 id="nao-se-extrai-o-que-nao-tem-fronteira">Não se extrai o que não tem fronteira<a class="headerlink" href="#nao-se-extrai-o-que-nao-tem-fronteira" title="Permanent link">&para;</a></h3>
+<p>A Aula 11 deixou <code>05-modular/</code> com três módulos, cada um com <code>api.py</code> público e <em>internals</em> marcados com <code>_</code>. O módulo <code>pagamentos</code> tem a API que os outros enxergam:</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/05-modular/mini_orion/pagamentos/api.py (recorte)</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">ResultadoCobranca</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">APROVADA</span> <span class="o">=</span> <span class="s2">"aprovada"</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">RECUSADA_PELO_EMISSOR</span> <span class="o">=</span> <span class="s2">"recusada_pelo_emissor"</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">ACIMA_DO_LIMITE</span> <span class="o">=</span> <span class="s2">"acima_do_limite"</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">PROVEDOR_INDISPONIVEL</span> <span class="o">=</span> <span class="s2">"provedor_indisponivel"</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">PedidoCobranca</span><span class="p">:</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">valor</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">cartao</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">parcelas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="k">class</span><span class="w"> </span><span class="nc">Gateway</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cobrar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pedido</span><span class="p">:</span> <span class="n">PedidoCobranca</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultadoCobranca</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p>Os provedores concretos vivem em <code>pagamentos._provedores</code> e ninguém de fora os importa. Três contratos do <code>setup.cfg</code> prendem isso:</p>
+<div class="language-ini highlight"><span class="filename">code/mini-orion/05-modular/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">[importlinter:contract:pagamentos-e-notificacoes-independentes]</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">independence</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="na">modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="na">mini_orion.pagamentos</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="na">mini_orion.notificacoes</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">[importlinter:contract:downstream-nao-importa-compra]</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="na">mini_orion.pagamentos</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="na">mini_orion.notificacoes</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="k">[importlinter:contract:sem-reach-in-nos-internals]</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="na">mini_orion.pagamentos._provedores</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="na">mini_orion.notificacoes._fila</span>
+</span></code></pre></div>
+<p><code>pagamentos</code> não conhece <code>compra</code> nem <code>notificacoes</code>; <code>compra</code> fala com <code>pagamentos.api</code> e não alcança <code>pagamentos._provedores</code>. E há um teste que exercita o módulo sem instanciar nenhum outro:</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/05-modular/tests/test_isolamento.py (recorte)</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_pagamentos_isolado</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">resultado</span> <span class="o">=</span> <span class="n">GatewayPagamentoX</span><span class="p">()</span><span class="o">.</span><span class="n">cobrar</span><span class="p">(</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="n">PedidoCobranca</span><span class="p">(</span><span class="n">valor</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">cartao</span><span class="o">=</span><span class="s2">"4111111111"</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="k">assert</span> <span class="n">resultado</span> <span class="ow">is</span> <span class="n">ResultadoCobranca</span><span class="o">.</span><span class="n">APROVADA</span>
+</span></code></pre></div>
+<p>Esse conjunto — API pública, <em>internals</em> fechados, contrato que falha na CI se alguém violar, teste que roda isolado — é a fronteira lógica pronta. Um componente <em>big ball of mud</em>, em que qualquer parte alcança qualquer outra, não tem nada disso: extraí-lo é primeiro construir a fronteira, sob pressão, com o cabo de rede já comprado. <code>pagamentos</code> está do lado bom dessa linha; é por isso que ele, e não outro módulo, entra no ADR desta aula.</p>
+<h3 id="o-que-a-extracao-cobra">O que a extração cobra<a class="headerlink" href="#o-que-a-extracao-cobra" title="Permanent link">&para;</a></h3>
+<p>Passar <code>pagamentos</code> para um processo próprio, atrás da rede, muda três coisas concretas — todas hoje de graça no checkpoint:</p>
+<ul>
+<li><strong>a transação local vira distribuída.</strong> No <code>fechar_pedido</code> de <code>compra</code>, cobrar e emitir o pedido acontecem no mesmo processo: ou os dois ocorrem, ou nenhum, sem trabalho extra. Com <code>pagamentos</code> fora, cobrar é uma chamada de rede e emitir é local — não há commit único, e passa a existir o caso de a cobrança ter acontecido e a emissão não.</li>
+<li><strong>um deploy vira dois deploys coordenados.</strong> Hoje <code>compra</code> e <code>pagamentos</code> sobem no mesmo artefato; uma mudança no formato de <code>PedidoCobranca</code> ou de <code>ResultadoCobranca</code> entra atômica. Separados, os dois lados versionam o contrato e coordenam a ordem de subida — o campo novo primeiro no consumidor ou no produtor.</li>
+<li><strong>o teste que rodava sem rede passa a precisar de uma.</strong> <code>test_pagamentos_isolado</code> hoje instancia uma classe e chama um método. Com <code>pagamentos</code> remoto, o teste equivalente do lado de <code>compra</code> sobe o serviço e fala com ele pela rede, ou usa um dublê que imita a resposta — e um dublê que diverge do serviço real é uma fonte de erro nova.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Distribuir troca a classe de falha, não a remove</p>
+<p>Com <code>pagamentos</code> isolado, um bug que trave o módulo para de derrubar o checkout — o isolamento de falha é real. Em troca, <code>pagamentos</code> indisponível deixa de ser uma exceção que o Python levanta na hora e vira timeout, repetição e estado ambíguo do lado de <code>compra</code>. A Aula 9 já nomeou esses cinco custos; o Módulo 3 os mede.</p>
+</div>
+<h3 id="o-gatilho-do-adr-009-relido">O gatilho do ADR-009, relido<a class="headerlink" href="#o-gatilho-do-adr-009-relido" title="Permanent link">&para;</a></h3>
+<p>A <a href="../aula09-monolito-nao-e-o-problema/">Aula 9</a> registrou o <strong>ADR-009</strong>: "o Orion permanece um único <em>deployable</em> pelos próximos 12 meses". Aquele ADR não fechou a porta — deixou um gatilho de reabertura observável, e uma das cláusulas era, quase à letra, o sintoma desta aula: <em>uma parte do sistema passar a exigir escala independente medida — por exemplo, a conciliação de <code>Pagamentos</code> precisando de janela e ritmo próprios que o deploy único impede</em>.</p>
+<p>O sintoma agora existe. O que ainda não existe é a medição. "A conciliação precisa de outro ritmo" é uma descrição do time de operação; o gatilho do ADR-009 pede um número — a cadência de release de <code>Pagamentos</code> divergindo da dos demais módulos, observada ao longo de um trimestre. Esta aula produz o ADR que fixa esse número e diz o que fazer enquanto ele não dispara.</p>
+<h2 id="decisao-sobre-o-orion-pagamentos-como-candidato-a-extracao">Decisão sobre o Orion: Pagamentos como candidato a extração<a class="headerlink" href="#decisao-sobre-o-orion-pagamentos-como-candidato-a-extracao" title="Permanent link">&para;</a></h2>
+<h3 id="as-tres-respostas-na-mesa">As três respostas na mesa<a class="headerlink" href="#as-tres-respostas-na-mesa" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Separar a carga de conciliação dentro do processo — agendador e fila próprios, mesmo <em>deployable</em></td>
+<td>dá à conciliação um ritmo de execução próprio e uma janela que não é a do checkout</td>
+<td>um agendador e uma fila internos a manter; não dá cadência de release própria nem isola falha por processo</td>
+<td>quando o que diverge é a cadência de <em>release</em>, e não só o horário de execução</td>
+</tr>
+<tr>
+<td>Extrair <code>Pagamentos</code> para um serviço agora</td>
+<td>cadência de release, janela de manutenção e escala próprias, de fato</td>
+<td>transação distribuída no fechamento, dois deploys coordenados, teste de <code>compra</code> com rede ou dublê, observabilidade distribuída</td>
+<td>quando o ganho não está medido e o gatilho do ADR-009 não disparou</td>
+</tr>
+<tr>
+<td>Não registrar nada e revisitar quando incomodar</td>
+<td>zero trabalho agora</td>
+<td>a decisão volta a ser tomada de memória, sob pressão, no meio de um incidente de campanha</td>
+<td>quando já há sintoma nomeado — como agora</td>
+</tr>
+</tbody>
+</table>
+<p>A primeira e a segunda alternativas têm defensores competentes. Quem separa a carga dentro do processo aposta que o sintoma é de agendamento e se resolve sem rede. Quem extrai agora aposta que a fronteira lógica sem a física demora a sair do papel, e que forçar a separação enquanto o acoplamento é baixo (<span class="arithmatex">\(C_a = 1\)</span>, <span class="arithmatex">\(C_e = 1\)</span>) sai mais barato do que esperar.</p>
+<h3 id="o-diagrama-dois-eixos-que-separam-o-candidato">O diagrama: dois eixos que separam o candidato<a class="headerlink" href="#o-diagrama-dois-eixos-que-separam-o-candidato" title="Permanent link">&para;</a></h3>
+<p>Pergunta que o gráfico responde: por que <code>Pagamentos</code>, e não <code>Catalogo</code>, <code>Checkout</code> ou <code>Notificacoes</code>, é o módulo que entra no ADR?</p>
+<pre class="mermaid"><code>quadrantChart
+    title Posicao qualitativa de quatro partes do Orion
+    x-axis Release junto do monolito --&gt; Release em ritmo proprio
+    y-axis Escala junto do monolito --&gt; Escala em ritmo proprio
+    quadrant-1 Candidato a extracao
+    quadrant-2 Replica de leitura resolve, sem extrair
+    quadrant-3 Segue o ritmo do monolito
+    quadrant-4 Deploy isolado interno ja resolve
+    Pagamentos: [0.82, 0.78]
+    Catalogo: [0.34, 0.72]
+    Notificacoes: [0.62, 0.31]
+    Checkout: [0.27, 0.33]</code></pre>
+<p>As setas dos eixos indicam a direção de crescimento — da esquerda para a direita e de baixo para cima —, não dependência. <code>Pagamentos</code> fica no quadrante alto-alto: a conciliação pede escala própria <em>e</em> a integração com provedores pede cadência de release própria. <code>Catalogo</code> tem carga de leitura que cresce sozinha em campanha (<span class="arithmatex">\(C_a = 4\)</span>), mas sua cadência de release acompanha o resto e seus quatro dependentes tornam a fronteira cara — escala isolada, ou uma réplica de leitura, resolve sem separar processo. <code>Checkout</code> é o hub, em 5 das 15 arestas inter-módulo e no caminho crítico; move-se com todo o sistema e não tem ritmo próprio de nada. <code>Notificacoes</code> entrega mudança de canal num ritmo relativamente próprio, mas seu volume cresce colado ao de pedidos.</p>
+<p>Nada no gráfico é medido: as posições vêm de julgamento, não de instrumentação. Ele também não mostra o custo de rede de cada extração, nem por que os quatro dependentes de <code>Catalogo</code> pesam mais que o acoplamento baixo de <code>Pagamentos</code>, nem o volume de tráfego em cada aresta. Serve para ordenar candidatos, não para decidir por si.</p>
+<h3 id="adr-pagamentos-como-candidato-a-extracao">📐 ADR — Pagamentos como candidato a extração<a class="headerlink" href="#adr-pagamentos-como-candidato-a-extracao" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — <code>Pagamentos</code> como candidato a extração</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceito. Não autoriza a extração; registra o candidato e o gatilho.</td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td>A conciliação de <code>Pagamentos</code> com provedores precisa reprocessar em lote, num ritmo próprio, e derrubar o processamento numa janela de manutenção que não pode coincidir com o pico do checkout. Hoje <code>Pagamentos</code> sobe e desce com o checkout. É o primeiro requisito operacional do Orion genuinamente distinto do resto — outro ritmo, não mais carga. <code>Pagamentos</code> tem <span class="arithmatex">\(C_a = 1\)</span> e <span class="arithmatex">\(C_e = 1\)</span>, e em <code>05-modular/</code> já tem API pública (<code>Gateway</code>, <code>PedidoCobranca</code>, <code>ResultadoCobranca</code>), <em>internals</em> fechados e três contratos de <code>import-linter</code> que falham a CI se a fronteira for violada. A fronteira lógica existe; a física, não.</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td>Registrar <code>Pagamentos</code> como candidato a extração. Enquanto o gatilho abaixo não disparar, o trabalho é separar a carga de conciliação dentro do processo — agendador e fila próprios, mesmo <em>deployable</em> —, medida reversível que não compra rede. A extração só é autorizada por um ADR posterior, disparado pelo gatilho.</td>
+</tr>
+<tr>
+<td><strong>Gatilho mensurável</strong></td>
+<td>Medir, durante um trimestre, a cadência de release de <code>Pagamentos</code> contra a dos demais módulos. O gatilho dispara se as correções de <code>Pagamentos</code> — contrato de provedor, regra de casamento de transação — precisarem sair fora do trem de release compartilhado mais de uma vez por sprint, ou se a janela de manutenção da conciliação bloquear um deploy de outro módulo mais de uma vez no trimestre.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Extrair <code>Pagamentos</code> agora: dá cadência e janela próprias de fato, mas cobra transação distribuída no fechamento, dois deploys coordenados e teste de <code>compra</code> com rede ou dublê, sem ganho medido. (b) Não registrar nada: evita trabalho agora, ao custo de a decisão voltar a ser tomada de memória, sob pressão, num incidente de campanha.</td>
+</tr>
+<tr>
+<td><strong>Consequências positivas</strong></td>
+<td>O candidato fica nomeado com um número que decide, não com "quando incomodar". A separação de carga em processo resolve o conflito de janela sem rede e é reversível. Se o gatilho disparar, a extração começa com a fronteira lógica já pronta e testada.</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td>Registrar um candidato cria expectativa: diretoria e time podem tratar a extração como decidida e antecipar contrato de rede e infraestrutura antes de o gatilho disparar. O gatilho depende de medir cadência de release por módulo, instrumentação que o Orion não tem hoje — enquanto não existir, o ADR não é falseável na prática. O agendador e a fila internos da separação de carga são código novo a manter, e podem aliviar a pressão o bastante para adiar indefinidamente uma extração que já se justificaria. Se o gatilho disparar, entra a conta inteira da rede — transação distribuída entre cobrar e emitir, dois deploys coordenados, testes de <code>compra</code> dependendo de um dublê de <code>Pagamentos</code>.</td>
+</tr>
+<tr>
+<td><strong>Reversão</strong></td>
+<td>Enquanto for só o registro mais a separação de carga em processo: apagar o ADR e remover o agendador — barato. Depois que a extração acontecer: reintroduzir o processo único e recuperar o commit local entre cobrança e emissão — caro, e mais caro a cada mês que outro consumidor passar a falar com o serviço de <code>Pagamentos</code>.</td>
+</tr>
+<tr>
+<td><strong>Condição de falseamento</strong></td>
+<td>Este ADR estaria errado se, medida durante um trimestre, a cadência de release de <code>Pagamentos</code> não divergir da dos demais módulos. Nesse caso o sinal é de ritmo de execução — resolvido pela separação de carga dentro do processo — e a extração não se justifica.</td>
+</tr>
+</tbody>
+</table>
+<p>O que <strong>não</strong> justifica extrair <code>Pagamentos</code> agora: o pico de 8x em campanha (é carga do sistema inteiro, não de <code>Pagamentos</code>); o acoplamento baixo (<span class="arithmatex">\(C_a = 1\)</span>, <span class="arithmatex">\(C_e = 1\)</span>), que torna a extração viável mas não necessária; o pedido de "plano de microsserviços" da diretoria; e o desconforto de ler um sistema grande. O único sinal em pé é o da janela e do ritmo da conciliação — e ele ainda não foi medido como divergência de cadência de release.</p>
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Legítimo ou não.</strong> Para cada sinal, diga se sustenta a decisão de extrair um módulo e por quê, em uma frase.</p>
+<p>a. A conciliação de <code>Pagamentos</code> precisa de janela de manutenção fora do horário de pico.
+b. Um integrante leu que monólito modular é um estágio, e que o passo obrigatório seguinte é distribuir.
+c. Um bug em <code>Catalogo</code> derrubou o checkout duas vezes no último mês.
+d. O volume diário de <code>Notificacoes</code> cresceu no trimestre, na mesma proporção do volume de pedidos.
+e. As três palestras de arquitetura da conferência deste ano eram sobre malha de serviços.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — sustenta.</strong> É requisito operacional próprio: outro ritmo de execução e uma janela que o deploy único impede. É o sinal do ADR desta aula, ainda a medir como cadência de release.</p>
+<p><strong>b — não sustenta.</strong> "É o próximo estágio obrigatório" é sequência de slide, não sinal do Orion. Módulo modular é preparação para uma extração <em>possível</em>, não promessa de uma extração <em>devida</em>.</p>
+<p><strong>c — sustenta, com ressalva.</strong> Isolamento de falha é sinal legítimo. Mas distribuir <code>Catalogo</code> — quatro dependentes, <span class="arithmatex">\(C_a = 4\)</span> — move a falha para trás de uma chamada de rede e acrescenta falha parcial; o tratamento pode caber dentro do processo (limite de carga, timeout curto), como a Aula 9 mostrou no log do incidente.</p>
+<p><strong>d — não sustenta.</strong> Crescer <em>junto</em> com os pedidos é escala compartilhada, não escala própria. <code>Notificacoes</code> não tem causa de carga independente da do resto.</p>
+<p><strong>e — não sustenta.</strong> Descreve o circuito de palestras, não o Orion. Nenhum componente apontado, nenhuma carga descrita.</p>
+</details>
+</li>
+<li>
+<p><strong>O sinal justifica avançar?</strong> Para cada cenário, diga se o gatilho de uma extração disparou ou não.</p>
+<p>a. Medida por um trimestre, a cadência de <code>Pagamentos</code> divergiu: correções de contrato com provedor saíram fora do trem de release em quatro dos seis sprints, e uma janela de conciliação bloqueou um deploy de <code>Pedidos</code>.
+b. <code>Promocoes</code> recebe um tipo de regra de desconto por trimestre; cada um obriga o deploy do sistema inteiro, mas nenhum bloqueou outro time.
+c. <code>Checkout</code> concentra 5 das 15 arestas inter-módulo e é o que mais causa incidente em produção.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — disparou.</strong> É o gatilho do ADR: divergência de cadência de release medida no trimestre, mais uma janela bloqueando deploy alheio. O próximo passo é o ADR de autorização da extração, com a conta da rede explícita.</p>
+<p><strong>b — não disparou.</strong> Isso é variação conhecida e recorrente numa dimensão só — o caso de microkernel da Aula 13. Regra de desconto como plugin resolve a cadência de deploy sem processo novo. O sinal é de forma interna, não de release divergente.</p>
+<p><strong>c — não disparou, e extrair pioraria.</strong> O hub no caminho crítico, com <span class="arithmatex">\(C_e = 5\)</span>, é caso de reforço de fronteira, não de extração: separá-lo multiplica chamadas de rede no fluxo mais sensível. Métrica alta de acoplamento é sintoma, não gatilho de distribuição.</p>
+</details>
+</li>
+<li>
+<p><strong>Complete o ADR.</strong> O registro abaixo está sem o gatilho mensurável e sem a condição de falseamento. Escreva as duas partes.</p>
+<blockquote>
+<p><strong>Contexto.</strong> <code>Logistica</code> tem <span class="arithmatex">\(C_a = 1\)</span> e <span class="arithmatex">\(C_e = 1\)</span>. O parceiro logístico novo exige homologação com deploys frequentes durante seis semanas, e a equipe de <code>Logistica</code> fica presa ao trem de release do Orion.
+<strong>Decisão.</strong> Registrar <code>Logistica</code> como candidato a extração; enquanto o gatilho não disparar, negociar uma faixa de release mais frequente para o módulo dentro do <em>deployable</em> atual.
+<strong>Alternativas.</strong> Extrair já — descartada porque a homologação é temporária e o custo de rede é permanente.
+<strong>Consequências positivas.</strong> A fronteira lógica de <code>Logistica</code> já existe em <code>05-modular/</code>; candidato nomeado com critério.</p>
+</blockquote>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>Gatilho mensurável</strong> — algo observável e datável. Por exemplo: passadas as seis semanas de homologação, <code>Logistica</code> continuar precisando de mais de um release fora do trem compartilhado por sprint, por dois sprints seguidos; ou a homologação forçar o adiamento de um deploy de outro módulo mais de uma vez. Enquanto for só a homologação temporária, o gatilho não conta.</p>
+<p><strong>Condição de falseamento</strong> — este ADR estaria errado se, terminada a homologação, a cadência de release de <code>Logistica</code> voltar a caber no trem compartilhado sem atraso. Nesse caso a divergência era do evento, não do módulo, e não há o que extrair.</p>
+</details>
+</li>
+<li>
+<p><strong>Julgue: extrair <code>Pagamentos</code> agora?</strong> O ADR desta aula registra o candidato e espera o gatilho. Um time competente extrairia já; outro esperaria. As duas posições são defensáveis.</p>
+<p>O que se avalia na sua resposta: se ela nomeia o <strong>critério</strong> que decide — cadência de release medida? existência de instrumentação para medir? custo da transação distribuída no fechamento? risco de a fronteira lógica não sair do papel? —, aplica esse critério ao cenário, e reconhece o que a posição oposta tem de válido (separar a carga dentro do processo compra tempo sem rede; ou, do outro lado, extrair enquanto o acoplamento é <span class="arithmatex">\(C_a = 1\)</span>/<span class="arithmatex">\(C_e = 1\)</span> evita fazer isso depois sob pressão). Diga também o que você observaria em seis meses para saber se a escolha envelheceu bem — por exemplo, quantas vezes a conciliação precisou de janela própria, ou se a separação de carga em processo já foi suficiente. Resposta sem critério nomeado não conta como resposta técnica.</p>
+</li>
+</ol>
+<h2 id="atividade-em-grupo">Atividade em grupo<a class="headerlink" href="#atividade-em-grupo" title="Permanent link">&para;</a></h2>
+<p>Sobre o recorte do seu grupo no Orion Evolution Lab, escrevam o ADR "candidato a extração" no formato Contexto / Decisão / Alternativas / Consequências (positivas <strong>e</strong> negativas) / Reversão, acrescido do gatilho mensurável e da condição de falseamento.</p>
+<ol>
+<li><strong>Escolham um módulo</strong> do recorte cuja fronteira lógica já esteja proposta (atividade da Aula 11) e para o qual exista um sinal operacional próprio — escala, cadência de release, isolamento de falha ou autonomia de time. Se nenhum módulo tem sinal, o ADR registra isso e para aqui.</li>
+<li><strong>Gatilho mensurável:</strong> um número com prazo. "Quando crescer" e "quando incomodar" não valem.</li>
+<li><strong>Condição de falseamento:</strong> a medição que, se der um certo resultado no fim do prazo, mostra que o sinal não era do módulo.</li>
+<li><strong>Obrigatório — o que o grupo perde ao extrair esse módulo.</strong> Nomeiem em dimensão concreta: qual transação hoje local passa a não ter commit único e entre quais operações; qual teste do recorte passa a exigir rede ou um dublê; quantos deploys hoje atômicos passam a ser coordenados, e quem coordena.</li>
+</ol>
+<p>O item 4 é o ponto da atividade. Um ADR de candidato a extração que só lista o que se ganha está incompleto — a extração cobra, e o grupo precisa saber o preço antes de o gatilho disparar. Formato e critérios em <a href="../../orion/">Orion Evolution Lab</a>.</p>
+<h2 id="o-que-ficou-registrado-e-a-conta-que-o-modulo-3-abre">O que ficou registrado e a conta que o Módulo 3 abre<a class="headerlink" href="#o-que-ficou-registrado-e-a-conta-que-o-modulo-3-abre" title="Permanent link">&para;</a></h2>
+<p>Ficou registrado um candidato: <code>Pagamentos</code>, pelo requisito de janela e ritmo da conciliação, com a fronteira lógica de <code>05-modular/</code> como prova de que a extração não seria feita no escuro. O ADR não autoriza a extração — fixa o gatilho (cadência de release divergente medida num trimestre), diz o que fazer enquanto ele não dispara (separar a carga dentro do processo) e nomeia o que a extração custaria: a transação local entre cobrar e emitir vira distribuída, um deploy vira dois coordenados, um teste sem rede passa a precisar de rede.</p>
+<p>Se o gatilho disparar e a decisão for extrair, tudo o que a rede cobra entra na conta — latência, falha parcial, transação sem commit único, operação de mais um artefato, observabilidade distribuída. A Aula 9 nomeou esses custos; nenhuma aula ainda os mediu. É isso que o Módulo 3 faz antes de recomendar qualquer coisa: transforma cada item dessa conta em número, para que "vale a pena distribuir <code>Pagamentos</code>?" deixe de ser uma aposta e passe a ser uma comparação.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 7 — Component-Based Thinking (granularidade de componente; forças que integram e forças que desintegram um componente).</li>
+<li>Ford, Neal; Parsons, Rebecca; Kua, Patrick. <em>Building Evolutionary Architectures</em>. Cap. 4 — Architectural Coupling (<em>architectural quantum</em>: a menor unidade que se pode implantar de forma independente).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>FORD, Neal; PARSONS, Rebecca; KUA, Patrick. <em>Building Evolutionary Architectures</em>. O'Reilly, 2017.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula13-pipeline-e-microkernel/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 13 — Pipeline e microkernel">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 13 — Pipeline e microkernel
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../exercicios-fixacao-aulas-13-14/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Exercícios de fixação (Aulas 13 e 14)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Exercícios de fixação (Aulas 13 e 14)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

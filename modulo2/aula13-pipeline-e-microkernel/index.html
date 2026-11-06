@@ -1,0 +1,2328 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo2/aula13-pipeline-e-microkernel/">
+      
+      
+      
+        <link rel="prev" href="../exercicios-fixacao-aulas-11-12/">
+      
+      
+        <link rel="next" href="../aula14-quando-o-monolito-deixa-de-servir/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 13 — Pipeline e microkernel - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 13 — Pipeline e microkernel
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uma-sequencia-que-nao-muda-e-uma-regra-que-muda-toda-hora" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Uma sequência que não muda e uma regra que muda toda hora
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-a-forma-do-dominio-e-uma-transformacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando a forma do domínio é uma transformação
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quando a forma do domínio é uma transformação">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filtros-e-um-fluxo-de-mao-unica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Filtros e um fluxo de mão única
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onde-o-pipeline-paga-e-onde-atrapalha" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde o pipeline paga e onde atrapalha
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-a-variacao-e-conhecida-e-recorrente" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando a variação é conhecida e recorrente
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quando a variação é conhecida e recorrente">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nucleo-estavel-plugins-removiveis" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Núcleo estável, plugins removíveis
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-contrato-que-o-nucleo-enxerga" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O contrato que o núcleo enxerga
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-trade-off-do-microkernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚖️ O trade-off do microkernel
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forma-de-monolito-nao-saida-dele" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forma de monólito, não saída dele
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-o-checkout-ilustrado-e-o-motor-de-promocoes-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: o checkout ilustrado e o motor de promoções real
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: o checkout ilustrado e o motor de promoções real">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-checkout-como-pipeline-um-esboco-ilustrativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O checkout como pipeline: um esboço ilustrativo
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-recorte-de-06-microkernel-o-nucleo-e-um-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O recorte de 06-microkernel: o núcleo e um plugin
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-diagrama-como-uma-regra-entra-num-nucleo-que-nao-a-importa" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagrama: como uma regra entra num núcleo que não a importa
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-regra-de-desconto-como-plugin-de-promocoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — regra de desconto como plugin de Promocoes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-o-limite-das-duas-formas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e o limite das duas formas
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uma-sequencia-que-nao-muda-e-uma-regra-que-muda-toda-hora" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Uma sequência que não muda e uma regra que muda toda hora
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-a-forma-do-dominio-e-uma-transformacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando a forma do domínio é uma transformação
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quando a forma do domínio é uma transformação">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filtros-e-um-fluxo-de-mao-unica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Filtros e um fluxo de mão única
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onde-o-pipeline-paga-e-onde-atrapalha" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde o pipeline paga e onde atrapalha
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quando-a-variacao-e-conhecida-e-recorrente" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Quando a variação é conhecida e recorrente
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quando a variação é conhecida e recorrente">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nucleo-estavel-plugins-removiveis" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Núcleo estável, plugins removíveis
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-contrato-que-o-nucleo-enxerga" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O contrato que o núcleo enxerga
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-trade-off-do-microkernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        ⚖️ O trade-off do microkernel
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forma-de-monolito-nao-saida-dele" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forma de monólito, não saída dele
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-o-checkout-ilustrado-e-o-motor-de-promocoes-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: o checkout ilustrado e o motor de promoções real
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: o checkout ilustrado e o motor de promoções real">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-checkout-como-pipeline-um-esboco-ilustrativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O checkout como pipeline: um esboço ilustrativo
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-recorte-de-06-microkernel-o-nucleo-e-um-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O recorte de 06-microkernel: o núcleo e um plugin
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-diagrama-como-uma-regra-entra-num-nucleo-que-nao-a-importa" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O diagrama: como uma regra entra num núcleo que não a importa
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-regra-de-desconto-como-plugin-de-promocoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — regra de desconto como plugin de Promocoes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-registrado-e-o-limite-das-duas-formas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou registrado e o limite das duas formas
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 2 — Arquiteturas Monolíticas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo2/aula13-pipeline-e-microkernel.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-13-pipeline-e-microkernel-monolitos-com-forma">Aula 13 — Pipeline e microkernel: monólitos com forma<a class="headerlink" href="#aula-13-pipeline-e-microkernel-monolitos-com-forma" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Esta aula desenvolve a capacidade de:</p>
+<ul>
+<li>reconhecer, pela forma do domínio, quando um fluxo é uma transformação em etapas e o pipeline é a forma adequada;</li>
+<li>distinguir composição de plugins (microkernel) de encadeamento de filtros (pipeline), mesmo quando as duas têm uma ordem;</li>
+<li>ler o contrato <code>RegraDesconto</code> e o <code>MotorPromocoes</code> do checkpoint <code>06-microkernel</code> e dizer o que o <code>import-linter</code> proíbe e por quê;</li>
+<li>escrever a assinatura de um plugin de regra de desconto que o <code>MotorPromocoes</code> aceita sem alteração no núcleo;</li>
+<li>redigir um ADR que nomeia o custo do microkernel — contrato de plugin, teste de composição, plugin mal-comportado —, e não só o ganho;</li>
+<li>justificar o uso de pipeline pela forma do domínio, e não por estética.</li>
+</ul>
+<h2 id="uma-sequencia-que-nao-muda-e-uma-regra-que-muda-toda-hora">Uma sequência que não muda e uma regra que muda toda hora<a class="headerlink" href="#uma-sequencia-que-nao-muda-e-uma-regra-que-muda-toda-hora" title="Permanent link">&para;</a></h2>
+<p>A Aula 12 fechou com dois fatos sobre o Mini-Orion que as fronteiras de módulo não explicam.</p>
+<p>O primeiro: <code>fechar_pedido</code>, no módulo <code>compra</code>, percorre a mesma ordem em toda execução — validar o carrinho, montar o pedido, cobrar, emitir, notificar. Não há ramo que pule uma etapa nem caminho que as reordene; o método <em>é</em> essa sequência.</p>
+<p>O segundo: <code>Promocoes</code> — responsável por cupons, campanhas e regras de desconto — recebe um tipo novo de regra quase todo trimestre. Cupom percentual, frete grátis acima de um piso, leve três pague dois, cashback para cliente recorrente: cada um entra no corpo do componente, e cada um obriga um deploy do sistema inteiro para uma mudança que não toca <code>Checkout</code>, <code>Pedidos</code> nem <code>Pagamentos</code>.</p>
+<p>Camadas governam a direção da dependência. Módulos de domínio governam o encapsulamento. Nenhum dos dois diz nada sobre um componente cuja forma é uma sequência fixa, nem sobre um componente que é um miolo estável com regras entrando e saindo. Esta aula trata das duas formas — e do preço de cada uma.</p>
+<h2 id="quando-a-forma-do-dominio-e-uma-transformacao">Quando a forma do domínio é uma transformação<a class="headerlink" href="#quando-a-forma-do-dominio-e-uma-transformacao" title="Permanent link">&para;</a></h2>
+<h3 id="filtros-e-um-fluxo-de-mao-unica">Filtros e um fluxo de mão única<a class="headerlink" href="#filtros-e-um-fluxo-de-mao-unica" title="Permanent link">&para;</a></h3>
+<p>Uma <strong>arquitetura em pipeline</strong> organiza o sistema como uma sequência de <strong>filtros</strong>: cada filtro recebe um dado, aplica uma transformação e entrega o resultado ao filtro seguinte. O fluxo é unidirecional — um filtro não chama o anterior nem conhece o próximo; ele conhece só o formato do que entra e o do que sai. A ordem dos filtros é a arquitetura: trocar dois de lugar muda o resultado, porque cada filtro assume a pós-condição do anterior.</p>
+<p>O pipeline serve quando o domínio <em>é</em> uma transformação em etapas — quando descrever o que o sistema faz já produz a lista de filtros. <code>fechar_pedido</code> tem esse formato: validar produz um carrinho conferido; montar produz um pedido a partir dele; cobrar produz um pedido pago; emitir produz um pedido registrado; notificar produz o aviso. São cinco etapas, cada uma consumindo o resultado da anterior e nada além disso.</p>
+<p>A forma não é de um ecossistema só. O encadeamento de comandos por <code>|</code> no shell Unix é o pipeline na sua versão mais literal — cada processo lê a saída do anterior e não conhece mais nada do que vem antes; frameworks de integração como Apache Camel e processadores de fluxo como Kafka Streams formalizam a mesma ideia para dados em trânsito entre sistemas. O que muda entre eles é o meio de transporte entre filtros — variável em memória, <code>stdout</code>, tópico de mensageria —, não a arquitetura.</p>
+<h3 id="onde-o-pipeline-paga-e-onde-atrapalha">Onde o pipeline paga e onde atrapalha<a class="headerlink" href="#onde-o-pipeline-paga-e-onde-atrapalha" title="Permanent link">&para;</a></h3>
+<p>O pipeline paga quando a sequência é real e estável: a forma do código espelha a forma do domínio, cada filtro se testa com uma entrada e uma saída, e inserir uma etapa nova — um filtro de antifraude entre cobrar e emitir — é acrescentar um elo, não reabrir o fluxo.</p>
+<p>Ele atrapalha quando o fluxo tem muitos ramos condicionais. Se metade das execuções pula etapas ou muda a ordem conforme o caso, a sequência deixa de descrever o domínio e o pipeline vira uma camada de indireção sobre um <code>if</code>. E a ordem, que é a força do pipeline, é também connascência de execução (Aula 11): forte, dinâmica, e agora distribuída pelos filtros em vez de selada num método. O ganho é a etapa isolável; o custo é que a corretude depende de uma ordem que o tipo não verifica.</p>
+<h2 id="quando-a-variacao-e-conhecida-e-recorrente">Quando a variação é conhecida e recorrente<a class="headerlink" href="#quando-a-variacao-e-conhecida-e-recorrente" title="Permanent link">&para;</a></h2>
+<h3 id="nucleo-estavel-plugins-removiveis">Núcleo estável, plugins removíveis<a class="headerlink" href="#nucleo-estavel-plugins-removiveis" title="Permanent link">&para;</a></h3>
+<p>Uma <strong>arquitetura em microkernel</strong> separa o sistema em duas partes: um <strong>núcleo</strong> que muda pouco e um conjunto de <strong>plugins</strong> que entram e saem. O núcleo sabe fazer três coisas — definir o contrato que um plugin precisa satisfazer, registrar plugins e compor o resultado dos plugins registrados. Não conhece nenhum plugin concreto.</p>
+<p>A forma serve quando a variação é <strong>conhecida e recorrente</strong>: sabe-se de antemão a dimensão em que o sistema vai variar — aqui, o tipo de regra de desconto — e essa variação chega em ritmo previsível. <code>Promocoes</code> é o caso. A parte que varia — a regra de desconto — é identificável e separável do resto do componente, que é estável.</p>
+<p>O nome vem do núcleo de sistema operacional que só resolve o essencial — escalonar processo, gerenciar memória — e empurra o resto para módulos carregados à parte; o <code>OSGi</code> do ecossistema Java e a arquitetura de plugins do Eclipse aplicam a mesma ideia a aplicações de usuário, e um navegador que carrega extensões sem recompilar segue o mesmo contrato: núcleo que define a interface, plugin que a implementa, sem o núcleo conhecer o plugin de antemão.</p>
+<h3 id="o-contrato-que-o-nucleo-enxerga">O contrato que o núcleo enxerga<a class="headerlink" href="#o-contrato-que-o-nucleo-enxerga" title="Permanent link">&para;</a></h3>
+<p>No checkpoint <code>06-microkernel</code>, o núcleo de <code>Promocoes</code> é <code>promocoes.api</code>. Ele define <code>RegraDesconto</code>, um <code>Protocol</code> com um método — <code>avalia(carrinho)</code> devolve um <code>Desconto</code> ou <code>None</code> — e <code>MotorPromocoes</code>, que guarda uma lista de regras, aceita novas por <code>registrar</code> e as compõe em <code>aplicar</code>. Um plugin é qualquer objeto com o método <code>avalia</code>; não há classe base para herdar, só o formato.</p>
+<p>Os plugins concretos vivem em <code>promocoes._regras</code> e importam <code>promocoes.api</code> para falar <code>Desconto</code> — o sentido <code>_regras -&gt; api</code> é permitido e esperado. O inverso, <code>api -&gt; _regras</code>, é o que quebraria a forma: o núcleo passaria a conhecer o que ele existe para não conhecer.</p>
+<h3 id="o-trade-off-do-microkernel">⚖️ O trade-off do microkernel<a class="headerlink" href="#o-trade-off-do-microkernel" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regras no corpo de <code>Promocoes</code>, com <code>if</code>/<code>match</code> por tipo</td>
+<td>zero indireção; um arquivo; o time já lê assim</td>
+<td>cada tipo novo arrasta o deploy do componente inteiro; o corpo cresce sem teto</td>
+<td>quando os tipos são poucos e entram raramente</td>
+</tr>
+<tr>
+<td>Microkernel: núcleo mais plugins registrados</td>
+<td>tipo novo é arquivo novo e uma linha de <code>registrar</code>; o núcleo não muda</td>
+<td>contrato de plugin a versionar; teste de composição por regra nova; plugin que lança exceção derruba <code>aplicar</code></td>
+<td>quando não há variação recorrente e conhecida a isolar</td>
+</tr>
+<tr>
+<td>Extrair <code>Promocoes</code> para um serviço próprio</td>
+<td>cadência de release e janela de manutenção independentes</td>
+<td>rede, falha parcial, observabilidade distribuída (Módulo 3)</td>
+<td>quando nenhum sinal operacional pede deploy separado</td>
+</tr>
+</tbody>
+</table>
+<p>O item que costuma passar despercebido é o terceiro custo da linha do meio. <code>aplicar</code> chama <code>regra.avalia</code> sem isolar a chamada: um plugin que levanta exceção interrompe a composição, e as regras bem-comportadas registradas depois dele não rodam. Um <code>match</code> no corpo do componente teria o mesmo risco — mas ali o conjunto de ramos é fechado e revisado junto; aqui, qualquer plugin registrado na raiz de composição entra no caminho. O microkernel troca "mudar o núcleo a cada regra" por "confiar em cada plugin registrado".</p>
+<h2 id="forma-de-monolito-nao-saida-dele">Forma de monólito, não saída dele<a class="headerlink" href="#forma-de-monolito-nao-saida-dele" title="Permanent link">&para;</a></h2>
+<p>Pipeline e microkernel organizam um monólito, no mesmo sentido que camadas e módulos de domínio: mudam a estrutura interna, não o empacotamento. O checkpoint <code>06-microkernel</code> continua um único <em>deployable</em>. <code>MotorPromocoes</code>, seus plugins e o resto do Mini-Orion vivem no mesmo pacote e sobem juntos — <code>promocoes</code> roda isolado neste checkpoint, sem ligação com o <code>fechar_pedido</code> do módulo <code>compra</code>, mas no mesmo processo.</p>
+<p>O deploy isolado que o microkernel entrega é isolado <em>dentro do processo</em>: adicionar <code>LeveTresPagueDois</code> não recompila nem retesta o núcleo, e ainda assim entra no mesmo release que tudo o mais. Chamar isso de "cadência de release independente" seria vender o que a forma não compra — a distinção que a Aula 11 fez entre fronteira lógica e física vale aqui igual.</p>
+<h2 id="decisao-sobre-o-orion-o-checkout-ilustrado-e-o-motor-de-promocoes-real">Decisão sobre o Orion: o checkout ilustrado e o motor de promoções real<a class="headerlink" href="#decisao-sobre-o-orion-o-checkout-ilustrado-e-o-motor-de-promocoes-real" title="Permanent link">&para;</a></h2>
+<p>Esta aula produz dois artefatos e um registro. O primeiro artefato é um esboço — o <code>Checkout</code> desenhado como pipeline, para fixar a forma. O segundo é o recorte do checkpoint <code>06-microkernel</code>, onde <code>Promocoes</code> já é um microkernel de verdade, com contrato no <code>import-linter</code> e testes. O registro é o ADR que escolhe essa forma e nomeia o que ela cobra.</p>
+<h3 id="o-checkout-como-pipeline-um-esboco-ilustrativo">O checkout como pipeline: um esboço ilustrativo<a class="headerlink" href="#o-checkout-como-pipeline-um-esboco-ilustrativo" title="Permanent link">&para;</a></h3>
+<p>O bloco abaixo é <strong>ilustrativo</strong> — nomes genéricos, não os do Mini-Orion, e não roda isolado. Ele existe para mostrar uma coisa: num pipeline, cada filtro conhece só a <code>Encomenda</code> que entra e a que sai, e a ordem da lista é a arquitetura.</p>
+<div class="language-python highlight"><span class="filename">pipeline_checkout.py — esboco ilustrativo, fora do Mini-Orion</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">Etapa</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">processa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encomenda</span><span class="p">:</span> <span class="s2">"Encomenda"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Encomenda"</span><span class="p">:</span> <span class="o">...</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">FiltroValidacao</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">processa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encomenda</span><span class="p">:</span> <span class="s2">"Encomenda"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Encomenda"</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="k">return</span> <span class="n">encomenda</span><span class="o">.</span><span class="n">com</span><span class="p">(</span><span class="n">validada</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">encomenda</span><span class="o">.</span><span class="n">itens</span><span class="p">))</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">FiltroMontagem</span><span class="p">:</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">processa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encomenda</span><span class="p">:</span> <span class="s2">"Encomenda"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Encomenda"</span><span class="p">:</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="k">return</span> <span class="n">encomenda</span><span class="o">.</span><span class="n">com</span><span class="p">(</span><span class="n">numero</span><span class="o">=</span><span class="s2">"PED-1"</span><span class="p">)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="k">class</span><span class="w"> </span><span class="nc">FiltroCobranca</span><span class="p">:</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1"># Cada filtro conhece so a encomenda que entra e a que sai.</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">processa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encomenda</span><span class="p">:</span> <span class="s2">"Encomenda"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Encomenda"</span><span class="p">:</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="k">return</span> <span class="n">encomenda</span><span class="o">.</span><span class="n">com</span><span class="p">(</span><span class="n">paga</span><span class="o">=</span><span class="n">encomenda</span><span class="o">.</span><span class="n">validada</span><span class="p">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="k">def</span><span class="w"> </span><span class="nf">executa</span><span class="p">(</span><span class="n">etapas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Etapa</span><span class="p">],</span> <span class="n">encomenda</span><span class="p">:</span> <span class="s2">"Encomenda"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Encomenda"</span><span class="p">:</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="k">for</span> <span class="n">etapa</span> <span class="ow">in</span> <span class="n">etapas</span><span class="p">:</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="n">encomenda</span> <span class="o">=</span> <span class="n">etapa</span><span class="o">.</span><span class="n">processa</span><span class="p">(</span><span class="n">encomenda</span><span class="p">)</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="k">return</span> <span class="n">encomenda</span>
+</span></code></pre></div>
+<p><code>Encomenda</code> é um agregado simples de itens, número e marcadores de progresso; o foco é a cadeia. Trocar <code>FiltroValidacao</code> e <code>FiltroMontagem</code> de lugar não é um detalhe: <code>FiltroMontagem</code> passaria a rodar sobre uma encomenda ainda não conferida. O <code>Checkout</code> real do Mini-Orion não usa essa estrutura — <code>fechar_pedido</code> é a sequência escrita à mão dentro de um método. O esboço mostra a forma que <code>fechar_pedido</code> teria se a sequência fosse dado, e não código.</p>
+<h3 id="o-recorte-de-06-microkernel-o-nucleo-e-um-plugin">O recorte de 06-microkernel: o núcleo e um plugin<a class="headerlink" href="#o-recorte-de-06-microkernel-o-nucleo-e-um-plugin" title="Permanent link">&para;</a></h3>
+<p>No checkpoint, <code>promocoes.api</code> é o núcleo. O contrato e o motor, no mesmo arquivo (recorte com linhas em branco reduzidas):</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/06-microkernel/mini_orion/promocoes/api.py (recorte)</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.nucleo.modelos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Carrinho</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">Desconto</span><span class="p">:</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">origem</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">valor</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">RegraDesconto</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="c1"># Um plugin e qualquer objeto com este metodo; sem classe base para herdar.</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">avalia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Desconto</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="k">class</span><span class="w"> </span><span class="nc">MotorPromocoes</span><span class="p">:</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_regras</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RegraDesconto</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">registrar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regra</span><span class="p">:</span> <span class="n">RegraDesconto</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="c1"># Unica porta de entrada de plugins; sem descoberta automatica.</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_regras</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regra</span><span class="p">)</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">aplicar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Desconto</span><span class="p">]:</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        <span class="n">resultados</span> <span class="o">=</span> <span class="p">(</span><span class="n">regra</span><span class="o">.</span><span class="n">avalia</span><span class="p">(</span><span class="n">carrinho</span><span class="p">)</span> <span class="k">for</span> <span class="n">regra</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regras</span><span class="p">)</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        <span class="k">return</span> <span class="p">[</span><span class="n">desconto</span> <span class="k">for</span> <span class="n">desconto</span> <span class="ow">in</span> <span class="n">resultados</span> <span class="k">if</span> <span class="n">desconto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+</span></code></pre></div>
+<p><code>aplicar</code> não soma os descontos nem decide prioridade: devolve a lista, e compor o efeito final é de quem chama. Um plugin concreto — o cupom percentual:</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/06-microkernel/mini_orion/promocoes/_regras/cupom_percentual.py (recorte)</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.nucleo.modelos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Carrinho</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.promocoes.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Desconto</span>   <span class="c1"># sentido permitido: _regras -&gt; api</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nd">@dataclass</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">CupomPercentual</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">fracao</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">avalia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Desconto</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fracao</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>            <span class="k">return</span> <span class="kc">None</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="k">return</span> <span class="n">Desconto</span><span class="p">(</span><span class="n">origem</span><span class="o">=</span><span class="s2">"cupom_percentual"</span><span class="p">,</span> <span class="n">valor</span><span class="o">=</span><span class="n">carrinho</span><span class="o">.</span><span class="n">total</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fracao</span><span class="p">)</span>
+</span></code></pre></div>
+<p>O plugin importa <code>promocoes.api</code> para falar <code>Desconto</code>. O sentido inverso é proibido por contrato:</p>
+<div class="language-ini highlight"><span class="filename">code/mini-orion/06-microkernel/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">[importlinter:contract:nucleo-nao-conhece-plugins]</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">O nucleo de promocoes nao importa regras concretas</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="na">mini_orion.promocoes.api</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="na">mini_orion.promocoes._regras</span>
+</span></code></pre></div>
+<p><code>type = forbidden</code>, com <code>promocoes.api</code> como origem e <code>promocoes._regras</code> como alvo: o núcleo não pode importar as regras concretas. É o quarto contrato do <code>setup.cfg</code> — os outros três são os da fronteira de módulos da Aula 11 — e <code>lint-imports</code> fecha em <code>4 kept, 0 broken</code>. Dois testes exercitam a composição:</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/06-microkernel/tests/test_microkernel.py (recorte)</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_composicao_de_dois_plugins</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">motor</span> <span class="o">=</span> <span class="n">MotorPromocoes</span><span class="p">()</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">motor</span><span class="o">.</span><span class="n">registrar</span><span class="p">(</span><span class="n">CupomPercentual</span><span class="p">(</span><span class="mf">0.10</span><span class="p">))</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">motor</span><span class="o">.</span><span class="n">registrar</span><span class="p">(</span><span class="n">FreteGratisAcimaDe</span><span class="p">(</span><span class="mf">150.0</span><span class="p">))</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">descontos</span> <span class="o">=</span> <span class="n">motor</span><span class="o">.</span><span class="n">aplicar</span><span class="p">(</span><span class="n">_carrinho</span><span class="p">())</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">descontos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_motor_funciona_sem_nenhum_plugin</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="k">assert</span> <span class="n">MotorPromocoes</span><span class="p">()</span><span class="o">.</span><span class="n">aplicar</span><span class="p">(</span><span class="n">_carrinho</span><span class="p">())</span> <span class="o">==</span> <span class="p">[]</span>
+</span></code></pre></div>
+<p>O primeiro registra dois plugins e confere que <code>aplicar</code> devolve dois descontos — a composição funciona sem que o motor saiba que <code>CupomPercentual</code> ou <code>FreteGratisAcimaDe</code> existem. O segundo confere que um <code>MotorPromocoes</code> sem plugin nenhum devolve <code>[]</code> — o núcleo é exercível sozinho. Um terceiro teste lê <code>api.py</code> com <code>ast</code> e falha se aparecer um <code>import</code> de <code>_regras</code>: a regra do contrato vira também teste de <code>pytest</code>, para quem não instalou o <code>import-linter</code>. São 3 testes no arquivo, 17 no checkpoint.</p>
+<h3 id="o-diagrama-como-uma-regra-entra-num-nucleo-que-nao-a-importa">O diagrama: como uma regra entra num núcleo que não a importa<a class="headerlink" href="#o-diagrama-como-uma-regra-entra-num-nucleo-que-nao-a-importa" title="Permanent link">&para;</a></h3>
+<p>Pergunta que o diagrama responde: se <code>promocoes.api</code> não importa <code>promocoes._regras</code>, por que caminho uma regra chega ao <code>MotorPromocoes</code>?</p>
+<pre class="mermaid"><code>flowchart TD
+    raiz["raiz de composicao"]
+    api["promocoes.api (MotorPromocoes, RegraDesconto, Desconto)"]
+    cupom["_regras.CupomPercentual"]
+    frete["_regras.FreteGratisAcimaDe"]
+
+    cupom --&gt; api
+    frete --&gt; api
+    raiz --&gt; api
+    raiz --&gt; cupom
+    raiz --&gt; frete
+    raiz -. "registrar(regra)" .-&gt; api</code></pre>
+<p>Leitura das setas cheias: <code>A --&gt; B</code> significa que A depende de B. Toda seta cheia aponta para <code>promocoes.api</code> e nenhuma sai dele — o núcleo está no fundo do grafo de dependências. A seta pontilhada <code>registrar(regra)</code> é fluxo em tempo de composição, não dependência: a raiz injeta cada plugin no motor chamando <code>registrar</code>.</p>
+<p>Três coisas o diagrama não representa: a ordem em que <code>aplicar</code> compõe os descontos (é a ordem das chamadas a <code>registrar</code>); o que cada regra decide por dentro — o <code>if self.fracao &lt;= 0</code> do cupom, o piso do frete grátis; e o fato de <code>promocoes</code> rodar isolado neste checkpoint, sem ligação com o <code>fechar_pedido</code> do módulo <code>compra</code>.</p>
+<h3 id="adr-regra-de-desconto-como-plugin-de-promocoes">📐 ADR — regra de desconto como plugin de Promocoes<a class="headerlink" href="#adr-regra-de-desconto-como-plugin-de-promocoes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — regra de desconto como plugin de <code>Promocoes</code></td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceita para o checkpoint <code>06-microkernel</code></td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td><code>Promocoes</code> recebe um tipo novo de regra de desconto quase todo trimestre. Hoje cada tipo entra no corpo do componente e obriga o deploy do sistema inteiro, para uma mudança que não toca <code>Checkout</code>, <code>Pedidos</code> nem <code>Pagamentos</code>. A responsabilidade de <code>Promocoes</code> — cupons, campanhas, regras de desconto — é justamente a parte que varia; o resto do componente é estável.</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td>Tratar <code>Promocoes</code> como microkernel. O núcleo (<code>promocoes.api</code>) define o contrato <code>RegraDesconto</code> — <code>avalia(carrinho)</code> devolve um <code>Desconto</code> ou <code>None</code> — e o <code>MotorPromocoes</code>, que compõe regras registradas por <code>registrar</code>. Cada regra concreta é um plugin em <code>promocoes._regras</code> que importa o núcleo para falar <code>Desconto</code>. O contrato <code>nucleo-nao-conhece-plugins</code> do <code>import-linter</code> proíbe o sentido <code>promocoes.api -&gt; promocoes._regras</code>.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Manter as regras no corpo de <code>Promocoes</code>, com um <code>if</code>/<code>match</code> por tipo: menos indireção, um arquivo, e o time já conhece; some quando o número de tipos cresce e cada mudança arrasta o deploy do componente todo. (b) Extrair <code>Promocoes</code> para um serviço com deploy independente: resolve a cadência de release de verdade, mas cobra rede, falha parcial e observabilidade distribuída (Módulo 3), sem sinal medido que peça isso hoje.</td>
+</tr>
+<tr>
+<td><strong>Consequências positivas</strong></td>
+<td>Um tipo novo de regra é um arquivo em <code>_regras</code> e uma linha de <code>registrar</code> na raiz de composição; o núcleo não muda e não é retestado. O contrato do linter documenta e verifica a direção núcleo↛plugin. <code>MotorPromocoes</code> sem plugin nenhum devolve <code>[]</code> — o núcleo é exercível sozinho.</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td>Passa a existir um contrato de plugin — <code>RegraDesconto</code> mais o formato de <code>Desconto</code> — que precisa ser mantido e versionado: alterá-lo toca todos os plugins de uma vez. Cada regra nova pede um teste de composição — o <code>test_composicao_de_dois_plugins</code> cresce, não some. E <code>aplicar</code> chama <code>regra.avalia</code> sem isolamento: um plugin que levanta exceção derruba a aplicação de desconto, inclusive as regras que se comportam. O ganho de deploy é interno ao processo, não cadência de release independente.</td>
+</tr>
+<tr>
+<td><strong>Reversão</strong></td>
+<td>Baixa enquanto há poucos plugins: reincorporar as regras ao corpo de <code>Promocoes</code>, remover <code>registrar</code>/<code>aplicar</code> e o contrato do <code>setup.cfg</code>. Fica cara depois que outro componente passar a registrar plugins ou a depender do formato de <code>Desconto</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>O campo que sustenta este ADR é o das consequências negativas. Um microkernel descrito só pelo ganho — "regra nova sem tocar no núcleo" — é anúncio. O contrato de plugin a versionar, o teste de composição que cresce a cada regra e o plugin que derruba <code>aplicar</code> são o preço, e são observáveis: dá para contar quantas vezes o contrato mudou e quantas vezes um plugin quebrou a composição.</p>
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Pipeline se aplica?</strong> Para cada ponto do Orion, diga se a arquitetura em pipeline descreve a forma do domínio, e por quê.</p>
+<p>a. <code>fechar_pedido</code> no módulo <code>compra</code>: validar, montar, cobrar, emitir, notificar.
+b. <code>Catalogo</code> respondendo a uma busca de produto por texto.
+c. <code>MotorPromocoes.aplicar</code> compondo as regras registradas.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — pipeline descreve a forma.</strong> Cada etapa consome o resultado da anterior e nada além disso; o fluxo é de mão única, sem ramo que reordene. Descrever o caso de uso já produz a lista de filtros.</p>
+<p><strong>b — pipeline não descreve.</strong> Uma busca é requisição e resposta: não há sequência de transformações em que uma etapa dependa da saída da anterior. Modelar como pipeline acrescenta maquinário sem forma correspondente no domínio.</p>
+<p><strong>c — pipeline não descreve, apesar da ordem.</strong> <code>aplicar</code> compõe regras que veem todas o mesmo <code>carrinho</code>, não a saída da regra anterior. É composição fan-out (microkernel), não uma cadeia. Se fosse pipeline, <code>FreteGratisAcimaDe</code> avaliaria o carrinho já modificado por <code>CupomPercentual</code>.</p>
+</details>
+</li>
+<li>
+<p><strong>Reordene e diga o efeito.</strong> Um pipeline ilustrativo roda com a lista <code>[FiltroValidacao, FiltroMontagem, FiltroCobranca]</code>, onde <code>FiltroCobranca</code> só cobra se <code>encomenda.validada</code> for verdadeira.</p>
+<p>a. O que acontece se <code>FiltroValidacao</code> e <code>FiltroMontagem</code> trocam de posição?
+b. O que acontece se <code>FiltroValidacao</code> é removido da lista?</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a —</strong> <code>FiltroMontagem</code> passa a atribuir <code>numero</code> a uma encomenda ainda não conferida. <code>FiltroCobranca</code> lê <code>validada</code> no valor default e não cobra, mas a encomenda já saiu com número: estado inconsistente. A ordem, num pipeline, é connascência de execução (Aula 11) — forte e não verificada pelo tipo.</p>
+<p><strong>b —</strong> sem o filtro que preenche <code>validada</code>, o campo fica no default e <code>FiltroCobranca</code> não cobra em nenhuma execução. Remover um filtro não é uma mudança local: os filtros seguintes assumem a pós-condição do que foi tirado.</p>
+</details>
+</li>
+<li>
+<p><strong>Escreva a assinatura do plugin.</strong> <code>Promocoes</code> vai ganhar a regra "leve três pague dois". Escreva a assinatura da classe do plugin — os campos e o método que o <code>MotorPromocoes</code> precisa —, sem implementar o cálculo. Diga também o que muda em <code>promocoes.api</code> e no <code>setup.cfg</code>.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.nucleo.modelos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Carrinho</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.promocoes.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Desconto</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="nd">@dataclass</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">LeveTresPagueDois</span><span class="p">:</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">sku_alvo</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">avalia</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Desconto</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p>O plugin satisfaz <code>RegraDesconto</code> por estrutura — tem <code>avalia(carrinho) -&gt; Desconto | None</code> — sem herdar nada. Nada muda em <code>promocoes.api</code>: o núcleo não conhece a regra. Nada muda no <code>setup.cfg</code>: o <code>import</code> é <code>_regras -&gt; api</code>, o sentido permitido, e o contrato segue verde. O que muda é a raiz de composição, que ganha <code>motor.registrar(LeveTresPagueDois("TEC-01"))</code>, e o <code>test_composicao_*</code>, que ganha um caso — o custo nomeado no ADR.</p>
+</details>
+</li>
+<li>
+<p><strong>Julgue: <code>Promocoes</code> como microkernel vale o custo?</strong> O ADR troca "deploy do sistema a cada regra" por um contrato de plugin, um teste de composição por regra nova e o risco de um plugin derrubar <code>aplicar</code>.</p>
+<p>Mais de uma resposta é aceitável, e os dois lados têm defensores competentes. O que se avalia: se a sua resposta nomeia o <strong>critério</strong> que decide — número de tipos de regra por trimestre? esforço de manter o contrato? risco operacional de um plugin mal-comportado? prazo de entrega de uma regra? —, aplica esse critério, e reconhece o que a posição oposta tem de defensável (manter o <code>if</code>/<code>match</code> no corpo do componente enquanto os tipos forem poucos). Diga também o que você observaria em seis meses para saber se a escolha envelheceu bem: por exemplo, quantos tipos novos entraram sem tocar <code>api.py</code>, ou se algum plugin já interrompeu a composição de um jeito que um <code>match</code> revisado não interromperia. Resposta sem critério nomeado não conta como resposta técnica.</p>
+</li>
+</ol>
+<h2 id="atividade-em-grupo">Atividade em grupo<a class="headerlink" href="#atividade-em-grupo" title="Permanent link">&para;</a></h2>
+<p>Sobre o recorte do seu grupo no Orion Evolution Lab:</p>
+<ol>
+<li>Encontrem no recorte um ponto cuja forma seja <strong>uma transformação em etapas de mão única</strong> (candidato a pipeline) <strong>ou</strong> <strong>um núcleo estável com variação recorrente e conhecida entrando e saindo</strong> (candidato a microkernel). Justifiquem pela forma do domínio, não por estética — se não der para descrever a forma sem citar a arquitetura, o candidato é fraco.</li>
+<li>Para o candidato a pipeline: listem as etapas, a pós-condição de cada uma e a connascência de execução que a ordem cria. Para o candidato a microkernel: nomeiem o núcleo, o contrato do plugin e quem chamaria o <code>registrar</code>.</li>
+<li><strong>Obrigatório:</strong> nomeiem o custo que a forma escolhida cobra, em dimensão concreta — contrato de plugin a versionar, teste de composição por regra nova, plugin mal-comportado que derruba o núcleo, ou ordem de filtros que vira connascência forte não verificada. Proposta que só lista o ganho está incompleta.</li>
+<li>Digam o que continua sendo um processo só depois da mudança. Pipeline e microkernel não distribuem nada; se o grupo espera cadência de release ou isolamento de falha, a forma escolhida não entrega isso.</li>
+</ol>
+<p>O item 3 é o ponto da atividade. Toda forma tem um preço estrutural, e reconhecê-lo antes de propor a mudança é o que separa uma decisão de um anúncio.</p>
+<h2 id="o-que-ficou-registrado-e-o-limite-das-duas-formas">O que ficou registrado e o limite das duas formas<a class="headerlink" href="#o-que-ficou-registrado-e-o-limite-das-duas-formas" title="Permanent link">&para;</a></h2>
+<p>Esta aula acrescentou duas formas de monólito às da Aula 12. Pipeline é a forma de um domínio que <em>é</em> uma transformação em etapas — filtros, fluxo de mão única, ordem como arquitetura. Microkernel é a forma de um componente com um miolo estável e variação conhecida e recorrente — núcleo, contrato de plugin, composição. O ADR escolheu microkernel para <code>Promocoes</code> e nomeou o preço: um contrato a versionar, um teste de composição por regra, e um plugin que pode derrubar <code>aplicar</code>.</p>
+<p>Nenhuma das duas mudou o empacotamento. O <code>06-microkernel</code> roda como um processo, com <code>pytest</code> e <code>lint-imports</code> verdes — 17 testes, 4 contratos mantidos. Camadas, módulos, pipeline e microkernel são formas <em>dentro</em> do monólito.</p>
+<p>Adiar a distribuição é de graça enquanto todas as partes do Orion toleram o mesmo ritmo operacional: um deploy, uma janela de manutenção, uma escala. A Aula 14 parte do primeiro ponto do Orion em que uma parte deixa de tolerar — quando o custo de continuar junto passa a pesar mais que o custo da rede.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 12 — Pipeline Architecture Style (filtros, tipos de filtro, fluxo unidirecional); Cap. 13 — Microkernel Architecture Style (core system e plug-in components; contrato e registro de plugin).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../exercicios-fixacao-aulas-11-12/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Exercícios de fixação (Aulas 11 e 12)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Exercícios de fixação (Aulas 11 e 12)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula14-quando-o-monolito-deixa-de-servir/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 14 — Quando o monólito deixa de servir">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 14 — Quando o monólito deixa de servir
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

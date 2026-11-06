@@ -1,0 +1,2690 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo3/aula18-granularidade/">
+      
+      
+      
+        <link rel="prev" href="../projeto-extrair-ou-nao-extrair/">
+      
+      
+        <link rel="next" href="../aula19-propriedade-do-dado/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 18 — Granularidade - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 18 — Granularidade
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ja-sabemos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que já sabemos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-caso-tres-candidatos-ao-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O caso: três candidatos ao corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-e-granularidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que é granularidade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forcas-que-empurram-e-forcas-que-seguram" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forças que empurram e forças que seguram
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Forças que empurram e forças que seguram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-seis-razoes-para-separar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As seis razões para separar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-quatro-razoes-para-manter-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quatro razões para manter junto
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-metrica-enxerga-e-o-que-nao-enxerga" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a métrica enxerga e o que não enxerga
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-atravessa-o-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que atravessa o corte
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O que atravessa o corte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tres-camadas-de-acordo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três camadas de acordo
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-uma-mudanca-em-b-quebra-em-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que uma mudança em B quebra em A
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-leitor-tolerante" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O leitor tolerante
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-limite-da-tolerancia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O limite da tolerância
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evoluir-um-contrato-que-precisa-quebrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Evoluir um contrato que precisa quebrar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-teste-de-contrato-guiado-pelo-consumidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O teste de contrato guiado pelo consumidor
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-connascencia-que-atravessa-a-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A connascência que atravessa a rede
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-o-corte-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: o corte de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: o corte de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onde-cortar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde cortar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uma-pontuacao-para-a-ordem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Uma pontuação para a ordem
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-ordem-dos-candidatos-ao-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Ordem dos candidatos ao corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-atravessa-o-corte_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que atravessa o corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-19-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 19 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ja-sabemos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que já sabemos
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-caso-tres-candidatos-ao-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O caso: três candidatos ao corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-e-granularidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que é granularidade
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forcas-que-empurram-e-forcas-que-seguram" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Forças que empurram e forças que seguram
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Forças que empurram e forças que seguram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#as-seis-razoes-para-separar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As seis razões para separar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#as-quatro-razoes-para-manter-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        As quatro razões para manter junto
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-a-metrica-enxerga-e-o-que-nao-enxerga" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que a métrica enxerga e o que não enxerga
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-atravessa-o-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que atravessa o corte
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O que atravessa o corte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tres-camadas-de-acordo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Três camadas de acordo
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-uma-mudanca-em-b-quebra-em-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que uma mudança em B quebra em A
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-leitor-tolerante" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O leitor tolerante
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-limite-da-tolerancia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O limite da tolerância
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evoluir-um-contrato-que-precisa-quebrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Evoluir um contrato que precisa quebrar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-teste-de-contrato-guiado-pelo-consumidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O teste de contrato guiado pelo consumidor
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-connascencia-que-atravessa-a-rede" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A connascência que atravessa a rede
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estudo-de-caso-o-corte-de-pagamentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Estudo de caso: o corte de <code>Pagamentos</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estudo de caso: o corte de Pagamentos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onde-cortar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde cortar
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uma-pontuacao-para-a-ordem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Uma pontuação para a ordem
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-ordem-dos-candidatos-ao-corte" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        📐 ADR — Ordem dos candidatos ao corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-atravessa-o-corte_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que atravessa o corte
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-19-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 19 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 3 — Arquiteturas Distribuídas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo3/aula18-granularidade.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-18-granularidade">Aula 18 — Granularidade<a class="headerlink" href="#aula-18-granularidade" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>explicar o que é <strong>granularidade de serviço</strong> e por que a pergunta "de que tamanho?" é mal formulada: a pergunta útil é "onde passa o corte, e o que atravessa";</li>
+<li>separar, num argumento de reunião, as <strong>forças de desintegração</strong> (razões para partir) das <strong>forças de integração</strong> (razões para manter junto), e dizer que evidência sustenta cada uma;</li>
+<li>ler <span class="arithmatex">\(C_a\)</span>, <span class="arithmatex">\(C_e\)</span> e a connascência como evidência de <strong>custo de corte</strong>, e dizer o que essas métricas não enxergam;</li>
+<li>distinguir uma mudança de contrato que acrescenta de uma que quebra, incluindo a que quebra o <strong>significado</strong> sem tocar o formato;</li>
+<li>explicar o que faz um leitor tolerante, um teste de contrato guiado pelo consumidor e uma regra de evolução de contrato;</li>
+<li>classificar a connascência que atravessa a rede pelos três eixos (força, localidade e grau);</li>
+<li>aplicar tudo isso a um caso: montar a matriz de forças do Orion, ordenar os candidatos e registrar a regra de evolução do contrato de cobrança.</li>
+</ul>
+<h2 id="o-que-ja-sabemos">O que já sabemos<a class="headerlink" href="#o-que-ja-sabemos" title="Permanent link">&para;</a></h2>
+<p>Este capítulo parte de cinco ideias que as aulas anteriores deixaram assentadas. Convém tê-las à mão, porque a granularidade só faz sentido sobre elas.</p>
+<p>A primeira é que <strong>separar processos troca uma chamada local por uma chamada remota</strong>, e as duas não se parecem. A chamada local ou devolve um resultado ou levanta um erro. A remota tem um terceiro desfecho, o de que não sabemos se a operação aconteceu: o tempo esgotou, e o outro lado pode ter executado, não ter executado ou ainda estar executando. Além disso, a latência de uma chamada remota tem cauda, e repetir a chamada só é seguro quando a operação aguenta ser repetida (as falácias da computação distribuída, Aula 16).</p>
+<p>A segunda é que <strong>a disponibilidade se multiplica quando as partes estão em série</strong>. Dois serviços de 99,9% de disponibilidade, um chamando o outro de forma síncrona, entregam cerca de 99,8% juntos. Cada artefato implantável a mais, no caminho de uma operação, tira um pouco do conjunto (Aula 17).</p>
+<p>A terceira é que <strong>a forma do que se implanta é um espectro</strong>. Numa ponta está o monólito modular, com fronteiras lógicas verificadas e um só artefato. No meio está o <em>service-based</em>, com poucos serviços grossos, em geral um por domínio. Na outra ponta estão os microsserviços, com muitos serviços finos, cada um com seu dado. Nenhuma forma é a certa em si; cada uma troca autonomia de <em>deploy</em> por custo de rede e de operação (Aula 17).</p>
+<p>A quarta é que <strong>variação recorrente não exige processo novo</strong>. Numa arquitetura em microkernel (Aula 13), um núcleo que muda pouco define o contrato de um plugin, registra os que existem e compõe o resultado; cada variante nova, como uma regra de desconto, é um plugin que entra sem alterar o núcleo e sem sair do processo. A fronteira existe e é verificada, mas é lógica e não de rede.</p>
+<p>A quinta é que <strong>o que cruza uma fronteira vira interface pública</strong>. Dentro de um processo, o verificador de tipos acusa quem usa o contrato errado. Pela rede, o contrato é uma mensagem serializada, lida e escrita por código de cada lado, e os consumidores mudam num ritmo que o produtor não controla.</p>
+<p>Três instrumentos de medida acompanham essas ideias desde os módulos anteriores. O fan-in <span class="arithmatex">\(C_a\)</span> conta quantos componentes dependem de um componente, e o fan-out <span class="arithmatex">\(C_e\)</span>, de quantos ele depende; os dois contam arestas, e uma aresta cortada vira uma chamada remota. A <strong>coesão</strong> (Aula 5) diz se o que está num componente pertence ao mesmo assunto. A <strong>connascência</strong> (Aula 6) diz que tipo de dependência existe entre duas partes e o quanto ela pesa. E o <strong>ADR</strong> registra a decisão com a alternativa descartada e a condição que a desmentiria.</p>
+<p>O que essas ideias ainda não respondem é a pergunta que vem antes de todas: se for para separar, <strong>o que se separa</strong>?</p>
+<h2 id="o-caso-tres-candidatos-ao-corte">O caso: três candidatos ao corte<a class="headerlink" href="#o-caso-tres-candidatos-ao-corte" title="Permanent link">&para;</a></h2>
+<p>O Orion chega a essa pergunta depois da Aula 17. Ficou decidido manter o monólito modular e, se o gatilho da Aula 14 disparar, cortar pouco. Na reunião seguinte, a conversa muda: se for para cortar, <strong>onde</strong>? Três componentes estão na mesa, e o diagrama mostra onde cada um fica no sistema.</p>
+<pre class="mermaid"><code>flowchart LR
+    Portal --&gt; Catalogo([Catalogo])
+    Portal --&gt; Checkout
+    Checkout --&gt; Catalogo
+    Checkout --&gt; Promocoes([Promocoes])
+    Checkout --&gt; Pagamentos([Pagamentos])
+    Promocoes --&gt; Catalogo
+    Integracoes --&gt; Catalogo
+    Integracoes --&gt; Notificacoes
+    Pagamentos --&gt; Notificacoes</code></pre>
+<p>Leitura das setas: <code>A --&gt; B</code> significa que A depende de B. Os candidatos têm contorno arredondado. O diagrama mostra 9 das 17 dependências do Orion e omite <code>Pedidos</code>, <code>Clientes</code> e <code>Logistica</code>, com as arestas que passam por eles; as demais não mudam a discussão. <code>Catalogo</code> tem quatro dependentes (<code>Portal</code>, <code>Checkout</code>, <code>Promocoes</code> e <code>Integracoes</code>, este último um componente que ninguém adotou). <code>Promocoes</code> é chamada pelo <code>Checkout</code> e lê preço de <code>Catalogo</code>. <code>Pagamentos</code> é chamado pelo <code>Checkout</code> e depende só de <code>Notificacoes</code>: <span class="arithmatex">\(C_a = 1\)</span> e <span class="arithmatex">\(C_e = 1\)</span>.</p>
+<p>Duas propostas aparecem na mesma tarde. A primeira: separar <code>Catalogo</code>, "porque tem quatro dependentes". A segunda: separar <code>Promocoes</code>, "porque muda todo trimestre". As duas chegam com a mesma convicção e são discutidas como se fossem o mesmo tipo de argumento, com um placar de quem convenceu mais gente na sala.</p>
+<p>Não são. "Quatro dependentes" é uma contagem de quem consome <code>Catalogo</code>, e descreve <strong>quanto custa cortar</strong>: cada dependente vira uma chamada remota e um contrato a manter. Como argumento, pesa contra o corte. "Muda todo trimestre" descreve o <strong>ritmo</strong> de uma parte, e esse sim pode ser um motivo para separar. Quem propôs o primeiro usou o número ao contrário.</p>
+<p>Há um segundo problema, que só aparece depois do corte. Com <code>Pagamentos</code> já separado e chamado pela rede, o time dele publica uma versão que acrescenta um resultado novo de cobrança, <code>EM_ANALISE</code>, para valores altos. Nenhum campo mudou de nome e o formato da resposta é idêntico. <code>Compra</code>, que não conhece o valor, o trata como cobrança aprovada, emite o pedido e notifica o cliente de uma compra que ninguém cobrou. Os testes dos dois lados passam.</p>
+<p>Temos então duas perguntas, na ordem em que o Orion as encontra: onde cortar, e o que passa pelo corte. Para respondê-las falta um vocabulário, e é pelo conceito de granularidade que ele começa. O Orion volta no estudo de caso do final, com a balança montada.</p>
+<h2 id="o-que-e-granularidade">O que é granularidade<a class="headerlink" href="#o-que-e-granularidade" title="Permanent link">&para;</a></h2>
+<p><strong>Granularidade</strong> é o tamanho da unidade que se separa e implanta, medido não em linhas de código, mas em <strong>quanta responsabilidade cabe nela</strong>. Um serviço de grão grosso reúne várias funções de negócio; um de grão fino, uma só. A Aula 17 ordenou as formas (monólito modular, <em>service-based</em>, microsserviços) pela quantidade de artefatos. Esta aula trata da pergunta anterior: dado um sistema, <strong>por onde passa cada corte</strong>.</p>
+<p>A armadilha é tratar o tamanho como objetivo. "Serviços pequenos" parece uma meta, mas um serviço pequeno demais cria chamadas remotas e transações distribuídas que um serviço maior resolveria dentro do processo, e um serviço grande demais mantém junto o que muda em ritmos diferentes. Nenhum tamanho é bom em si. O que existe é um conjunto de forças que empurra o corte para um lado ou para o outro, e o trabalho do arquiteto é pesá-las com evidência.</p>
+<h2 id="forcas-que-empurram-e-forcas-que-seguram">Forças que empurram e forças que seguram<a class="headerlink" href="#forcas-que-empurram-e-forcas-que-seguram" title="Permanent link">&para;</a></h2>
+<p>Toda separação é uma troca de forças. <strong>Forças de desintegração</strong> são razões para partir uma parte do resto. <strong>Forças de integração</strong> são razões para mantê-la junta. A classificação vem de Ford, Richards, Sadalage e Dehghani (<em>Software Architecture: The Hard Parts</em>, Cap. 7), que a usam justamente para decidir o grão de um serviço. Eles apontam um erro comum: equipes se concentram nos desintegradores e ignoram os integradores, e o grão certo está no equilíbrio entre os dois. A utilidade da classificação é prática: cada argumento da reunião vai para um lado da balança, com a evidência que o sustenta, e o placar de quem fala mais alto deixa de decidir.</p>
+<p>Para ver a balança antes de levá-la ao Orion, um cenário de fora. Numa plataforma de reservas de hotéis, o módulo de avaliações de hóspedes recebe leitura em volume muito maior que o resto e ganha campos novos toda semana. O módulo de reserva e depósito muda raramente, mas cada reserva só vale se o depósito for registrado na mesma operação. As avaliações têm duas razões para sair (escala e ritmo de mudança) e nenhuma para ficar. Reserva e depósito têm uma razão forte para ficar juntos, a transação, por maior que seja o volume. Separar os dois pelo critério "quem tem mais tráfego" cortaria a transação; separar as avaliações não corta nada que precise ser atômico.</p>
+<h3 id="as-seis-razoes-para-separar">As seis razões para separar<a class="headerlink" href="#as-seis-razoes-para-separar" title="Permanent link">&para;</a></h3>
+<p>O <strong>escopo da função</strong> pergunta se o componente faz coisas de naturezas diferentes. Um serviço que cobra, estorna e concilia em lote reúne atividades com ritmos muito distintos: a cobrança é interativa e imediata, a conciliação é um processamento noturno. A evidência está na descrição das responsabilidades e na coesão (Aula 5): quando metade do código não é tocada por quem mexe na outra metade, há duas funções num lugar só.</p>
+<p>A <strong>volatilidade</strong> pergunta se uma parte muda num ritmo diferente do resto. Um módulo que recebe regra nova toda semana, preso ao <em>deploy</em> de um módulo que muda uma vez por ano, faz o primeiro esperar o segundo. A evidência não está no grafo de dependências; está no histórico do repositório (quantas mudanças por período) e no tempo que cada uma esperou o <em>deploy</em> conjunto. "Muda muito" sem essa medida é impressão.</p>
+<p>A <strong>escala e a vazão</strong> perguntam se uma parte recebe carga que cresce por uma causa própria. Um catálogo lido milhares de vezes para cada compra cresce por outro motivo que o checkout. Cuidado com a distinção que a Aula 14 fez: o pico de campanha é carga do sistema inteiro, não de uma parte. A evidência é carga medida por componente, e a solução nem sempre é um serviço novo: uma réplica de leitura pode atender a escala sem criar outra fronteira de falha.</p>
+<p>A <strong>tolerância a falha</strong> pergunta se a queda de uma parte deve poupar as outras, ou o contrário. Se o fechamento de compra não pode parar porque a geração de recomendações caiu, a recomendação merece um isolamento que a cobrança talvez não precise. A evidência é o registro de incidentes e as dependências obrigatórias no caminho crítico: separar só ajuda se a parte separada deixar de ser obrigatória para quem a chama. Se continuar obrigatória, a queda dela derruba o chamador do mesmo jeito, agora com uma rede no meio.</p>
+<p>A <strong>segurança</strong> pergunta se uma parte guarda ou trafega um dado que exige outro nível de proteção. Dado de cartão é o caso clássico: reduzir o número de componentes que o tocam reduz a superfície de ataque e o escopo de uma auditoria. A evidência é um requisito declarado, não uma suposição.</p>
+<p>A <strong>extensibilidade</strong> pergunta se variantes novas chegam com frequência. Um sistema que ganha provedor de pagamento novo a cada trimestre se beneficia de uma fronteira onde o provedor entra sem tocar o resto. Aqui a resposta costuma ser interna ao processo (um ponto de extensão, como o microkernel da Aula 13) antes de ser um serviço, e isso muda o custo da solução.</p>
+<h3 id="as-quatro-razoes-para-manter-junto">As quatro razões para manter junto<a class="headerlink" href="#as-quatro-razoes-para-manter-junto" title="Permanent link">&para;</a></h3>
+<p>A <strong>transação</strong> pergunta se dois passos precisam valer juntos ou não valer. Dentro de um processo, um banco garante isso com um <em>commit</em> único. Depois do corte, cada lado tem o seu, e a atomicidade vira um problema de compensação (Aula 20). É a força de integração mais cara de desfazer.</p>
+<p>O <strong>fluxo entre serviços</strong> pergunta se uma operação percorre as duas partes em sequência, esperando a resposta de cada uma. Quando o fluxo é síncrono e no caminho crítico, as partes dependem uma da outra em disponibilidade e em latência (Aulas 16 e 17), e separá-las troca uma chamada local por uma remota sem tornar nenhuma das duas independente.</p>
+<p>O <strong>código compartilhado</strong> pergunta se as partes dependem da mesma biblioteca de código. Utilitários e infraestrutura compartilhados são corriqueiros e não pesam; o caso que pesa é o de código de <strong>domínio</strong> comum, porque uma mudança nele exige alterar, testar e implantar juntos todos os serviços que o usam, e o ganho de separá-los desaparece. O versionamento da biblioteca atenua, sem eliminar.</p>
+<p>As <strong>relações entre dados</strong> perguntam se o dado que o serviço usa também pode ser separado. Se duas partes leem ou escrevem as mesmas tabelas, separar os processos mantém o acoplamento por esquema (tema da Aula 19), e separar o dado cria cópias para manter. É por isso que "quantos leem este dado" é um argumento de integração, e não de desintegração.</p>
+<h3 id="o-que-a-metrica-enxerga-e-o-que-nao-enxerga">O que a métrica enxerga e o que não enxerga<a class="headerlink" href="#o-que-a-metrica-enxerga-e-o-que-nao-enxerga" title="Permanent link">&para;</a></h3>
+<p>Cada uma das dez forças pede evidência, e a primeira tentação é buscá-la nas métricas que já usamos desde o Módulo 1, porque são baratas e saem do código. Vale saber o que cada uma entrega antes de apoiar um corte nela.</p>
+<p>O fan-in <span class="arithmatex">\(C_a\)</span> (quantos componentes dependem deste) e o fan-out <span class="arithmatex">\(C_e\)</span> (de quantos este depende) dizem <strong>quantas arestas</strong> o corte transformaria em chamadas remotas. Isso é informação útil, porque cada aresta cortada traz a cauda e a ambiguidade da Aula 16 e um contrato a manter. Mas as duas contam arestas e dão o mesmo peso a todas. Quatro leituras de um catálogo e quatro cobranças transacionais têm o mesmo <span class="arithmatex">\(C_a = 4\)</span> e custos de corte muito diferentes: as primeiras toleram uma réplica e um pouco de atraso, as segundas exigem que o <em>commit</em> seja único.</p>
+<p>A connascência (Aula 6) afina a leitura. Ela diz que <strong>tipo</strong> de dependência cada aresta carrega, e a análise de força, localidade e grau diz o quanto cada uma pesa. Ainda assim, nem a contagem nem a connascência dizem se a aresta fica no caminho de um fechamento de compra, e é isso que decide o preço de cortá-la.</p>
+<p>Há também o que nenhuma delas pode ver: três das seis razões para separar (volatilidade, escala e extensibilidade) não aparecem no grafo. Vivem no histórico do repositório e na medição de produção. Uma decisão tomada olhando só o grafo vê metade da balança. Por isso a métrica é sintoma de custo de corte, e não veredito: ela diz onde olhar, e a decisão continua precisando das forças e da evidência de cada uma.</p>
+<h2 id="o-que-atravessa-o-corte">O que atravessa o corte<a class="headerlink" href="#o-que-atravessa-o-corte" title="Permanent link">&para;</a></h2>
+<p>Decidido onde cortar, resta o que passa pelo corte. Dentro de um processo, duas partes combinam o que trocam por <strong>tipos</strong>, e o verificador acusa quem passa o campo errado. Pela rede, o que existe é uma mensagem serializada, e cada lado a lê e a escreve com código próprio. O acordo deixa de ser verificado por uma ferramenta e passa a depender de testes, de disciplina ou do cliente em produção. Por isso se diz que o contrato remoto é uma <strong>interface pública</strong>: tem consumidores que o produtor não controla e que mudam num ritmo próprio.</p>
+<h3 id="tres-camadas-de-acordo">Três camadas de acordo<a class="headerlink" href="#tres-camadas-de-acordo" title="Permanent link">&para;</a></h3>
+<p>Um contrato remoto combina três coisas, e cada uma quebra de um jeito. Para vê-las separadas, um exemplo de fora do Orion, que acompanha esta aula até o fim da discussão sobre contratos.</p>
+<p>Um portal de cursos online, que chamaremos de <strong>A</strong>, libera ou bloqueia o conteúdo de um aluno perguntando a um serviço de assinaturas, <strong>B</strong>, mantido por outro time, qual é a situação dele. Na versão 1, a resposta de B é esta:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="nt">"situacao"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ativa"</span><span class="p">,</span><span class="w"> </span><span class="nt">"plano"</span><span class="p">:</span><span class="w"> </span><span class="s2">"anual"</span><span class="w"> </span><span class="p">}</span>
+</span></code></pre></div>
+<p>A só lê o campo <code>situacao</code>: o <code>id</code> ela já conhece, e o <code>plano</code> ela nunca usa. O que os dois times combinaram se divide em três camadas.</p>
+<table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>O que combina</th>
+<th>No exemplo</th>
+<th>Quem a verifica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Formato</strong></td>
+<td>quais campos existem, de que tipo, quais são obrigatórios</td>
+<td><code>situacao</code> é um texto; <code>id</code> é um número</td>
+<td>um verificador de esquema</td>
+</tr>
+<tr>
+<td><strong>Vocabulário</strong></td>
+<td>os valores que um campo pode assumir</td>
+<td><code>ativa</code>, <code>suspensa</code> ou <code>cancelada</code></td>
+<td>o esquema, se o vocabulário for declarado como enumeração</td>
+</tr>
+<tr>
+<td><strong>Significado</strong></td>
+<td>o que cada valor obriga o consumidor a fazer</td>
+<td>só <code>ativa</code> autoriza liberar o conteúdo</td>
+<td>só um teste; nenhum esquema</td>
+</tr>
+</tbody>
+</table>
+<p>Um esquema captura o formato e, quando o vocabulário é declarado como enumeração, também o vocabulário. Nenhum esquema captura o significado. Newman aponta isso ao falar de ferramentas que comparam esquemas: elas pegam as quebras estruturais e deixam passar as semânticas, e para essas é preciso um teste.</p>
+<p>A camada do vocabulário é a mais traiçoeira, porque ela cresce. Basta que B passe a devolver também <code>em_carencia</code>. Nada se perdeu, e o valor novo tem sentido para o produtor. Para A, escrita quando só existiam três valores, o quarto não está em lugar nenhum da lógica, e o que ela faz com um valor desconhecido é uma decisão tomada meses antes, no dia em que escreveu o <code>if</code>. A próxima seção separa as mudanças que quebram das que não quebram, e a seguinte mostra como A pode se proteger.</p>
+<h3 id="o-que-uma-mudanca-em-b-quebra-em-a">O que uma mudança em B quebra em A<a class="headerlink" href="#o-que-uma-mudanca-em-b-quebra-em-a" title="Permanent link">&para;</a></h3>
+<p>B vai mudar a resposta ao longo do ano. Cada mudança possível atinge uma camada diferente do acordo, e por isso aparece de um jeito diferente. O quadro cruza as cinco mudanças mais comuns com o que cada uma faz no portal.</p>
+<table>
+<thead>
+<tr>
+<th>Mudança em B</th>
+<th>No exemplo</th>
+<th>O que quebra</th>
+<th>Como aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Campo novo na resposta</td>
+<td>B acrescenta <code>renovacao_em</code></td>
+<td>nada, se A ignora o que não conhece</td>
+<td>não aparece</td>
+</tr>
+<tr>
+<td>Campo que A lê é renomeado ou removido</td>
+<td><code>situacao</code> vira <code>estado</code></td>
+<td>todo consumidor que o lê</td>
+<td><strong>erro na hora</strong>; o teste de contrato acusa</td>
+</tr>
+<tr>
+<td>Campo obrigatório novo no pedido</td>
+<td>B passa a exigir <code>origem</code> na consulta</td>
+<td>todo consumidor que não o envia</td>
+<td><strong>erro na hora</strong>: B recusa o pedido</td>
+</tr>
+<tr>
+<td>Valor novo no vocabulário</td>
+<td>B devolve <code>em_carencia</code></td>
+<td>quem decide pelo que conhece</td>
+<td><strong>nada</strong>; só um teste que declare os valores acusa</td>
+</tr>
+<tr>
+<td>Significado novo para um valor antigo</td>
+<td><code>ativa</code> passa a incluir o período de teste gratuito</td>
+<td>quem agia pelo sentido antigo</td>
+<td><strong>nada</strong>; só um teste do comportamento acusa</td>
+</tr>
+</tbody>
+</table>
+<p>As linhas se dividem em dois grupos pela última coluna. Nas duas do meio, o formato mudou, e A falha na hora, alto: o erro aparece, alguém o corrige no mesmo dia, e o custo é de coordenação. Nas duas últimas, o formato é o mesmo, A continua funcionando e <strong>decide errado sem avisar</strong>. É o segundo grupo que custa um aluno liberado sem direito ou um cliente cobrado sem pedido. Resta a primeira linha, o caso que se quer manter barato: acrescentar um campo só é inofensivo se A for escrita de modo a ignorar o que não conhece, e é desse modo que trata a seção seguinte.</p>
+<h3 id="o-leitor-tolerante">O leitor tolerante<a class="headerlink" href="#o-leitor-tolerante" title="Permanent link">&para;</a></h3>
+<p>Newman chama de <strong>leitor tolerante</strong> (<em>tolerant reader</em>, expressão de Martin Fowler) o consumidor que pega só os campos de que precisa e ignora o resto, para que mudanças que não lhe dizem respeito não o quebrem. É a aplicação ao contrato do princípio de Postel: ser conservador no que envia e liberal no que aceita. A frase é fácil de concordar e difícil de aplicar, porque "aceitar" tem dois sentidos que a prática separa: aceitar um <strong>campo</strong> que não se conhece e aceitar um <strong>valor</strong> que não se conhece. O primeiro é quase sempre seguro. O segundo, não. O portal de cursos mostra a diferença.</p>
+<p>Na versão 2, B faz duas mudanças compatíveis, cada uma por boas razões do lado dele. Acrescenta o campo <code>renovacao_em</code>, com a data da próxima cobrança. E acrescenta o valor <code>em_carencia</code>: o pagamento foi recusado, uma nova tentativa de cobrança está em curso e, enquanto ela não passar, o conteúdo novo deve ficar bloqueado. O time de B avisou no canal de mudanças, e ninguém perdeu nada. O que acontece em A depende de <strong>como A lê a resposta</strong>. Há três maneiras de escrever essa leitura, e todas funcionam com a versão 1.</p>
+<div class="language-python highlight"><span class="filename">Ilustrativo: três maneiras de ler a resposta de B</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">CONHECIDAS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"ativa"</span><span class="p">,</span> <span class="s2">"suspensa"</span><span class="p">,</span> <span class="s2">"cancelada"</span><span class="p">}</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">ler_rigido</span><span class="p">(</span><span class="n">carga</span><span class="p">):</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="c1"># confere a resposta inteira contra o que a v1 descrevia</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">carga</span><span class="p">)</span> <span class="o">!=</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"situacao"</span><span class="p">,</span> <span class="s2">"plano"</span><span class="p">}</span> <span class="ow">or</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"situacao"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONHECIDAS</span><span class="p">:</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"resposta fora do esquema da v1"</span><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="k">return</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"situacao"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"ativa"</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">ler_ingenuo</span><span class="p">(</span><span class="n">carga</span><span class="p">):</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="c1"># decide pelo que conhece e deixa o resto virar o caso comum</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="k">return</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"situacao"</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"suspensa"</span><span class="p">,</span> <span class="s2">"cancelada"</span><span class="p">}</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">ler_tolerante</span><span class="p">(</span><span class="n">carga</span><span class="p">):</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="n">situacao</span> <span class="o">=</span> <span class="n">carga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"situacao"</span><span class="p">)</span>  <span class="c1"># campos extras sao ignorados</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="k">if</span> <span class="n">situacao</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONHECIDAS</span><span class="p">:</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="k">raise</span> <span class="n">SituacaoDesconhecida</span><span class="p">(</span><span class="n">situacao</span><span class="p">)</span>  <span class="c1"># nao saber ler nao e o mesmo que "ativa"</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="k">return</span> <span class="n">situacao</span> <span class="o">==</span> <span class="s2">"ativa"</span>
+</span></code></pre></div>
+<p>O <strong>leitor rígido</strong> desconfia de tudo o que não estava no acordo. O <strong>leitor ingênuo</strong> escreveu a lógica pensando nos casos de bloqueio que conhecia (<code>suspensa</code>, <code>cancelada</code>) e deixou o resto cair em "libera", porque era isso que a v1 garantia. O <strong>leitor tolerante</strong> ignora os campos que não usa, mas confere o valor do único campo que decide o fluxo.</p>
+<p>A tabela cruza os três leitores com quatro mudanças de B, três delas do quadro anterior.</p>
+<table>
+<thead>
+<tr>
+<th>Mudança em B</th>
+<th>Leitor rígido</th>
+<th>Leitor ingênuo</th>
+<th>Leitor tolerante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Campo novo (<code>renovacao_em</code>)</td>
+<td>falha, sem necessidade</td>
+<td>segue</td>
+<td>segue</td>
+</tr>
+<tr>
+<td>Campo que A não lê é removido (<code>plano</code>)</td>
+<td>falha, sem necessidade</td>
+<td>segue</td>
+<td>segue</td>
+</tr>
+<tr>
+<td>Valor novo (<code>em_carencia</code>)</td>
+<td>falha, alto</td>
+<td><strong>libera, sem avisar</strong></td>
+<td>falha, alto, e A escolhe o que fazer</td>
+</tr>
+<tr>
+<td>Campo que A lê é renomeado (<code>situacao</code>)</td>
+<td>falha, alto</td>
+<td>falha, alto</td>
+<td>falha, alto</td>
+</tr>
+</tbody>
+</table>
+<p>As duas primeiras linhas mostram o que o leitor tolerante compra: A deixa de depender de coisas que não usa, e o time de B pode evoluir a resposta sem consultar todos os consumidores. O leitor rígido, que parece o mais cuidadoso, é o que mais quebra, e quebra por mudanças que não alteram nada do que A decide. A última linha é o caso fácil: o formato mudou, o erro aparece na hora e alguém corrige no mesmo dia.</p>
+<p>A linha que decide a escolha é a terceira. Com o leitor ingênuo, a resposta <code>em_carencia</code> chega, não está na lista de bloqueios, e o aluno com pagamento recusado continua assistindo ao conteúdo novo. Nenhum erro, nenhum alerta, nenhum teste vermelho: cada lado, lido sozinho, está correto. O diagrama mostra a diferença no mesmo instante da chamada.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant A as Portal de cursos (A)
+    participant B as Assinaturas (B, v2)
+    A-&gt;&gt;B: situacao da assinatura 42?
+    B--&gt;&gt;A: situacao = em_carencia
+    Note over A: leitor ingenuo: nao e suspensa nem cancelada, entao libera
+    Note over A: leitor tolerante: valor fora do acordo, estado indeterminado</code></pre>
+<p>O diagrama mostra uma chamada só e omite o que vem depois: o que A faz com o estado indeterminado, que é o ponto da próxima subseção.</p>
+<h3 id="o-limite-da-tolerancia">O limite da tolerância<a class="headerlink" href="#o-limite-da-tolerancia" title="Permanent link">&para;</a></h3>
+<p>Ignorar um campo é seguro porque nenhuma decisão de A depende dele. Com um valor não é assim, e a regra que sai do exemplo é: <strong>a tolerância vale para o que não decide o fluxo; para o que decide, o leitor confere</strong>. O leitor tolerante útil aceita o campo extra e <strong>trata o valor desconhecido como falha</strong>: a resposta chegou, mas diz algo que A não sabe ler, e não saber ler não é o mesmo que autorizar.</p>
+<pre class="mermaid"><code>flowchart TD
+    R[Resposta de B] --&gt; C{situacao presente e conhecida?}
+    C -- sim --&gt; D[decide pelo significado combinado]
+    C -- nao --&gt; E[estado indeterminado]
+    E --&gt; F[politica de A: negar, liberar ou tentar depois, e registrar]</code></pre>
+<p>Campos extras não aparecem no diagrama porque o leitor tolerante os descarta antes da pergunta. O ponto central do desenho está no último nó, e três observações o completam.</p>
+<p>A primeira é que <strong>a política é de A, não de B</strong>. Diante do indeterminado, A pode negar o acesso (e arriscar bloquear quem deveria assistir), liberar (e arriscar liberar quem não deveria) ou mostrar "não conseguimos confirmar sua assinatura, tente em instantes". Qual escolher depende do que A sabe e B não: um curso gratuito de introdução pode liberar, uma aula paga com custo de licença por acesso pode negar. B não pode tomar essa decisão por A, porque não sabe o que A faz com o resultado. O que o leitor tolerante garante não é a escolha certa, e sim que <strong>a escolha é feita por quem pode fazê-la</strong>, em vez de ser tomada por acaso por um <code>if</code> escrito meses antes.</p>
+<p>A segunda é que <strong>o indeterminado precisa de um caminho de aviso</strong>. Um leitor tolerante que nega em silêncio troca um erro invisível por outro: o aluno é bloqueado, o suporte recebe o chamado e ninguém liga a causa à mudança de B. O registro e o alerta de "valor desconhecido" são o que transforma a tolerância em informação. Na prática, o alerta é o primeiro sinal de que o acordo mudou sem que A soubesse.</p>
+<p>A terceira é que <strong>a tolerância não resolve a mudança de significado</strong>. Se B passasse a usar <code>ativa</code> também para assinaturas em período de teste gratuito, o valor continua conhecido, o formato é o mesmo e A libera um conteúdo que ninguém esperava liberar. Nenhum leitor, por mais tolerante que seja, percebe isso. Esse tipo de quebra só aparece se alguém escreveu, em algum lugar, o que <code>ativa</code> obriga A a fazer, e é para isso que serve o teste de contrato da seção seguinte.</p>
+<p>Há ainda o excesso contrário: ignorar um campo novo que <strong>deveria</strong> ser lido. Se B acrescentasse <code>bloqueio_parental</code> e A o descartasse por ser "um campo que eu não conhecia", a decisão passaria a depender de um dado que A tem à vista e não usa. Por isso a regra distingue o que decide o fluxo do que não decide, e não o que é novo do que é antigo. Quem decide o que entra em cada grupo é o consumidor, que é quem sabe o que o resto do código faz com a resposta.</p>
+<h3 id="evoluir-um-contrato-que-precisa-quebrar">Evoluir um contrato que precisa quebrar<a class="headerlink" href="#evoluir-um-contrato-que-precisa-quebrar" title="Permanent link">&para;</a></h3>
+<p>Há mudanças que não dá para tornar aditivas. Suponha que o time de B decida, por padronização com os outros serviços da empresa, trocar <code>situacao</code> por <code>estado</code>. O significado e o vocabulário são os mesmos; só o nome muda, e isso basta para quebrar todo consumidor que o lê. Três consumidores o leem: o portal de cursos (A), o aplicativo móvel e o painel de relatórios do financeiro. Cada um tem o seu time e o seu ritmo, e o aplicativo tem uma particularidade: uma nova versão passa pela revisão das lojas e leva semanas até chegar aos usuários, e as versões antigas seguem instaladas por meses.</p>
+<p>Newman descreve três saídas para uma mudança assim. Elas diferem em quanto exigem de coordenação e em quanto custam a quem as adota.</p>
+<p><strong>1. Implantação em passo único</strong> (<em>lockstep deployment</em>). B e os três consumidores mudam na mesma janela: B passa a devolver <code>estado</code>, e os três passam a lê-lo no mesmo dia. É a mais simples de entender, e anula a independência de <em>deploy</em> que justificou o corte, porque os quatro times voltam a se mover juntos. No exemplo ela nem é possível, já que o aplicativo não controla quando os usuários atualizam. Se qualquer um dos quatro falhar na janela, os outros três têm de voltar atrás.</p>
+<p><strong>2. Duas versões lado a lado</strong> (<em>coexist versions</em>). B publica as duas versões do endpoint e mantém ambas no ar:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /v1/assinaturas/42  -&gt;  { "id": 42, "situacao": "ativa", "plano": "anual" }
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GET /v2/assinaturas/42  -&gt;  { "id": 42, "estado": "ativa", "plano": "anual" }
+</span></code></pre></div>
+<p>Cada consumidor muda para <code>/v2</code> quando quiser, e a <code>/v1</code> sai quando ninguém mais a chamar. O preço recai sobre B: duas rotas para manter, uma correção de defeito que pode ter de ser feita duas vezes, e um registro de acessos por consumidor para saber quando a <code>/v1</code> pode sair. E as duas versões leem os mesmos dados, o que limita o que a <code>/v2</code> pode mudar por baixo.</p>
+<p><strong>3. Emular a interface antiga</strong> na nova, o padrão de <strong>expandir e contrair</strong> (<em>expand and contract</em>). Em vez de duas rotas, a mesma resposta carrega os dois campos durante um tempo:</p>
+<pre class="mermaid"><code>flowchart LR
+    E["Expandir: B devolve situacao e estado"] --&gt; M["Migrar: cada consumidor passa a ler estado"]
+    M --&gt; C["Contrair: B remove situacao quando ninguem a le"]</code></pre>
+<p>Na fase de expansão, a mudança é aditiva (<code>{ "id": 42, "situacao": "ativa", "estado": "ativa", "plano": "anual" }</code>), e nenhum consumidor quebra. Na fase de migração, o portal troca o campo nesta semana, o painel no mês seguinte, e o aplicativo quando a nova versão chegar aos usuários. Na de contração, B remove <code>situacao</code>: o único passo que quebra, e que a esta altura já não atinge ninguém. O diagrama mostra as fases e omite o que as liga, a evidência de que ninguém mais lê o campo antigo. Essa evidência é o ponto frágil. O registro de acessos mostra quem chamou a rota, mas não quais campos o consumidor lê. O arquivo de contrato do consumidor, que a seção seguinte descreve, mostra. E sem um prazo e um responsável, a contração não acontece, e o campo antigo fica na resposta para sempre.</p>
+<table>
+<thead>
+<tr>
+<th>Saída</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Passo único</td>
+<td>mudança simples, sem versão duas vezes</td>
+<td>todos os times se movem juntos</td>
+<td>consumidores que não controlamos, como o aplicativo</td>
+</tr>
+<tr>
+<td>Duas versões</td>
+<td>cada consumidor migra no seu tempo</td>
+<td>B mantém duas rotas e o registro de quem usa cada uma</td>
+<td>mudanças que dependem de alterar os dados por baixo</td>
+</tr>
+<tr>
+<td>Expandir e contrair</td>
+<td>migração sem versão nova e sem quebra no meio</td>
+<td>uma fase com dois campos, e um prazo para a contração</td>
+<td>quando não há como saber quem ainda lê o campo antigo</td>
+</tr>
+</tbody>
+</table>
+<p>A escolha depende de quantos são os consumidores e do quanto o produtor os controla, que é o <strong>grau</strong> da connascência, tema da última seção desta parte. Com um único consumidor do mesmo time, o passo único pode ser o mais barato. Com três, um deles fora do controle de B, a terceira saída é a única que não depende de combinar uma data.</p>
+<h3 id="o-teste-de-contrato-guiado-pelo-consumidor">O teste de contrato guiado pelo consumidor<a class="headerlink" href="#o-teste-de-contrato-guiado-pelo-consumidor" title="Permanent link">&para;</a></h3>
+<p>Um <strong>teste de contrato guiado pelo consumidor</strong> (<em>consumer-driven contract</em>) inverte quem escreve a expectativa. O consumidor registra, num arquivo que entrega ao produtor, o que espera de cada resposta: os campos, os tipos, os valores. O produtor roda essas expectativas contra o próprio servidor a cada alteração, e a mudança que as quebra falha na CI do produtor, <strong>antes</strong> de chegar a produção. Newman recomenda que os dois times escrevam essas expectativas juntos, pelo efeito colateral de abrir a conversa que o acordo verbal evita.</p>
+<p>Ford e seus coautores (Cap. 13) descrevem o mesmo mecanismo como um modelo de <strong>tração</strong> (<em>pull</em>): em vez de o produtor empurrar um contrato a todos os consumidores, cada consumidor monta o contrato do que precisa e o entrega ao produtor, que o mantém verde na sua esteira de entrega. Eles apontam o preço: o mecanismo só funciona com equipes disciplinadas, que rodem os testes de contrato e não ignorem as falhas. O custo é manter o arquivo atualizado: um contrato de consumidor desatualizado dá confiança falsa, porque passa por ignorância do que mudou. Por isso o arquivo declara só o que o consumidor realmente usa e deixa os demais campos livres.</p>
+<h3 id="a-connascencia-que-atravessa-a-rede">A connascência que atravessa a rede<a class="headerlink" href="#a-connascencia-que-atravessa-a-rede" title="Permanent link">&para;</a></h3>
+<p>A heurística da Aula 6 dizia: a connascência forte fica dentro do componente, a fraca atravessa a fronteira. Olhando o contrato pelos três eixos, o nome de um campo é connascência de nome (a mais fraca), o tipo do campo é connascência de tipo, e o significado de um valor é connascência de significado, a mais forte das três. A <strong>localidade</strong> é o que muda com a rede: a mesma connascência de significado entre duas funções do mesmo módulo é barata, porque o autor das duas está na mesma conversa; entre dois processos, a correção exige coordenação de equipes, e o erro só aparece em produção. A força não mudou; o custo mudou porque a distância cresceu. O <strong>grau</strong> (quantos consumidores) segue baixo enquanto houver um só, e é o que mantém o caso tratável: com dez consumidores, a mesma linha pesaria dez vezes mais.</p>
+<p>Disso sai uma alternativa de desenho: rebaixar a connascência de significado antes de cruzar a fronteira, transformando-a em nome ou tipo. Em vez de devolver um vocabulário a interpretar, o produtor devolveria o fato diretamente (por exemplo, um booleano que diz se o dinheiro saiu). O consumidor deixaria de interpretar e leria o fato. É uma boa opção, com o custo de redesenhar o contrato.</p>
+<h2 id="estudo-de-caso-o-corte-de-pagamentos">Estudo de caso: o corte de <code>Pagamentos</code><a class="headerlink" href="#estudo-de-caso-o-corte-de-pagamentos" title="Permanent link">&para;</a></h2>
+<p>Vamos aplicar o que a aula explicou ao Orion, nas duas perguntas com que ela abriu.</p>
+<h3 id="onde-cortar">Onde cortar<a class="headerlink" href="#onde-cortar" title="Permanent link">&para;</a></h3>
+<p>Pesamos os três candidatos que a reunião trouxe, <code>Catalogo</code> e <code>Promocoes</code> das propostas, e <code>Pagamentos</code>, o candidato da Aula 14. Para as razões de separar, a evidência de cada um é:</p>
+<table>
+<thead>
+<tr>
+<th>Força</th>
+<th><code>Catalogo</code></th>
+<th><code>Promocoes</code></th>
+<th><code>Pagamentos</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escopo</td>
+<td>coeso</td>
+<td>coeso</td>
+<td>cobrança, estorno e conciliação em lote</td>
+</tr>
+<tr>
+<td>Volatilidade</td>
+<td>acompanha o resto</td>
+<td>regra nova quase todo trimestre</td>
+<td>contrato de provedor; gatilho ainda não medido</td>
+</tr>
+<tr>
+<td>Escala</td>
+<td>leitura cresce sozinha</td>
+<td>—</td>
+<td>conciliação acumula em campanha</td>
+</tr>
+<tr>
+<td>Falha</td>
+<td>queda afeta 4 dependentes</td>
+<td>pode falhar sem derrubar a compra</td>
+<td>provedor externo instável</td>
+</tr>
+<tr>
+<td>Segurança</td>
+<td>—</td>
+<td>—</td>
+<td>número do cartão em trânsito</td>
+</tr>
+<tr>
+<td>Extensibilidade</td>
+<td>—</td>
+<td>regras novas já entram como plugin do microkernel, sem rede</td>
+<td>provedores novos sem tocar <code>Checkout</code></td>
+</tr>
+</tbody>
+</table>
+<p>Um traço ("—") significa sem evidência no que o Orion tem hoje, e não que a força não exista. Falta o outro lado da balança. As razões para manter junto recebem a mesma matriz, com as quatro forças de integração:</p>
+<table>
+<thead>
+<tr>
+<th>Força</th>
+<th><code>Catalogo</code></th>
+<th><code>Promocoes</code></th>
+<th><code>Pagamentos</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transação</td>
+<td>—</td>
+<td>—</td>
+<td>cobrar e emitir o pedido num <em>commit</em> só</td>
+</tr>
+<tr>
+<td>Fluxo</td>
+<td>consultado no fechamento</td>
+<td>consultada no fechamento</td>
+<td>chamada síncrona no fechamento, coordenada pelo <code>Checkout</code></td>
+</tr>
+<tr>
+<td>Código compartilhado</td>
+<td>tipos de <code>nucleo</code></td>
+<td>tipos de <code>nucleo</code></td>
+<td>tipos de <code>nucleo</code></td>
+</tr>
+<tr>
+<td>Relações entre dados</td>
+<td>quatro leitores do mesmo dado</td>
+<td>lê preço de <code>Catalogo</code></td>
+<td>a conciliação junta cobranças e pedidos</td>
+</tr>
+</tbody>
+</table>
+<p>Algumas células pedem explicação. O pacote <code>nucleo</code> do Mini-Orion carrega os tipos de dados (<code>ChaveIdempotencia</code>, <code>Pedido</code> e outros) usados por <code>compra</code>, <code>pagamentos</code> e <code>notificacoes</code>; por isso o código compartilhado aparece nos três. São tipos, e não regra de negócio, o que reduz o risco, mas uma mudança em um tipo passa a exigir a biblioteca versionada dos dois lados. Nos dados, os quatro leitores de <code>Catalogo</code> são <code>Portal</code>, <code>Checkout</code>, <code>Promocoes</code> e <code>Integracoes</code> (o componente que ninguém adotou), e a leitura que <code>Promocoes</code> faz de <code>Catalogo</code> é uma das duas arestas internas do módulo <code>Vitrine</code>. A conciliação de <code>Pagamentos</code> casa as cobranças com os pedidos por um <em>join</em> no banco do Orion, e é o que a Aula 19 examina. E a transação é a única célula de integração que só um candidato preenche: <code>Pagamentos</code>, que participa do <em>commit</em> que cobra e emite, é o que tem a força de integração mais forte entre os três.</p>
+<p>As leituras saem do que a aula explicou. <code>Catalogo</code> tem a coluna de separação quase vazia e a de integração cheia, e a única força de separação com evidência (leitura) tem solução sem processo novo, a réplica de leitura; o <span class="arithmatex">\(C_a = 4\)</span> aparece do lado do custo. <code>Promocoes</code> tem uma força de separação forte e quase nenhuma de integração, mas a Aula 13 mostrou que o microkernel isola a regra <strong>dentro</strong> do processo, e "cadência de <em>release</em> independente" seria vender o que essa forma não compra. Falta medir a espera pelo <em>deploy</em> conjunto; sem a medida, a força é plausível e não comprovada. <code>Pagamentos</code> é o único com evidência em quase todas as linhas de separação, e é também o único com uma transação a desfazer. A matriz faz o que a conversa de corredor não faz: mostra ao proponente do corte a força que o contraria. Cortar <code>Pagamentos</code> desfaz o <em>commit</em> único entre cobrar e emitir, e esse é o preço que a Aula 20 trata com sagas.</p>
+<p>A matriz não decide por contagem de células. <code>Pagamentos</code> vence porque suas razões estão ancoradas em um sinal que o ADR da Aula 14 já nomeia como mensurável, e o preço está identificado.</p>
+<h3 id="uma-pontuacao-para-a-ordem">Uma pontuação para a ordem<a class="headerlink" href="#uma-pontuacao-para-a-ordem" title="Permanent link">&para;</a></h3>
+<p>A matriz mostra as forças, mas uma ordem precisa ser defendida célula a célula, e "tem mais traços preenchidos" é justamente a contagem que a aula rejeitou. A saída é dar <strong>nota por evidência</strong>, e não por presença. Cada força recebe uma de três notas:</p>
+<table>
+<thead>
+<tr>
+<th>Nota</th>
+<th>Critério</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>há evidência no que o Orion tem hoje: código, descrição das responsabilidades, requisito ou decisão registrada</td>
+</tr>
+<tr>
+<td>1</td>
+<td>a força é plausível, mas ainda não foi medida ou declarada</td>
+</tr>
+<tr>
+<td>0</td>
+<td>sem evidência, ou a força tem solução que dispensa o corte</td>
+</tr>
+</tbody>
+</table>
+<p>As notas das razões para separar somam; as das razões para manter junto subtraem. O saldo é o resultado, com cada nota justificada na tabela.</p>
+<table>
+<thead>
+<tr>
+<th>Candidato</th>
+<th>Separar (soma)</th>
+<th>Manter junto (soma)</th>
+<th>Saldo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pagamentos</code></td>
+<td><strong>7.</strong> Escopo 2: cobrança, estorno e conciliação em lote têm ritmos distintos. Volatilidade, escala, falha, segurança e extensibilidade 1 cada: todas plausíveis, nenhuma medida</td>
+<td><strong>5.</strong> Transação 2: cobrar e emitir são um <em>commit</em> só. Fluxo 1: uma chamada síncrona no fechamento. Código 1: os tipos de <code>nucleo</code>. Dados 1: a conciliação junta cobranças e pedidos, mas há saída (Aula 19)</td>
+<td><strong>+2</strong>, primeiro</td>
+</tr>
+<tr>
+<td><code>Promocoes</code></td>
+<td><strong>2.</strong> Volatilidade 1: "muda todo trimestre", sem a espera por <em>deploy</em> medida. Falha 1: pode falhar sem derrubar a compra. Extensibilidade 0: o microkernel já responde, sem rede</td>
+<td><strong>3.</strong> Transação 0. Fluxo 1: consultada no fechamento. Código 1. Dados 1: lê preço de <code>Catalogo</code></td>
+<td><strong>−1</strong>, segundo</td>
+</tr>
+<tr>
+<td><code>Catalogo</code></td>
+<td><strong>1.</strong> Escala 1: a leitura cresce sozinha, mas a réplica de leitura resolve sem corte. Falha 0: separar não tira <code>Catalogo</code> do caminho dos quatro dependentes</td>
+<td><strong>4.</strong> Dados 2: quatro leitores do mesmo dado. Fluxo 1. Código 1. Transação 0</td>
+<td><strong>−3</strong>, último</td>
+</tr>
+</tbody>
+</table>
+<p>Dois cuidados mantêm a tabela honesta. O primeiro é que <strong>as notas são julgamento</strong>, e não medida: duas pessoas podem discordar de um 1 ou de um 2, e a tabela serve justamente para mostrar onde. O segundo é testar quanto o resultado depende das notas que ainda não têm medida. Se contarmos apenas as razões para separar que já têm evidência (as notas 2), os saldos passam a <span class="arithmatex">\(-3\)</span> para <code>Pagamentos</code>, <span class="arithmatex">\(-3\)</span> para <code>Promocoes</code> e <span class="arithmatex">\(-4\)</span> para <code>Catalogo</code>. A posição de <code>Catalogo</code> não muda, porque ele perde com ou sem medida. A distância entre <code>Pagamentos</code> e <code>Promocoes</code> desaparece, e é ela que a medição da espera pelo <em>deploy</em> e da carga da conciliação decidiria. Pesos diferentes mudam pouco: se a transação valesse o dobro, o saldo de <code>Pagamentos</code> cairia a <span class="arithmatex">\(0\)</span> e ele continuaria à frente de <code>Promocoes</code> com <span class="arithmatex">\(-1\)</span>.</p>
+<h3 id="adr-ordem-dos-candidatos-ao-corte">📐 ADR — Ordem dos candidatos ao corte<a class="headerlink" href="#adr-ordem-dos-candidatos-ao-corte" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identificador</strong></td>
+<td>ADR — Ordem dos candidatos ao corte</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Aceito. Vale enquanto o ADR-009 e o gatilho da Aula 14 estiverem em vigor; o corte só acontece se o gatilho disparar.</td>
+</tr>
+<tr>
+<td><strong>Contexto</strong></td>
+<td>Duas propostas de corte circulam: <code>Catalogo</code>, por ter <span class="arithmatex">\(C_a = 4\)</span>, e <code>Promocoes</code>, por mudar todo trimestre. A matriz mostra que a primeira é um argumento de custo de corte e a segunda, de volatilidade ainda não medida como espera de <em>deploy</em>.</td>
+</tr>
+<tr>
+<td><strong>Decisão</strong></td>
+<td>Se houver corte, o primeiro candidato é <code>Pagamentos</code>, com a transação entre cobrar e emitir nomeada como o preço. <code>Promocoes</code> segue no microkernel da Aula 13 até que a espera pelo <em>deploy</em> conjunto seja medida. <code>Catalogo</code> não é candidato; a escala de leitura se trata com réplica de leitura.</td>
+</tr>
+<tr>
+<td><strong>Alternativas</strong></td>
+<td>(a) Ordenar por <span class="arithmatex">\(C_a\)</span>: parece prudente, mas o <span class="arithmatex">\(C_a\)</span> mede o custo de cortar, não o motivo. (b) Ordenar por volatilidade: defensável, e passa à frente se a espera por <em>deploy</em> for medida e pesar. &copy; Ordenar pela matriz, com nota por evidência em cada força (saldos <span class="arithmatex">\(+2\)</span>, <span class="arithmatex">\(-1\)</span> e <span class="arithmatex">\(-3\)</span>).</td>
+</tr>
+<tr>
+<td><strong>Consequências negativas</strong></td>
+<td>Parte da matriz (volatilidade, escala) depende de evidências que o Orion ainda não mediu. O corte de <code>Pagamentos</code> desfaz a transação local e cria uma janela de inconsistência sem tratamento por enquanto.</td>
+</tr>
+<tr>
+<td><strong>Condição de falseamento</strong></td>
+<td>Errado se a espera pelo <em>deploy</em> conjunto de <code>Promocoes</code> superar a de <code>Pagamentos</code> no mesmo trimestre, ou se o preço da transação desfeita superar o ganho de cadência de <code>Pagamentos</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="o-que-atravessa-o-corte_1">O que atravessa o corte<a class="headerlink" href="#o-que-atravessa-o-corte_1" title="Permanent link">&para;</a></h3>
+<p>Com <code>Pagamentos</code> chamado pela rede, o incidente do início da aula é exatamente o caso do vocabulário que cresce. O formato da resposta não mudou e <code>EM_ANALISE</code> é um valor legítimo para o produtor; o consumidor que decide pelo que conhece da v1 trata o desconhecido como aprovação. Em termos da aula, é uma mudança aditiva no vocabulário que quebra o significado. Por esse caminho, a connascência do contrato de cobrança é: o nome <code>resultado</code> (a mais fraca), o tipo texto, e o significado "<code>em_analise</code> não autoriza emitir o pedido" (a mais forte das três), com localidade distante (dois processos, possivelmente dois times) e grau 1 hoje, porque <code>Pagamentos</code> tem <span class="arithmatex">\(C_a = 1\)</span>.</p>
+<p>A regra que o Orion adota tem quatro partes. O consumidor, <code>compra</code>, lê com um leitor tolerante que trata valor desconhecido como falha (o fechamento devolve <code>cobranca_indeterminada</code> e não emite o pedido). O que <code>compra</code> espera de <code>pagamentos</code> fica em um arquivo de contrato escrito pelo consumidor, e o produtor o roda a cada mudança. Campo novo na resposta vale sem aviso; valor novo, campo renomeado ou removido e campo obrigatório novo no pedido exigem aviso e versão. E um contrato do <code>import-linter</code> impede <code>compra</code> de importar o lado servidor de <code>pagamentos</code>. O custo aceito: o arquivo de contrato precisa de dono, e o fechamento passa a devolver <code>cobranca_indeterminada</code> por um valor que o produtor considera legítimo, um caso que a Aula 20 retoma.</p>
+<h3 id="na-pratica-python">Na prática: Python<a class="headerlink" href="#na-pratica-python" title="Permanent link">&para;</a></h3>
+<p>O código está no checkpoint <code>07-remoto/</code> do repositório de código (<a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura-code">https://github.com/eduardo-da-silva/fundamentos-arquitetura-code</a>), que a aula estende sem criar pasta nova. O acordo de formato agora mora num módulo de <code>pagamentos</code>, <code>contrato.py</code>, com o vocabulário das duas versões e as duas maneiras de ler uma resposta:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/mini_orion/pagamentos/contrato.py (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">RESULTADOS_V1</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="p">{</span><span class="s2">"aprovada"</span><span class="p">,</span> <span class="s2">"recusada_pelo_emissor"</span><span class="p">,</span> <span class="s2">"acima_do_limite"</span><span class="p">,</span> <span class="s2">"provedor_indisponivel"</span><span class="p">}</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># A v2 so acrescenta um valor. Nenhum campo mudou de nome ou de tipo.</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">RESULTADOS_V2</span> <span class="o">=</span> <span class="n">RESULTADOS_V1</span> <span class="o">|</span> <span class="p">{</span><span class="s2">"em_analise"</span><span class="p">}</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">ler_ingenuo</span><span class="p">(</span><span class="n">carga</span><span class="p">:</span> <span class="n">Carga</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultadoCobranca</span><span class="p">:</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="c1"># Decide pelo que conhece da v1 e deixa o resto virar aprovacao.</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">valor</span> <span class="o">=</span> <span class="n">carga</span><span class="p">[</span><span class="s2">"resultado"</span><span class="p">]</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="k">if</span> <span class="n">valor</span> <span class="ow">in</span> <span class="n">RESULTADOS_V1</span> <span class="o">-</span> <span class="p">{</span><span class="s2">"aprovada"</span><span class="p">}:</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="k">return</span> <span class="n">ResultadoCobranca</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">))</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="hll">    <span class="k">return</span> <span class="n">ResultadoCobranca</span><span class="o">.</span><span class="n">APROVADA</span>
+</span></span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">leitor_tolerante</span><span class="p">(</span><span class="n">conhecidos</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Leitor</span><span class="p">:</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">ler</span><span class="p">(</span><span class="n">carga</span><span class="p">:</span> <span class="n">Carga</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultadoCobranca</span><span class="p">:</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="n">valor</span> <span class="o">=</span> <span class="n">carga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"resultado"</span><span class="p">)</span>  <span class="c1"># campos extras sao ignorados</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="k">if</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conhecidos</span><span class="p">:</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="hll">            <span class="k">raise</span> <span class="n">ResultadoDesconhecido</span><span class="p">(</span><span class="sa">f</span><span class="s2">"resultado </span><span class="si">{</span><span class="n">valor</span><span class="si">!r}</span><span class="s2"> fora do acordo"</span><span class="p">)</span>
+</span></span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>        <span class="k">return</span> <span class="n">ResultadoCobranca</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">))</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="k">return</span> <span class="n">ler</span>
+</span></code></pre></div>
+<p>A versão do consumidor é o conjunto de valores que ele conhece. <code>ler_ingenuo</code> existe para reproduzir o consumidor da v1; em produção ficaria só o tolerante. <code>ResultadoDesconhecido</code> herda de <code>CobrancaIndeterminada</code>, o terceiro desfecho da Aula 16, que <code>ServicoCheckout</code> já sabe tratar.</p>
+<p>O consumidor escreve o acordo em <code>07-remoto/contratos/compra-espera-de-pagamentos.json</code>, com duas interações (uma cobrança comum e uma de valor alto), e o verificador em <code>tests/verificador_contrato.py</code> roda cada uma contra o servidor. A mudança da v2 falha antes do <em>deploy</em>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt; verificar(ServicoPagamentos(GatewayPagamentoXv2()).tratar_cobranca)
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>["cobranca de valor alto, ainda dentro do limite do provedor:
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  campo 'resultado' com valor 'em_analise' fora do acordo"]
+</span></code></pre></div>
+<p>E o contrato do <code>import-linter</code> fecha a quarta parte da regra:</p>
+<div class="language-ini highlight"><span class="filename">07-remoto/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">[importlinter:contract:compra-nao-importa-o-lado-servidor]</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Compra nao importa o lado servidor de Pagamentos</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="na">mini_orion.pagamentos._servidor</span>
+</span></code></pre></div>
+<p><code>_servidor</code> é o código que, num sistema real, rodaria no processo de outro time. Se <code>compra</code> o importasse, o teste de <code>compra</code> passaria executando o código do produtor dentro do processo do consumidor, e o acordo de formato nunca seria exercitado.</p>
+<p>Para rodar, com o ambiente da Aula 16 preparado:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">cd</span><span class="w"> </span>fundamentos-arquitetura-code/07-remoto
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>pytest<span class="w"> </span>tests/test_contrato.py<span class="w">     </span><span class="c1"># 10 testes</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>pytest<span class="w">                            </span><span class="c1"># 57 testes, com os herdados</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>lint-imports<span class="w">                      </span><span class="c1"># 6 contratos</span>
+</span></code></pre></div>
+<p>O que vale experimentar:</p>
+<ul>
+<li><strong>Ver o incidente.</strong> <code>test_leitor_ingenuo_emite_o_pedido_de_uma_cobranca_em_analise</code> monta o cenário completo: produtor na v2 e consumidor ingênuo. O resultado é <code>"confirmado"</code> e o provedor não aprovou nenhuma cobrança. O teste ao lado, <code>test_leitor_tolerante_trata_o_valor_desconhecido_como_falha</code>, muda só o leitor, e o resultado passa a <code>"cobranca_indeterminada"</code>.</li>
+<li><strong>Quebrar o acordo de outra forma.</strong> Em <code>tests/test_contrato.py</code>, <code>acrescentando_campo</code>, <code>renomeando_campo</code> e <code>removendo_campo</code> são produtores adulterados. Escreva uma quarta (trocar o tipo de <code>resultado</code> para número) e preveja o que o verificador diz antes de rodar.</li>
+<li><strong>Quebrar a fronteira.</strong> Acrescente <code>import mini_orion.pagamentos._servidor</code> ao topo de <code>mini_orion/compra/api.py</code> e rode <code>lint-imports</code>. O sexto contrato quebra, e nenhum teste de comportamento percebe.</li>
+</ul>
+<h2 id="o-que-ficou-decidido-e-o-que-a-aula-19-pergunta">O que ficou decidido e o que a Aula 19 pergunta<a class="headerlink" href="#o-que-ficou-decidido-e-o-que-a-aula-19-pergunta" title="Permanent link">&para;</a></h2>
+<p>Ficou decidido que, se houver corte, o candidato é <code>Pagamentos</code>, e que a decisão sai da balança de forças e não de um placar: <code>Catalogo</code> perdeu porque o seu <span class="arithmatex">\(C_a = 4\)</span> é custo de corte, e <code>Promocoes</code> aguarda a medida da espera pelo <em>deploy</em>. Ficou registrado que a granularidade se decide por forças com evidência, que o contrato remoto é uma interface pública com três camadas, que acrescentar um valor pode quebrar o significado sem tocar o formato, e que o consumidor decide o que fazer com o que não conhece, com o teste de contrato como instrumento que torna a quebra visível antes do <em>deploy</em>.</p>
+<p>Tudo isso trata do que passa pela chamada. Falta o que fica de cada lado dela. A conciliação de <code>Pagamentos</code>, que motivou o corte, hoje casa as transações do provedor com os pedidos por um <em>join</em> no banco do Orion. Depois da extração, o <em>join</em> deixa de existir, e o relatório do mês fecha com diferença. De quem é a tabela, e o que <code>pagamentos</code> guarda para continuar conciliando sozinho? A Aula 19 responde.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Ford, Neal; Richards, Mark; Sadalage, Pramod; Dehghani, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021. Cap. 7 — Service Granularity (as seis forças de desintegração e as quatro de integração).</li>
+<li>Ford, Neal; Richards, Mark; Sadalage, Pramod; Dehghani, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021. Cap. 13 — Contracts (contratos estritos e frouxos, e os contratos guiados pelo consumidor).</li>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 5 — Implementing Microservice Communication (seção "Handling Change Between Microservices": evitar quebras, leitor tolerante e como gerir uma quebra inevitável).</li>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 9 — Testing (seção "Contract Tests and Consumer-Driven Contracts").</li>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 17 — Microservices Architecture (seção "Granularity").</li>
+<li>Page-Jones, Meilir. <em>What Every Programmer Should Know About Object-Oriented Design</em>. A origem das formas de connascência usadas na seção "A connascência que atravessa a rede".</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>FORD, Neal; RICHARDS, Mark; SADALAGE, Pramod; DEHGHANI, Zhamak. <em>Software Architecture: The Hard Parts</em>. O'Reilly, 2021.</li>
+<li>NEWMAN, Sam. <em>Building Microservices</em>. 2. ed. O'Reilly, 2021.</li>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../projeto-extrair-ou-nao-extrair/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Projeto das Aulas 16 e 17 — Extrair ou não extrair">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Projeto das Aulas 16 e 17 — Extrair ou não extrair
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula19-propriedade-do-dado/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 19 — Propriedade do dado e acesso entre serviços">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 19 — Propriedade do dado e acesso entre serviços
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

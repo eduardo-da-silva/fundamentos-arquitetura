@@ -1,0 +1,2604 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo2/aula11-monolito-modular/">
+      
+      
+      
+        <link rel="prev" href="../exercicios-fixacao-aulas-9-10/">
+      
+      
+        <link rel="next" href="../aula12-reorganizar-o-grafo/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 11 — Monólito modular - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 11 — Monólito modular
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#promocoes-de-novo-e-se-a-fronteira-acompanhasse-o-assunto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Promocoes de novo: e se a fronteira acompanhasse o assunto?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-e-um-monolito-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que é um Monólito Modular?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O que é um Monólito Modular?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#definicao-estrutural" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Definição estrutural
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-estrategia-modular-monolith-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A estratégia "Modular Monolith First"
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fronteira-logica-versus-fronteira-fisica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fronteira lógica versus fronteira física
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fronteira lógica versus fronteira física">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-fronteira-logica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Fronteira Lógica
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-fronteira-fisica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Fronteira Física
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-porta-publica-e-um-principio-o-mecanismo-muda-com-a-linguagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A porta pública é um princípio, o mecanismo muda com a linguagem
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-anatomia-de-um-modulo-de-dominio-o-caso-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A anatomia de um módulo de domínio: o caso Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A anatomia de um módulo de domínio: o caso Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cortar-por-assunto-nao-por-tecnologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cortar por assunto, não por tecnologia
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-porta-unica-de-promocoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A porta única de <code>Promocoes</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-heuristica-de-connascencia-na-fronteira-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A heurística de connascência na fronteira modular
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-ponto-honesto-sobre-acoplamento-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O ponto honesto sobre acoplamento residual
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-orion-05-modular-codigo-contratos-e-isolamento-de-testes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-Orion 05-modular: Código, contratos e isolamento de testes
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mini-Orion 05-modular: Código, contratos e isolamento de testes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-arvore-de-pacotes-e-o-shared-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A árvore de pacotes e o Shared Kernel
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-mapa-de-dependencias-e-a-blindagem-dos-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O mapa de dependências e a blindagem dos internals
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-tres-contratos-do-setupcfg" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Os três contratos do setup.cfg
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Os três contratos do setup.cfg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-fiacao-legitima-e-a-diretiva-ignore_imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A fiação legítima e a diretiva <code>ignore_imports</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-teste-de-isolamento-e-a-evidencia-palpavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O teste de isolamento é a evidência palpável
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo-orion-evolution-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo: Orion Evolution Lab
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintese-e-o-proximo-passo-reorganizar-o-grafo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Síntese e o próximo passo: reorganizar o grafo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula17-service-based-e-microsservicos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo3/aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#promocoes-de-novo-e-se-a-fronteira-acompanhasse-o-assunto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Promocoes de novo: e se a fronteira acompanhasse o assunto?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-e-um-monolito-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que é um Monólito Modular?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O que é um Monólito Modular?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#definicao-estrutural" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Definição estrutural
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-estrategia-modular-monolith-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A estratégia "Modular Monolith First"
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fronteira-logica-versus-fronteira-fisica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fronteira lógica versus fronteira física
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fronteira lógica versus fronteira física">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-fronteira-logica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Fronteira Lógica
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-fronteira-fisica" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Fronteira Física
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-porta-publica-e-um-principio-o-mecanismo-muda-com-a-linguagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A porta pública é um princípio, o mecanismo muda com a linguagem
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-anatomia-de-um-modulo-de-dominio-o-caso-orion" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A anatomia de um módulo de domínio: o caso Orion
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A anatomia de um módulo de domínio: o caso Orion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cortar-por-assunto-nao-por-tecnologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cortar por assunto, não por tecnologia
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-porta-unica-de-promocoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A porta única de <code>Promocoes</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-heuristica-de-connascencia-na-fronteira-modular" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A heurística de connascência na fronteira modular
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-ponto-honesto-sobre-acoplamento-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O ponto honesto sobre acoplamento residual
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mini-orion-05-modular-codigo-contratos-e-isolamento-de-testes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-Orion 05-modular: Código, contratos e isolamento de testes
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mini-Orion 05-modular: Código, contratos e isolamento de testes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-arvore-de-pacotes-e-o-shared-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A árvore de pacotes e o Shared Kernel
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-mapa-de-dependencias-e-a-blindagem-dos-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O mapa de dependências e a blindagem dos internals
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-tres-contratos-do-setupcfg" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Os três contratos do setup.cfg
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Os três contratos do setup.cfg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-fiacao-legitima-e-a-diretiva-ignore_imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A fiação legítima e a diretiva <code>ignore_imports</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-teste-de-isolamento-e-a-evidencia-palpavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O teste de isolamento é a evidência palpável
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Exercícios
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atividade-em-grupo-orion-evolution-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Atividade em grupo: Orion Evolution Lab
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintese-e-o-proximo-passo-reorganizar-o-grafo" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Síntese e o próximo passo: reorganizar o grafo
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 2 — Arquiteturas Monolíticas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo2/aula11-monolito-modular.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-11-monolito-modular-fronteira-logica-sem-fronteira-fisica">Aula 11 — Monólito modular: fronteira lógica sem fronteira física<a class="headerlink" href="#aula-11-monolito-modular-fronteira-logica-sem-fronteira-fisica" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao terminar esta aula, você deve conseguir:</p>
+<ul>
+<li>definir formalmente o estilo arquitetural Monólito Modular e distingui-lo de monólitos planos (<em>Big Ball of Mud</em>), monólitos em camadas e sistemas distribuídos;</li>
+<li>fundamentar a estratégia <em>"Modular Monolith First"</em> e contrastar as propriedades de uma fronteira lógica com as de uma fronteira física;</li>
+<li>situar onde cada linguagem sustenta a fronteira de módulo — compilador, empacotamento ou CI — e por que Python depende inteiramente da última;</li>
+<li>aplicar a heurística de connascência à fronteira de um módulo, garantindo que formas fortes fiquem confinadas internamente e apenas formas fracas atravessem a API pública;</li>
+<li>configurar e interpretar contratos de arquitetura estática (<code>independence</code>, <code>forbidden</code> e isenções legítimas de <code>ignore_imports</code>) que barram o acesso a detalhes internos (<em>reach-in</em>);</li>
+<li>projetar a assinatura de uma API pública mínima de domínio e demonstrar, por meio de testes unitários isolados, a existência de fronteiras reais.</li>
+</ul>
+<h2 id="promocoes-de-novo-e-se-a-fronteira-acompanhasse-o-assunto">Promocoes de novo: e se a fronteira acompanhasse o assunto?<a class="headerlink" href="#promocoes-de-novo-e-se-a-fronteira-acompanhasse-o-assunto" title="Permanent link">&para;</a></h2>
+<p>A Aula 10 terminou com um diagnóstico desconfortável: o cupom de frete grátis vinculado à campanha ativa exigiu modificações em <code>Portal</code>, <code>Checkout</code>, <code>Promocoes</code> e <code>Pedidos</code>. Embora a regra de dependência em camadas tenha sido respeitada e o analisador estático tenha permanecido verde do início ao fim, quatro componentes distribuídos em três camadas técnicas distintas precisaram ser alterados conjuntamente. A camada governa a direção descendente da dependência; ela é estruturalmente incapaz de conter a dispersão de uma mudança de negócio.</p>
+<p>Na retrospectiva seguinte, a equipe muda a pergunta estrutural de partida:</p>
+<blockquote>
+<p><em>Em vez de fatiarmos o sistema por papel técnico horizontal, o que aconteceria se a fronteira acompanhasse o assunto de negócio? Concretamente: o que muda se ninguém puder importar o interior de <code>Promocoes</code>, exceto por uma porta pública estrita?</em></p>
+</blockquote>
+<p>Hoje, no grafo original do Orion, <code>Checkout</code> alcança o motor de regras de <code>Promocoes</code> por dentro: importa diretamente classes concretas e conhece a mecânica interna de cálculo de descontos. Se <code>Promocoes</code> ganhar uma porta única — contendo exclusivamente contratos abstratos e tipos de dados fundamentais — enquanto todo o seu maquinário interno de regras for blindado contra acessos externos, três transformações arquiteturais acontecem:</p>
+<ol>
+<li><strong>Isolamento de evolução</strong>: a inclusão de um novo tipo de promoção (frete grátis, "leve 3 pague 2", cupons progressivos ou cashback de parceiro) torna-se uma mudança estritamente interna de <code>Promocoes</code>. Nenhum módulo consumidor precisa ser recompilado, retestado ou alterado, desde que a assinatura da porta pública permaneça estável.</li>
+<li><strong>Desacoplamento de conhecimento</strong>: <code>Checkout</code> deixa de conhecer <em>como</em> o desconto é calculado e passa a depender apenas do fato abstrato de que <em>pode solicitar</em> a aplicação de promoções sobre um carrinho de compras.</li>
+<li><strong>Minimização do acoplamento</strong>: o contrato entre chamador e chamado fica restrito a tipos de dados explícitos e interfaces, reduzindo a connascência entre eles ao nível mais fraco e seguro possível.</li>
+</ol>
+<p>O cupom ainda produz reflexos em <code>Portal</code> (que exibe o anúncio comercial na vitrine) e em <code>Pedidos</code> (que registra a isenção no pedido final). A fronteira em torno de <code>Promocoes</code> não elimina a existência desses outros assuntos — eles são legítimos e pertencem a outros domínios. O que ela elimina é o entrelaçamento de código e o vazamento de detalhes internos.</p>
+<hr />
+<h2 id="o-que-e-um-monolito-modular">O que é um Monólito Modular?<a class="headerlink" href="#o-que-e-um-monolito-modular" title="Permanent link">&para;</a></h2>
+<h3 id="definicao-estrutural">Definição estrutural<a class="headerlink" href="#definicao-estrutural" title="Permanent link">&para;</a></h3>
+<p>Um <strong>Monólito Modular</strong> (<em>Modular Monolith</em>) é um estilo arquitetural no qual a aplicação:
+- é executada em tempo de execução dentro de um <strong>único processo de sistema operacional</strong>;
+- é empacotada e implantada por meio de um <strong>único pipeline e artefato de entrega</strong>;
+- compartilha a mesma infraestrutura computacional e memória física;
+- <strong>mas</strong> possui sua estrutura interna rigorosamente particionada em <strong>módulos de domínio independentes</strong>, com fronteiras lógicas bem estabelecidas, interfaces públicas explícitas e proibição estrita de acesso a detalhes de implementação interna.</p>
+<pre class="mermaid"><code>---
+title: Arquitetura monolitica modular
+---
+flowchart TB
+    subgraph processo["Único processo — mesma memória, mesma transação"]
+        direction TB
+        subgraph compra["Módulo Compra"]
+            direction TB
+            compra_api["api.py (porta)"] --&gt; compra_int["_pedidos.py (internals)"]
+        end
+        subgraph vitrine["Módulo Vitrine"]
+            direction TB
+            vitrine_api["api.py (porta)"] --&gt; vitrine_int["_regras.py (internals)"]
+        end
+        kernel["Shared Kernel — tipos e modelos primitivos"]
+    end
+
+    compra --&gt; kernel
+    vitrine --&gt; kernel</code></pre>
+<blockquote>
+<p><strong>Convenção de leitura das setas</strong>: <code>A --&gt; B</code> significa que <strong>A depende de B</strong>. Nenhuma seta toca um nó de <em>internals</em>: é a fronteira em desenho.
+<strong>O que o diagrama omite</strong>: a chamada direta de <code>compra.api</code> para <code>vitrine.api</code> (um módulo também consome a porta do outro, não só o Shared Kernel), os demais módulos do Orion — mostra só dois, para fixar o padrão —, os testes de isolamento de cada módulo, e o conteúdo interno de cada <code>_*.py</code>.</p>
+</blockquote>
+<p>Para compreender sua posição no espectro arquitetural, compare os quatro arranjos fundamentais:</p>
+<table>
+<thead>
+<tr>
+<th>Estilo</th>
+<th>Empacotamento / Deploy</th>
+<th>Processos em Execução</th>
+<th>Organização Interna</th>
+<th>Acoplamento entre Partes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Big Ball of Mud</strong></td>
+<td>Monolítico</td>
+<td>Único</td>
+<td>Desorganizada / Sem fronteiras</td>
+<td>Alto / Caótico (qualquer arquivo acessa tudo)</td>
+</tr>
+<tr>
+<td><strong>Monólito em Camadas</strong></td>
+<td>Monolítico</td>
+<td>Único</td>
+<td>Faixas horizontais técnicas</td>
+<td>Médio (regras dependem da direção, mas cortam faixas)</td>
+</tr>
+<tr>
+<td><strong>Monólito Modular</strong></td>
+<td>Monolítico</td>
+<td>Único</td>
+<td>Módulos verticais de negócio</td>
+<td>Baixo / Controlado (somente via APIs públicas de domínio)</td>
+</tr>
+<tr>
+<td><strong>Microsserviços</strong></td>
+<td>Distribuído</td>
+<td>Múltiplos processos</td>
+<td>Serviços autônomos de negócio</td>
+<td>Físico / Rede (isolamento total via sockets e serialização)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-estrategia-modular-monolith-first">A estratégia "Modular Monolith First"<a class="headerlink" href="#a-estrategia-modular-monolith-first" title="Permanent link">&para;</a></h3>
+<p>Ao longo da última década, uma quantidade expressiva de equipes de engenharia migrou prematuramente de monólitos tradicionais para microsserviços, atraída pela promessa de independência de desenvolvimento. O resultado recorrente foi a substituição de problemas de código por problemas de rede: sistemas que antes sofriam com acoplamento interno passaram a sofrer com latência acumulada, quebras parciais de chamadas remotas, perda de transações atômicas e pesada sobrecarga operacional de observabilidade distribuída — configurando o anti-padrão do <em>monólito distribuído</em>.</p>
+<p>Autores como Martin Fowler, Simon Brown e Neal Ford sintetizaram a resposta da engenharia moderna na máxima:</p>
+<blockquote>
+<p><em>"Se você não consegue construir um sistema com fronteiras limpas dentro do mesmo processo, que chance você tem de construí-lo separando as partes por uma rede?"</em></p>
+</blockquote>
+<p>O Monólito Modular oferece os principais benefícios que os desenvolvedores buscam nos microsserviços — isolamento cognitivo, limites claros de contexto (Bounded Contexts do DDD), testes rápidos e autonomia para equipes trabalharem em domínios específicos — <strong>sem</strong> incorrer na fatura da computação distribuída.</p>
+<h3 id="fronteira-logica-versus-fronteira-fisica">Fronteira lógica versus fronteira física<a class="headerlink" href="#fronteira-logica-versus-fronteira-fisica" title="Permanent link">&para;</a></h3>
+<p>A distinção entre essas duas categorias de fronteira é um dos fundamentos mais importantes da disciplina:</p>
+<h4 id="1-fronteira-logica">1. Fronteira Lógica<a class="headerlink" href="#1-fronteira-logica" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Mecanismo</strong>: imposta em tempo de compilação, pelo sistema de tipos da linguagem ou por ferramentas de análise estática de código (linters de arquitetura).</li>
+<li><strong>Runtime</strong>: os módulos coabitam o mesmo espaço de memória. Uma chamada entre dois módulos é uma chamada de método/função em memória (<em>in-memory invocation</em>), executada em microssegundos ou nanossegundos.</li>
+<li><strong>Transacionalidade</strong>: permite commits atômicos (ACID) no mesmo banco de dados relacional.</li>
+<li><strong>Custo</strong>: quase exclusivamente de design (definir bons contratos e manter a disciplina das ferramentas de governança).</li>
+</ul>
+<h4 id="2-fronteira-fisica">2. Fronteira Física<a class="headerlink" href="#2-fronteira-fisica" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Mecanismo</strong>: imposta pela separação de processos de sistema operacional e cabos de rede (TCP/IP, HTTP, gRPC, mensageria).</li>
+<li><strong>Runtime</strong>: a chamada de função é substituída por serialização de payload, handshake de rede, tráfego de pacotes e desserialização. A latência salta de nanossegundos para milissegundos.</li>
+<li><strong>Transacionalidade</strong>: commits únicos deixam de existir; o sistema precisa adotar consistência eventual, padrões de compensação (<em>Sagas</em>) ou transações em duas fases.</li>
+<li><strong>Custo</strong>: operacional, de infraestrutura, de monitoramento e de tolerância a falhas parciais.</li>
+</ul>
+<blockquote>
+<p><strong>Tese central</strong>: <em>A fronteira lógica é o ensaio honesto da fronteira física.</em><br />
+Se um módulo de domínio não possui sua API pública rigorosamente definida e seus internals blindados dentro da mesma memória, extraí-lo para um serviço distribuído causará falhas imediatas. No entanto, uma vez que a fronteira lógica esteja consolidada e estável, o monólito modular pode atender à empresa por anos — e, caso a separação física venha a ser justificável no futuro (Módulo 3), a extração será direta, pois o contorno do módulo já está pronto.</p>
+</blockquote>
+<hr />
+<h2 id="a-porta-publica-e-um-principio-o-mecanismo-muda-com-a-linguagem">A porta pública é um princípio, o mecanismo muda com a linguagem<a class="headerlink" href="#a-porta-publica-e-um-principio-o-mecanismo-muda-com-a-linguagem" title="Permanent link">&para;</a></h2>
+<p>O conceito de monólito modular é agnóstico a tecnologia: em qualquer ecossistema, a regra é a mesma — <em>o que pertence ao interior do módulo não pode ser importado por quem está de fora</em>. O que muda de linguagem para linguagem é quem garante isso, e em que ponto da cadeia de build.</p>
+<p>Python é o caso mais exposto: a linguagem foi construída sob a filosofia de <em>"consenting adults"</em> e não tem modificador de acesso nativo que barre um <code>import</code> — qualquer arquivo <code>.py</code> pode, tecnicamente, importar qualquer outro. Por isso o Mini-Orion sustenta a fronteira em duas partes: uma convenção visual (porta pública em <code>api.py</code>, implementação interna com prefixo <code>_</code>) e uma verificação mecânica no CI (<code>import-linter</code>, lendo contratos declarativos e falhando o build quando alguém rompe a convenção). Sem a segunda parte, a primeira não passa de combinado verbal.</p>
+<p>Outras linguagens resolvem o mesmo problema em lugares diferentes da cadeia de build. Java barra o acesso já na visibilidade de pacote (<code>package-private</code>) e formaliza módulos com o JPMS; Go proíbe no próprio compilador qualquer import que atravesse um diretório <code>internal/</code>; C#/.NET usa o modificador <code>internal</code> dentro do assembly; monorepos TypeScript aplicam tags de módulo do Nx ou o <code>dependency-cruiser</code> como regra de lint. A diferença entre elas é <em>onde</em> a barreira vive — compilador, empacotamento ou CI —, não se a barreira existe. Python empurra a barreira inteira para o CI porque não tem onde mais colocá-la.</p>
+<hr />
+<h2 id="a-anatomia-de-um-modulo-de-dominio-o-caso-orion">A anatomia de um módulo de domínio: o caso Orion<a class="headerlink" href="#a-anatomia-de-um-modulo-de-dominio-o-caso-orion" title="Permanent link">&para;</a></h2>
+<p>Aplicando esse desenho ao Marketplace Orion, contrastamos a abordagem horizontal da Aula 10 com a modularização por domínio.</p>
+<h3 id="cortar-por-assunto-nao-por-tecnologia">Cortar por assunto, não por tecnologia<a class="headerlink" href="#cortar-por-assunto-nao-por-tecnologia" title="Permanent link">&para;</a></h3>
+<p>Um <strong>módulo de domínio</strong> agrupa componentes por assunto de negócio, não por semelhança técnica. Aplicado aos dez componentes canônicos do Orion, esse critério produz oito módulos:</p>
+<table>
+<thead>
+<tr>
+<th>Módulo de domínio</th>
+<th>Componentes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Borda</td>
+<td><code>Portal</code></td>
+</tr>
+<tr>
+<td>Vitrine</td>
+<td><code>Catalogo</code>, <code>Promocoes</code></td>
+</tr>
+<tr>
+<td>Compra</td>
+<td><code>Checkout</code>, <code>Pedidos</code></td>
+</tr>
+<tr>
+<td>Financeiro</td>
+<td><code>Pagamentos</code></td>
+</tr>
+<tr>
+<td>Distribuição</td>
+<td><code>Logistica</code></td>
+</tr>
+<tr>
+<td>Comunicação</td>
+<td><code>Notificacoes</code></td>
+</tr>
+<tr>
+<td>Identidade</td>
+<td><code>Clientes</code></td>
+</tr>
+<tr>
+<td>Integração</td>
+<td><code>Integracoes</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Critério de agrupamento</p>
+<p>O critério de agrupamento atende à definição de <strong>coesão forte</strong>: elementos que sofrem manutenção pelos mesmos motivos de negócio moram juntos. Esse agrupamento é uma decisão desta disciplina, do mesmo tipo que a convenção de contagem de Abstractness do Módulo 1: existe para dar ao exercício de reorganização uma resposta verificável, e um corte diferente — juntar <code>Financeiro</code> e <code>Distribuição</code> num módulo de pós-venda, por exemplo — seria igualmente defensável.</p>
+</div>
+<h3 id="a-porta-unica-de-promocoes">A porta única de <code>Promocoes</code><a class="headerlink" href="#a-porta-unica-de-promocoes" title="Permanent link">&para;</a></h3>
+<p>Retomemos o problema do cupom de desconto. Em um monólito modular, como desenhamos a fronteira do módulo <code>promocoes</code>?</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>promocoes/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    api.py          &lt;- Porta única: Protocol Promocoes, Desconto, factory
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    _regras.py      &lt;- Internal: MotorRegras, RegraFreteGratis, RegraCashback
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    _campanhas.py   &lt;- Internal: RepositorioCampanhasEmMemoria, cache local
+</span></code></pre></div>
+<p>Na porta pública (<code>api.py</code>), expomos apenas o contrato de consumo e os tipos de valor imutáveis:</p>
+<div class="language-python highlight"><span class="filename">promocoes/api.py (recorte conceitual da porta)</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.nucleo.modelos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Carrinho</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">Desconto</span><span class="p">:</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="sd">"""Resultado da avaliação promocional."""</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">valor</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">descricao</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="k">class</span><span class="w"> </span><span class="nc">Promocoes</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="sd">"""Contrato abstrato que outros módulos consomem."""</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">desconto_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Desconto</span><span class="p">:</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span><span class="sd">"""Calcula o melhor desconto aplicável ao carrinho."""</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        <span class="o">...</span>
+</span></code></pre></div>
+<p>Todo o motor de regras de desconto, a lista de cupons e a mecânica de cálculo residem em <code>_regras.py</code>. </p>
+<p>Quando o time de marketing cria uma nova campanha ("leve 3 camisetas e pague 2"), a alteração é feita exclusivamente dentro de <code>_regras.py</code>. O módulo <code>Compra</code> (<code>Checkout</code>) sequer toma conhecimento da alteração: ele continua chamando <code>desconto_para(carrinho)</code> e recebendo um objeto imutável <code>Desconto</code>. O custo de propagação da mudança foi contido dentro da fronteira do módulo.</p>
+<h3 id="a-heuristica-de-connascencia-na-fronteira-modular">A heurística de connascência na fronteira modular<a class="headerlink" href="#a-heuristica-de-connascencia-na-fronteira-modular" title="Permanent link">&para;</a></h3>
+<p>Na Aula 6, introduzimos a connascência e sua regra de ouro:</p>
+<blockquote>
+<p><em>Connascência forte só é aceitável quando a localidade é alta; connascência que cruza fronteiras deve ser fraca e estática.</em></p>
+</blockquote>
+<p>No monólito modular, essa heurística é aplicada de forma literal:</p>
+<ol>
+<li><strong>Connascência de Execução (Forte, Dinâmica)</strong>: Dentro do módulo <code>compra</code>, a sequência de fechamento do pedido executa:
+   <code>validar_carrinho() -&gt; calcular_desconto() -&gt; cobrar() -&gt; emitir_pedido() -&gt; publicar_confirmacao()</code>.<br />
+   Essa ordem rígida é uma connascência forte. No entanto, ela reside <strong>inteira dentro de um único método</strong> (<code>fechar_pedido</code>) em <code>compra.api</code>. A localidade é máxima (algumas linhas no mesmo arquivo). Nenhuma parte dessa sequência vaza para quem chama o checkout.</li>
+<li><strong>Connascência de Tipo (Fraca, Estática)</strong>: Entre <code>compra</code> e <code>pagamentos</code>, a dependência é restrita a tipos imutáveis: <code>compra</code> passa um <code>PedidoCobranca</code> e recebe um <code>ResultadoCobranca</code>. Se o tipo mudar, o verificador estático acusa o erro antes dos testes rodarem.</li>
+<li><strong>Connascência de Nome (Fraca, Estática)</strong>: Os módulos concordam apenas nos nomes dos métodos da interface (<code>cobrar</code>, <code>desconto_para</code>).</li>
+</ol>
+<p>A API pública atua como um filtro sanitário: ela barra a passagem de connascências fortes para o exterior do módulo.</p>
+<h3 id="o-ponto-honesto-sobre-acoplamento-residual">O ponto honesto sobre acoplamento residual<a class="headerlink" href="#o-ponto-honesto-sobre-acoplamento-residual" title="Permanent link">&para;</a></h3>
+<p>É fundamental manter a honestidade técnica: <strong>o monólito modular não elimina todas as dependências entre módulos, nem deve prometer isso.</strong></p>
+<p>No Mini-Orion, o módulo <code>compra</code> continua importando as APIs de <code>pagamentos</code> e <code>notificacoes</code>. Isso é legítimo: quem é responsável por orquestrar um caso de uso precisa conhecer a interface de quem executa as etapas do processo. A invocação continua sendo uma chamada de função direta e síncrona dentro da mesma thread de execução.</p>
+<p>Dizer que o monólito modular elimina dependências seria vender uma ilusão. O que ele elimina de forma categórica é o <strong>reach-in</strong>: a prática perigosa de um módulo alcançar implementações concretas e estruturas internas de outro módulo. A independência temporal completa (onde <code>compra</code> emite um evento e segue sem esperar resposta) só é atingida com arquiteturas orientadas a eventos, assunto do Módulo 4.</p>
+<hr />
+<h2 id="mini-orion-05-modular-codigo-contratos-e-isolamento-de-testes">Mini-Orion 05-modular: Código, contratos e isolamento de testes<a class="headerlink" href="#mini-orion-05-modular-codigo-contratos-e-isolamento-de-testes" title="Permanent link">&para;</a></h2>
+<p>No repositório do Mini-Orion, o checkpoint <code>05-modular</code> reorganiza o sistema em módulos de domínio estritos.</p>
+<h3 id="a-arvore-de-pacotes-e-o-shared-kernel">A árvore de pacotes e o Shared Kernel<a class="headerlink" href="#a-arvore-de-pacotes-e-o-shared-kernel" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><span class="filename">code/mini-orion/05-modular/mini_orion/</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mini_orion/
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    nucleo/         modelos.py                 shared kernel: apenas @dataclass
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    compra/         api.py   _pedidos.py       modulo de dominio
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    pagamentos/     api.py   _provedores.py    modulo de dominio
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    notificacoes/   api.py   _fila.py          modulo de dominio
+</span></code></pre></div>
+<p>O pacote <code>nucleo</code> desempenha o papel de <strong>Shared Kernel</strong> (Evans, DDD):
+- Contém apenas estruturas de dados fundamentais (<code>Carrinho</code>, <code>Cliente</code>, <code>Pedido</code>) tipadas com <code>@dataclass(frozen=True)</code>.
+- É estritamente desprovido de lógica de negócio comportamental.
+- Serve como vocabulário comum entre os módulos: <code>compra</code> e <code>notificacoes</code> importam <code>nucleo</code>, mas depender do <code>nucleo</code> não introduz dependência entre eles.</p>
+<h3 id="o-mapa-de-dependencias-e-a-blindagem-dos-internals">O mapa de dependências e a blindagem dos internals<a class="headerlink" href="#o-mapa-de-dependencias-e-a-blindagem-dos-internals" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    compra["compra.api"]
+    pagamentos["pagamentos.api"]
+    notificacoes["notificacoes.api"]
+    nucleo["nucleo.modelos"]
+
+    compra --&gt; pagamentos
+    compra --&gt; notificacoes
+    compra --&gt; nucleo
+    notificacoes --&gt; nucleo
+
+    subgraph internos ["Internals blindados (ninguem de fora acessa)"]
+        prov["pagamentos._provedores"]
+        fila["notificacoes._fila"]
+        ped["compra._pedidos"]
+    end
+    style internos stroke-dasharray: 6 4</code></pre>
+<blockquote>
+<p><strong>Convenção de leitura das setas</strong>: <code>A --&gt; B</code> significa que <strong>A depende estaticamente de B</strong> (A importa B).
+<strong>O que o diagrama destaca</strong>: As setas de dependência tocam exclusivamente as portas públicas (<code>api.py</code>) e o <code>nucleo</code>. Nenhum módulo externo possui arestas apontando para os elementos dentro da caixa tracejada (<code>_*</code>).</p>
+</blockquote>
+<h3 id="os-tres-contratos-do-setupcfg">Os três contratos do setup.cfg<a class="headerlink" href="#os-tres-contratos-do-setupcfg" title="Permanent link">&para;</a></h3>
+<p>Para garantir que a blindagem não dependa de boa vontade, três contratos foram definidos no <code>setup.cfg</code>:</p>
+<div class="language-ini highlight"><span class="filename">code/mini-orion/05-modular/setup.cfg (recorte)</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">[importlinter:contract:pagamentos-e-notificacoes-independentes]</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Pagamentos e Notificacoes nao se conhecem</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">independence</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="na">mini_orion.pagamentos</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="na">mini_orion.notificacoes</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">[importlinter:contract:downstream-nao-importa-compra]</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Pagamentos e Notificacoes nao dependem de Compra</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="na">mini_orion.pagamentos</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="na">mini_orion.notificacoes</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="k">[importlinter:contract:sem-reach-in-nos-internals]</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Ninguem alcanca os internals de outro modulo</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">forbidden</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="na">source_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">    </span><span class="na">mini_orion.compra</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="na">forbidden_modules</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="na">mini_orion.pagamentos._provedores</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="na">mini_orion.notificacoes._fila</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="na">ignore_imports</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">    </span><span class="na">mini_orion.notificacoes.api -&gt; mini_orion.notificacoes._fila</span>
+</span></code></pre></div>
+<p>Análise funcional dos contratos:
+1. <strong><code>type = independence</code></strong>: garante que <code>pagamentos</code> e <code>notificacoes</code> operem de forma totalmente ortogonal. Nenhum deles pode importar nada do outro, em nenhum sentido.
+2. <strong><code>type = forbidden</code> (downstream)</strong>: assegura a direção única de orquestração. Módulos especialistas não podem importar o orquestrador <code>compra</code>.
+3. <strong><code>type = forbidden</code> (anti-reach-in)</strong>: impede que <code>compra</code> importe <code>_provedores</code> ou <code>_fila</code>.</p>
+<h4 id="a-fiacao-legitima-e-a-diretiva-ignore_imports">A fiação legítima e a diretiva <code>ignore_imports</code><a class="headerlink" href="#a-fiacao-legitima-e-a-diretiva-ignore_imports" title="Permanent link">&para;</a></h4>
+<p>A última linha do contrato proíbe <code>compra</code> de acessar <code>notificacoes._fila</code>, mas contém a cláusula:
+<code>ignore_imports = mini_orion.notificacoes.api -&gt; mini_orion.notificacoes._fila</code>.</p>
+<p>Por que essa isenção existe?<br />
+Dentro de <code>notificacoes.api</code>, a fábrica <code>criar_notificador()</code> precisa instanciar a classe concreta <code>FilaNotificacoes</code> (que vive em <code>_fila.py</code>) para entregar um objeto pronto a quem chamou. Isso <strong>não é vazamento arquitetural</strong>: é o próprio módulo montando suas peças internas para oferecer uma conveniência de uso na sua porta pública. A diretiva <code>ignore_imports</code> documenta essa fiação interna como legítima, enquanto mantém o bloqueio absoluto para qualquer importação vinda de fora do pacote.</p>
+<h3 id="o-teste-de-isolamento-e-a-evidencia-palpavel">O teste de isolamento é a evidência palpável<a class="headerlink" href="#o-teste-de-isolamento-e-a-evidencia-palpavel" title="Permanent link">&para;</a></h3>
+<p>Na Aula 10, para testar se uma recusa de cartão funcionava, éramos obrigados a instanciar o grafo quase completo da aplicação: carrinho, cliente, gateway concreto, repositório e notificador, disparando o método <code>fechar_pedido</code> inteiro. A regra que queríamos testar estava enroscada na orquestração.</p>
+<p>No Monólito Modular, a existência real da fronteira é comprovada por um teste que roda com cada módulo completamente isolado:</p>
+<div class="language-python highlight"><span class="filename">code/mini-orion/05-modular/tests/test_isolamento.py</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.pagamentos.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">PedidoCobranca</span><span class="p">,</span> <span class="n">ResultadoCobranca</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.pagamentos._provedores</span><span class="w"> </span><span class="kn">import</span> <span class="n">GatewayPagamentoX</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.notificacoes.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventoNotificacao</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.notificacoes._fila</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilaNotificacoes</span><span class="p">,</span> <span class="n">NotificacaoTolerante</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_pagamentos_isolado</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="c1"># Testa o provedor diretamente sem instanciar nada de compra ou pedidos</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">resultado</span> <span class="o">=</span> <span class="n">GatewayPagamentoX</span><span class="p">()</span><span class="o">.</span><span class="n">cobrar</span><span class="p">(</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="n">PedidoCobranca</span><span class="p">(</span><span class="n">valor</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">cartao</span><span class="o">=</span><span class="s2">"4111111111"</span><span class="p">)</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="p">)</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="k">assert</span> <span class="n">resultado</span> <span class="ow">is</span> <span class="n">ResultadoCobranca</span><span class="o">.</span><span class="n">APROVADA</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_notificacoes_isolado</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    <span class="c1"># Testa a fila de notificacoes sem subir checkout ou banco de dados</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="n">fila</span> <span class="o">=</span> <span class="n">FilaNotificacoes</span><span class="p">()</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="n">NotificacaoTolerante</span><span class="p">(</span><span class="n">fila</span><span class="p">)</span><span class="o">.</span><span class="n">publicar</span><span class="p">(</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>        <span class="n">EventoNotificacao</span><span class="p">(</span><span class="n">destinatario</span><span class="o">=</span><span class="s2">"cliente@orion.com"</span><span class="p">,</span> <span class="n">assunto</span><span class="o">=</span><span class="s2">"Confirmacao"</span><span class="p">)</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    <span class="p">)</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fila</span><span class="o">.</span><span class="n">pendentes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span></code></pre></div>
+<p>Nenhum componente de <code>compra</code> é carregado. O teste é executado em milissegundos na memória.</p>
+<blockquote>
+<p><strong>Critério de validação</strong>: <em>Um módulo com fronteira de verdade se testa sozinho.</em><br />
+Se para testar unitariamente um módulo você for forçado a mockar ou subir as classes do orquestrador, a fronteira é apenas retórica e o acoplamento continua presente.</p>
+</blockquote>
+<hr />
+<h2 id="exercicios">Exercícios<a class="headerlink" href="#exercicios" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Identificação da porta.</strong> O pacote <code>pagamentos</code> do Mini-Orion possui os seguintes arquivos:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pagamentos/
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    api.py          Gateway (Protocol), PedidoCobranca, ResultadoCobranca
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    _provedores.py  GatewayPagamentoX, GatewayPagamentoY, GatewayForaDoAr
+</span></code></pre></div>
+<p>Um desenvolvedor do módulo <code>compra</code> precisa realizar a cobrança de um pedido. Quais elementos ele tem autorização arquitetural para importar e quais o linter deve proibir? Justifique o motivo para cada caso.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>Pode importar (de <code>pagamentos.api</code>):</strong>
+- <code>Gateway</code>: protocolo abstrato que define a assinatura do método de cobrança;
+- <code>PedidoCobranca</code>: tipo de entrada que empacota os dados da transação;
+- <code>ResultadoCobranca</code>: enum ou tipo de retorno que expressa o status do pagamento.</p>
+<p><strong>Não pode importar (de <code>pagamentos._provedores</code>):</strong>
+- <code>GatewayPagamentoX</code>, <code>GatewayPagamentoY</code>, <code>GatewayForaDoAr</code>: classes concretas que implementam o protocolo. O módulo de compra não deve conhecer provedores específicos. A escolha de qual provedor instanciar pertence à composição inicial do sistema (injeção de dependências), não à lógica do checkout. O linter acusa violação de <em>reach-in</em> se qualquer um desses arquivos for importado fora de <code>pagamentos</code>.</p>
+</details>
+</li>
+<li>
+<p><strong>Classificação de connascência entre módulos.</strong> Avalie cada uma das seguintes conexões entre módulos, apontando a forma de connascência, a localidade e se a conexão é permitida na fronteira modular:</p>
+<p>a. <code>compra</code> e <code>pagamentos</code> concordam que a cobrança devolve um objeto imutável <code>ResultadoCobranca</code>.<br />
+b. Dentro do método <code>fechar_pedido</code>, a execução sequencial obrigatória: <code>gateway.cobrar()</code> antes de <code>repo.salvar()</code>.<br />
+c. O módulo <code>compra._pedidos</code> armazena <code>pedido.valor_total = 250.0</code> e o módulo <code>pagamentos._provedores</code> efetua a cobrança com base em <code>cobranca.valor = 250.0</code>.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>a — Connascência de Tipo.</strong> Estática e fraca. Localidade: módulos distintos (atravessa fronteira). É <strong>permitida e recomendada</strong>: expressa um contrato estável de tipos, verificado em tempo de compilação ou checagem de tipos estáticos (<code>mypy</code>).</p>
+<p><strong>b — Connascência de Execução.</strong> Dinâmica e forte. Localidade: máxima (confinada dentro do método <code>fechar_pedido</code> em <code>compra.api</code>). É <strong>permitida apenas porque a localidade é alta</strong>: não cruza fronteiras; quem chama <code>fechar_pedido</code> não precisa saber em que ordem as operações internas ocorrem.</p>
+<p><strong>c — Connascência de Valor.</strong> Dinâmica e forte. Localidade: módulos distintos. É uma <strong>dívida técnica tolerada</strong>: os dois valores precisam coincidir exatamente. Ela só é sustentável hoje porque o orquestrador <code>compra</code> deriva ambos do mesmo <code>carrinho.total</code> no momento da chamada. A eliminação definitiva dessa connascência de valor exige eventos imutáveis com payload completo (Módulo 4).</p>
+</details>
+</li>
+<li>
+<p><strong>Projetando a API mínima.</strong> O domínio <code>promocoes</code> precisa permitir que o módulo de fechamento aplique descontos no carrinho sem que nenhum detalhe de campanhas ou cupons vaze. Escreva o conteúdo completo de <code>promocoes/api.py</code>, contendo os tipos de dados e a interface que <code>compra</code> deve consumir.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p>Uma implementação exemplar expõe apenas estruturas de dados imutáveis e um protocolo tipado:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mini_orion.nucleo.modelos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Carrinho</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">Desconto</span><span class="p">:</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">valor</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="n">descricao</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="k">class</span><span class="w"> </span><span class="nc">Promocoes</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">desconto_para</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">carrinho</span><span class="p">:</span> <span class="n">Carrinho</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Desconto</span><span class="p">:</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">        </span><span class="sd">"""Recebe o carrinho e retorna o desconto a aplicar."""</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="o">...</span>
+</span></code></pre></div>
+<p>O que <strong>não</strong> entra na API: classes de regras individuais (<code>RegraCupom200</code>, <code>RegraFreteGratis</code>), classes de acesso a banco de campanhas ou conexões externas. Esses elementos permanecem encapsulados nos arquivos internos <code>_regras.py</code> e <code>_campanhas.py</code>.</p>
+</details>
+</li>
+<li>
+<p><strong>Julgamento arquitetural: vale a pena a fronteira lógica sem a física?</strong> Um engenheiro sênior da equipe argumenta: <em>"Monólito modular é uma meia-medida ilusória. Mantemos o acoplamento de runtime, o risco de concorrência no mesmo banco e a disputa de deploy em um artefato só. Deveríamos ir diretamente para microsserviços."</em><br />
+    Avalie criticamente esse argumento. Identifique quais pontos da afirmação são verdadeiros, quais são falaciosos e defina qual é o <strong>critério decisório</strong> para adotar o monólito modular.</p>
+<details class="note">
+<summary>Resposta comentada</summary>
+<p><strong>O que a afirmação tem de verdadeiro:</strong> O monólito modular de fato não resolve disputas de deploy em equipes gigantescas (se o pipeline quebrar, ninguém faz deploy) e não isola falhas em nível de processo de SO (se uma thread consumir 100% de CPU ou causar um estouro de memória, o processo inteiro é impactado).</p>
+<p><strong>O que a afirmação tem de falacioso:</strong> A ideia de que microsserviços resolvem acoplamento automaticamente. Se os domínios do Orion forem fatiados incorretamente e distribuídos em serviços pela rede, o acoplamento continuará existindo, acrescido da penalidade de latência de rede, falhas de conexão, serialização e transações distribuídas sem garantia ACID.</p>
+<p><strong>Critério decisório:</strong> O monólito modular é a escolha correta quando o sistema precisa de organização cognitiva, divisão clara de código e governança de arquitetura, mas a empresa <strong>não possui volume de tráfego que justifique a escala física independente</strong>, nem equipe de operações para gerenciar orquestradores de containers e rastreamento distribuído. Ele é o patamar obrigatório de maturidade: extrai-se depois o que já está modularizado, se e quando houver evidência mensurável de necessidade de escala física.</p>
+</details>
+</li>
+</ol>
+<hr />
+<h2 id="atividade-em-grupo-orion-evolution-lab">Atividade em grupo: Orion Evolution Lab<a class="headerlink" href="#atividade-em-grupo-orion-evolution-lab" title="Permanent link">&para;</a></h2>
+<p>Com base no recorte arquitetural do seu grupo:</p>
+<ol>
+<li><strong>Partição em módulos de domínio</strong>: agrupe os componentes do seu recorte em módulos de domínio funcionais, tomando como base o agrupamento de oito módulos apresentado nesta aula. Registre qualquer divergência adotada em relação ao padrão da disciplina e justifique o motivo.</li>
+<li><strong>Definição de API pública</strong>: para cada módulo proposto, escreva a assinatura da <strong>API pública mínima</strong> (máximo de quatro classes/tipos expostos por módulo).</li>
+<li><strong>Mapeamento de internals</strong>: liste os arquivos e componentes que receberiam prefixo <code>_</code>, justificando por que nenhum outro módulo tem razão legítima para importá-los.</li>
+<li><strong>A dependência que exige eventos (Obrigatório)</strong>: aponte uma dependência entre dois módulos do seu recorte que <strong>não pode ser eliminada</strong> apenas com fronteiras lógicas sem quebrar a sincronia do fluxo. Explique qual connascência a sustenta e qual gatilho observável no futuro recomendaria transformá-la em um evento assíncrono.</li>
+</ol>
+<hr />
+<h2 id="sintese-e-o-proximo-passo-reorganizar-o-grafo">Síntese e o próximo passo: reorganizar o grafo<a class="headerlink" href="#sintese-e-o-proximo-passo-reorganizar-o-grafo" title="Permanent link">&para;</a></h2>
+<p>O Mini-Orion demonstrou que é viável criar fronteiras limpas, coesas e testáveis dentro do mesmo artefato monolítico:
+- O sistema é particionado por <strong>domínio</strong>, não por tecnologia;
+- As APIs públicas (<code>api.py</code>) funcionam como barreiras sanitárias que barram o vazamento de detalhes internos;
+- Contratos automatizados no CI garantem a proibição do <em>reach-in</em>;
+- Módulos se testam de forma unitária e instantânea sem instanciar outros domínios;
+- Mantém-se o benefício do deploy simples em processo único e transações ACID.</p>
+<p>No Mini-Orion, operamos com três módulos. No entanto, o sistema completo do <strong>Marketplace Orion</strong> possui <strong>dez componentes e dezessete arestas de dependência</strong>.</p>
+<p>Quando aplicamos os oito módulos de domínio desta aula sobre esse grafo de 17 arestas, o que acontece?<br />
+Quantas dependências ficam guardadas como detalhes internos e quantas cruzam fronteiras entre módulos? A resposta é contraintuitiva — e é o que a <strong>Aula 12</strong> calcula e demonstra.</p>
+<hr />
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture</em>. O'Reilly, 2020. Cap. 8 — <em>Component-Based Thinking</em> (componente como partição lógica e física; coesão e acoplamento entre domínios).</li>
+<li>LILIENTHAL, Carola. <em>Sustainable Software Architecture: Analyze and Reduce Technical Debt</em>. dpunkt.verlag, 2019. Cap. 3 — <em>Modularization Patterns</em>.</li>
+<li>FOWLER, Martin. <em>MonolithFirst</em>. MartinFowler.com, 2015. (Ensaio clássico sobre o custo de prematuramente distribuir arquiteturas).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>EVANS, Eric. <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em>. Addison-Wesley, 2003.</li>
+<li>MARTIN, Robert C. <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017.</li>
+<li>PAGE-JONES, Meilir. <em>What Every Programmer Should Know About Object-Oriented Design</em>. Dorset House, 1995.</li>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../exercicios-fixacao-aulas-9-10/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Exercícios de fixação (Aulas 9 e 10)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Exercícios de fixação (Aulas 9 e 10)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../aula12-reorganizar-o-grafo/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Aula 12 — Reorganizar o grafo do Orion">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Aula 12 — Reorganizar o grafo do Orion
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

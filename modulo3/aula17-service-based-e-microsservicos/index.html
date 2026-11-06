@@ -1,0 +1,2325 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Eduardo da Silva">
+      
+      
+        <link rel="canonical" href="https://eduardo-da-silva.github.io/fundamentos-arquitetura/modulo3/aula17-service-based-e-microsservicos/">
+      
+      
+      
+        <link rel="prev" href="../aula16-falacias-da-computacao-distribuida/">
+      
+      
+        <link rel="next" href="../projeto-extrair-ou-nao-extrair/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.svg">
+      <meta name="generator" content="zensical-0.0.74">
+    
+    
+      
+        <title>Aula 17 — Do service-based aos microsserviços - Arquitetura de Software</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Pular para conteúdo
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Arquitetura de Software" class="md-header__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navegação</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arquitetura de Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Aula 17 — Do service-based aos microsserviços
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Pesquisar</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Pesquisar">
+  <button type="button" class="md-search__button">
+    Pesquisar
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arquitetura de Software" class="md-nav__button md-logo" aria-label="Arquitetura de Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M360.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6m64.6 136.1c-12.5 12.5-12.5 32.8 0 45.3l73.4 73.4-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0zm-274.7 0c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l73.3-73.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+
+    </a>
+    Arquitetura de Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eduardo-da-silva/fundamentos-arquitetura
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Início
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 1 — Fundamentos Arquiteturais
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula01-o-que-e-arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 1 — O que é Arquitetura de Software?
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula02-leis-trade-offs-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 2 — Leis da Arquitetura, trade-offs e ADR
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula03-caracteristicas-arquiteturais/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 3 — Características arquiteturais
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula04-modularidade-componentes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 4 — Modularidade e Componentes
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula05-acoplamento-coesao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 5 — Acoplamento e Coesão
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula06-connascencia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 6 — Connascência
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula07-metricas-governanca/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 7 — Métricas e governança
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo1/aula08-oficina-diagnostico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 8 — Oficina de Diagnóstico
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modulo2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 2 — Arquiteturas Monolíticas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula09-monolito-nao-e-o-problema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 9 — O monólito não é o problema
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula10-monolito-em-camadas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 10 — Monólito em camadas
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-9-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 9 e 10)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula11-monolito-modular/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 11 — Monólito modular
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula12-reorganizar-o-grafo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 12 — Reorganizar o grafo do Orion
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-11-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 11 e 12)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula13-pipeline-e-microkernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 13 — Pipeline e microkernel
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/aula14-quando-o-monolito-deixa-de-servir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 14 — Quando o monólito deixa de servir
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modulo2/exercicios-fixacao-aulas-13-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Exercícios de fixação (Aulas 13 e 14)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Módulo 3 — Arquiteturas Distribuídas
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula16-falacias-da-computacao-distribuida/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 16 — Falácias da computação distribuída
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 17 — Do service-based aos microsserviços
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#de-que-tamanho-deve-ser-o-que-se-implanta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        De que tamanho deve ser o que se implanta?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#um-espectro-de-granularidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Um espectro de granularidade
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Um espectro de granularidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-que-cada-forma-otimiza" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que cada forma otimiza
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onde-as-duas-propostas-caem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde as duas propostas caem
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#independente-de-que-o-quantum" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Independente de quê? O quantum
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-escolher-entre-as-formas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como escolher entre as formas
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como escolher entre as formas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dois-custos-de-toda-separacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dois custos de toda separação
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-cenario-o-fechamento-de-uma-compra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O cenário: o fechamento de uma compra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-ler-o-resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como ler o resultado
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-mediria-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que mediria de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-a-forma-do-deployable" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: a forma do <em>deployable</em>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: a forma do deployable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cinco-alternativas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cinco alternativas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trabalho-do-aluno" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Trabalho do aluno
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-18-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 18 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projeto-extrair-ou-nao-extrair/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Projeto das Aulas 16 e 17 — Extrair ou não extrair
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula18-granularidade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 18 — Granularidade
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula19-propriedade-do-dado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 19 — Propriedade do dado e acesso entre serviços
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula20-consistencia-e-saga/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 20 — Consistência e saga
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula21-custo-real-operacao-e-times/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 21 — O custo real, operação, observabilidade e times
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aula22-oficina-o-que-extrair-primeiro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Aula 22 — Oficina, o que extrair primeiro
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../orion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Orion Evolution Lab
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo-e-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Objetivo e competências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#de-que-tamanho-deve-ser-o-que-se-implanta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        De que tamanho deve ser o que se implanta?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#um-espectro-de-granularidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Um espectro de granularidade
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Um espectro de granularidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-que-cada-forma-otimiza" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que cada forma otimiza
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#onde-as-duas-propostas-caem" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Onde as duas propostas caem
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#independente-de-que-o-quantum" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Independente de quê? O quantum
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-escolher-entre-as-formas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como escolher entre as formas
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Como escolher entre as formas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dois-custos-de-toda-separacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dois custos de toda separação
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-cenario-o-fechamento-de-uma-compra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O cenário: o fechamento de uma compra
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-ler-o-resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Como ler o resultado
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-mediria-de-verdade" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que mediria de verdade
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisao-sobre-o-orion-a-forma-do-deployable" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Decisão sobre o Orion: a forma do <em>deployable</em>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decisão sobre o Orion: a forma do deployable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cinco-alternativas" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Cinco alternativas
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#na-pratica-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Na prática: Python
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trabalho-do-aluno" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Trabalho do aluno
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-decidido-e-o-que-a-aula-18-pergunta" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        O que ficou decidido e o que a Aula 18 pergunta
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leitura-complementar" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Leitura complementar
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Referências
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Módulo 3 — Arquiteturas Distribuídas
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+    <a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura/edit/main/docs/modulo3/aula17-service-based-e-microsservicos.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="aula-17-do-service-based-aos-microsservicos">Aula 17 — Do <em>service-based</em> aos microsserviços<a class="headerlink" href="#aula-17-do-service-based-aos-microsservicos" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo-e-competencias">Objetivo e competências<a class="headerlink" href="#objetivo-e-competencias" title="Permanent link">&para;</a></h2>
+<p>Ao fechar esta aula, conseguimos:</p>
+<ul>
+<li>situar o monólito modular, o <em>service-based</em> e os microsserviços num espectro de granularidade, pelo que cada um entrega como unidade de deploy, de dado e de time;</li>
+<li>explicar o que é um <em>architectural quantum</em> e por que dez serviços que se chamam de forma síncrona formam um quantum só;</li>
+<li>contar, para uma forma dada, quantos artefatos ela tem, quantas arestas do grafo atravessam a rede e quantas chamadas remotas o <code>Checkout</code> faz diretamente;</li>
+<li>estimar o efeito de cada forma na disponibilidade do fechamento, dizendo quais premissas sustentam a conta;</li>
+<li>separar o que se lê do grafo e do código (estrutura) do que só a medição em produção responde (taxa de falha, disponibilidade);</li>
+<li>usar um guia de decisão, que parte de um <strong>motivador de separação</strong> comprovado, para escolher entre manter o monólito, extrair um componente, agrupar por domínio ou ir aos microsserviços;</li>
+<li>justificar a escolha da forma do <em>deployable</em> com pelo menos três alternativas e uma condição que a faria envelhecer;</li>
+<li>rodar <code>quantum.py</code> e refazer a conta para uma divisão proposta por nós, e aplicá-la a um cenário próprio no projeto das Aulas 16 e 17.</li>
+</ul>
+<h2 id="de-que-tamanho-deve-ser-o-que-se-implanta">De que tamanho deve ser o que se implanta?<a class="headerlink" href="#de-que-tamanho-deve-ser-o-que-se-implanta" title="Permanent link">&para;</a></h2>
+<p>Todo sistema precisa, em algum momento, ser colocado no ar. O que se coloca no ar como uma unidade, com um único procedimento de entrega, é um <strong>artefato implantável</strong> (em inglês, <em>deployable</em>), e o ato de colocá-lo no ar é o <em><strong>deploy</strong></em>. Um monólito modular tem um artefato. Um sistema de dez serviços tem dez, cada um com o seu próprio <em>deploy</em>.</p>
+<p>A pergunta desta aula é de granularidade: de que tamanho deve ser cada artefato? Entre "tudo junto" e "um por componente" existem muitas respostas, e cada uma troca coisas diferentes. A Aula 16 mostrou o custo de cruzar a rede: cada chamada remota carrega a falácia 1 (a resposta pode se perder) e a falácia 2 (a latência tem cauda). Cada artefato a mais cria arestas assim. Falta mostrar o que se ganha em troca e como comparar as formas com números.</p>
+<p>Para isso precisamos de duas coisas: um vocabulário para as formas intermediárias entre "um processo" e "um serviço por componente", e uma noção precisa do que significa dizer que algo é "independente". Depois disso, vamos aplicar os conceitos no projeto Orion.</p>
+<h2 id="um-espectro-de-granularidade">Um espectro de granularidade<a class="headerlink" href="#um-espectro-de-granularidade" title="Permanent link">&para;</a></h2>
+<p>A Aula 14 terminou com <code>Pagamentos</code> registrado como candidato a extração, com um gatilho mensurável para decidir. Quando o ADR circula, voltam duas contrapropostas, uma de cada time. O time de plataforma quer <strong>um microsserviço por componente</strong>: o Orion tem dez componentes, então dez serviços, cada um com seu dado, seu <em>deploy</em> e seu dono. O time de operações quer <strong>só tirar <code>Pagamentos</code></strong> e deixar o resto onde está, o que dá dois artefatos. As duas são chamadas de "arquitetura de serviços", e nenhuma traz um número.</p>
+<p>Diante desse cenário, o Orion tem na mesa, no mínimo, estas opções: <strong>manter o monólito modular</strong>, <strong>tirar só <code>Pagamentos</code></strong>, <strong>agrupar por domínio</strong> (o <em>service-based</em>) e <strong>um serviço por componente</strong> (os microsserviços). Antes de compará-las, convém situá-las num espectro. O que varia ao longo dele é o tamanho da unidade que se implanta, e junto com ela o tamanho do dado e do time que cabem nessa unidade. Três formas têm nome na literatura, e a tabela as mostra:</p>
+<table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Unidade de deploy</th>
+<th>Dado</th>
+<th>No Orion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monólito modular</td>
+<td>um artefato, com módulos de fronteira lógica</td>
+<td>um banco</td>
+<td>1 artefato (o estado em que o Mini-Orion terminou o Módulo 2)</td>
+</tr>
+<tr>
+<td><em>Service-based</em></td>
+<td>poucos serviços grossos, cada um um domínio</td>
+<td>em geral um banco compartilhado, que pode ser dividido</td>
+<td>os 8 módulos de domínio da Aula 12 viram 8 serviços</td>
+</tr>
+<tr>
+<td>Microsserviços</td>
+<td>muitos serviços, um por domínio de negócio</td>
+<td>cada serviço dono do seu dado</td>
+<td>os 10 componentes viram 10 serviços</td>
+</tr>
+</tbody>
+</table>
+<p>O <em>service-based</em> é um estilo com nome próprio no livro-base de Richards e Ford, entre o monólito e os microsserviços: na descrição deles, de quatro a doze serviços de domínio, grossos, em geral com um banco único atrás. Os microsserviços, na formulação de Newman, são serviços liberáveis de forma independente e modelados em torno de um domínio de negócio, que evitam bancos compartilhados e escondem o próprio dado atrás de uma interface. O próprio Newman diz que o tamanho é um dos aspectos menos interessantes da definição: o que importa é a independência de <em>deploy</em> e a fronteira bem traçada. Por isso a diferença entre as formas é de grau antes de ser de natureza, e a conversa que perde tempo discutindo o nome costuma perder também a pergunta que interessa.</p>
+<p>A forma do meio é a menos discutida e a mais instrutiva para o Orion, porque a Aula 12 já fez, sem rede, o agrupamento que ela exigiria: os oito módulos de domínio, com suas fronteiras verificadas por contratos de <code>import-linter</code>. Um <em>service-based</em> por domínio seria transformar cada fronteira lógica em fronteira de rede. Resta saber quanto isso custa.</p>
+<h3 id="o-que-cada-forma-otimiza">O que cada forma otimiza<a class="headerlink" href="#o-que-cada-forma-otimiza" title="Permanent link">&para;</a></h3>
+<p>O <strong>monólito modular</strong> otimiza simplicidade operacional: um <em>deploy</em>, uma transação local entre cobrar e emitir, um teste que roda sem rede. Cobra o que a Aula 9 nomeou: tudo sobe junto, com uma cadência e uma escala só.</p>
+<p>O <em><strong>service-based</strong></em> otimiza autonomia de deploy por domínio sem multiplicar demais os artefatos. Como cada serviço é grosso, a maior parte das chamadas continua dentro dele, e a transação local sobrevive dentro de cada domínio. Cobra a rede em todas as arestas que cruzam domínios e, se o banco for compartilhado, um acoplamento por dado que a Aula 19 vai examinar.</p>
+<p>Uma ressalva sobre o estilo, na descrição do livro. Richards e Ford esperam que os serviços de domínio <strong>não se chamem entre si</strong>: a interface fala com cada um, e o que os serviços têm em comum é o banco e as bibliotecas, não chamadas. O exemplo deles é o fechamento de um pedido, em que cobrar, gerar o número do pedido e baixar o estoque acontecem <strong>dentro de um serviço só</strong>, com <em>rollback</em> local se o cartão estiver vencido. Transformar cada aresta entre módulos em chamada de rede, como fazemos na linha "os 8 módulos viram 8 serviços" do quadro acima, é a leitura mais cara do estilo, e não a que o livro recomenda.</p>
+<p>A escolha entre as duas versões é uma questão de <strong>onde passa a fronteira</strong>, mais do que de tamanho. No Cap. 17, Richards e Ford dão como um dos critérios para traçar fronteiras de serviço olhar as entidades que precisam cooperar numa mesma transação: se cobrar e emitir o pedido têm de acontecer juntos, isso sugere que ficam no mesmo serviço. Pelo critério do livro, a aresta entre <code>Checkout</code> e <code>Pagamentos</code> é uma das que não se deveria cortar, e a versão agrupada de sete serviços respeita isso. Por isso a conta desta aula compara duas versões: os oito domínios, que cortam todas as fronteiras entre módulos e mostram o custo máximo, e uma versão agrupada de sete serviços em que <code>Pagamentos</code> fica junto de <code>Checkout</code> e <code>Pedidos</code>, como no exemplo do livro.</p>
+<p>Há aqui uma tensão com a proposta de extrair só <code>Pagamentos</code>, que corta exatamente essa aresta. O gatilho da Aula 14 é um sinal de cadência de release e de janela para a conciliação, e a pergunta é se ele pesa mais do que a transação local que a extração desfaz.</p>
+<p>Os <strong>microsserviços</strong> otimizam autonomia máxima: cada componente tem seu ritmo de release, sua escala e, idealmente, seu time. Cobram a rede em quase todas as arestas, a consistência entre dados separados em quase todo fluxo, e a operação de tantos artefatos quantos serviços existirem.</p>
+<p>Nenhuma das três é a resposta em abstrato. Cada uma é a resposta sob um contexto, e o que vamos fazer a seguir é medir o contexto do Orion.</p>
+<h3 id="onde-as-duas-propostas-caem">Onde as duas propostas caem<a class="headerlink" href="#onde-as-duas-propostas-caem" title="Permanent link">&para;</a></h3>
+<p>A proposta do time de plataforma é o extremo dos microsserviços: dez artefatos, um por componente.</p>
+<p>A do time de operações não cabe em nenhum dos três degraus do quadro. Ela produz dois artefatos de tamanhos muito diferentes: <code>Pagamentos</code>, que é um componente só, e "o resto", que reúne os outros nove. É uma <strong>granularidade mista</strong>: uma ponta fina, do tamanho de um microsserviço, ao lado de uma grossa, do tamanho de um monólito. Isso tem uma vantagem e um custo. A vantagem é que só paga rede onde há sinal de que vale pagar, e é o caminho de migração gradual que Newman defende, em vez de uma troca de uma vez só. O custo é que a fronteira nova passa pela aresta entre <code>Checkout</code> e <code>Pagamentos</code>, que hoje é uma chamada local dentro de uma transação (cobrar e emitir o pedido). Depois da extração, essa aresta atravessa a rede e a transação deixa de ser local. É o que a conta das próximas seções vai pôr em números.</p>
+<h2 id="independente-de-que-o-quantum">Independente de quê? O quantum<a class="headerlink" href="#independente-de-que-o-quantum" title="Permanent link">&para;</a></h2>
+<p>Considere dois serviços, <code>Checkout</code> e <code>Pagamentos</code>, em artefatos separados, com <em>deploys</em> separados. O <code>Checkout</code> chama <code>Pagamentos</code> e espera a resposta para continuar. Se <code>Pagamentos</code> sai do ar, o <code>Checkout</code> não consegue fechar nenhum pedido. Se uma campanha dobra o volume do <code>Checkout</code>, <code>Pagamentos</code> recebe o dobro das chamadas e precisa escalar junto. Esses dois serviços são independentes?</p>
+<p>Em um sentido, sim: cada um sobe e desce em um momento próprio. Em outro, não: a disponibilidade e a escala de um dependem do outro. São duas leituras da palavra. A independência de <strong>implantação</strong> é poder subir e descer sem que os outros precisem subir junto. A independência de <strong>características</strong> é a disponibilidade, a escala e a latência de um serviço não dependerem das de outro. As duas não andam juntas, e a segunda é a que o negócio sente.</p>
+<p>Ford, Parsons, Kua e Sadalage nomeiam essa diferença com a ideia de <em>architectural quantum</em>: o menor artefato implantável de forma independente que tem <strong>alta coesão funcional</strong>, <strong>alto acoplamento estático</strong> e <strong>acoplamento dinâmico síncrono</strong>. Dois termos pedem explicação:</p>
+<ul>
+<li>o <strong>acoplamento estático</strong> é tudo o que precisa estar junto para o artefato funcionar: as bibliotecas, o banco de dados, o contrato que ele consome;</li>
+<li>o <strong>acoplamento dinâmico</strong> é como os artefatos se chamam em execução, e é <strong>síncrono</strong> quando quem chama espera a resposta para continuar.</li>
+</ul>
+<p>A consequência é a que importa para o Orion, e é o caso do início. Se o <code>Checkout</code> chama <code>Pagamentos</code> de forma síncrona, a disponibilidade do <code>Checkout</code> passa a depender da de <code>Pagamentos</code>, e o <code>Checkout</code> só escala até onde <code>Pagamentos</code> escala. Há dois artefatos, dois <em>deploys</em>, e <strong>um quantum só</strong>, porque as características de um são limitadas pelas do outro.</p>
+<p>Usamos daqui em diante uma versão operacional da definição, mais simples que a do livro, que discute casos de borda como o de uma fila entre os dois lados: dois componentes pertencem ao mesmo quantum se vivem no <strong>mesmo artefato</strong>, se estão ligados por uma <strong>chamada síncrona</strong> ou se <strong>compartilham um banco de dados</strong>. O terceiro critério vem do acoplamento estático: segundo o livro, um banco comum faz todos os serviços atrás dele formarem um quantum só, mesmo que nenhum chame o outro, porque o banco tem sua própria cadência de <em>deploy</em> e todos dependem dela. É uma simplificação nossa, e vale dizer onde ela perde precisão: não vê o acoplamento por biblioteca comum, que também liga quanta, nem as interfaces de usuário compartilhadas.</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph q1 [quantum 1]
+        Checkout --&gt;|sincrona| Pagamentos
+    end
+    subgraph q2 [quantum 2]
+        Notificacoes
+    end
+    Pagamentos -.-&gt;|fila| Notificacoes</code></pre>
+<p>Leitura das setas: <code>A --&gt; B</code> significa que A depende de B. A linha cheia é uma chamada síncrona, em que A espera a resposta de B; a tracejada passa por uma fila, em que A não espera.</p>
+<p>O diagrama responde a uma pergunta de contagem: quantos quanta há aqui? Dois. <code>Checkout</code> e <code>Pagamentos</code> estão presos pela chamada síncrona, e <code>Notificacoes</code> ficou livre porque a única aresta que chega nela passa por uma fila. Ele omite as outras catorze arestas do grafo, e supõe que <code>Notificacoes</code> tem um banco próprio: se compartilhasse o banco com os outros dois, os três voltariam a ser um quantum só.</p>
+<p>Aplicada ao grafo inteiro, a definição dá um resultado que costuma surpreender. Com os dez componentes em dez serviços e todas as chamadas síncronas, o Orion tem <strong>dez artefatos e um quantum</strong>: cada serviço sobe sozinho, mas nenhum tem características próprias. Esse arranjo lembra o <strong>monólito distribuído</strong> de Newman, o pior dos dois mundos, com o custo da rede sem a independência que a justificaria. Há uma diferença de critério: Newman chama assim o sistema de vários serviços que precisam ser implantados juntos, e a nossa definição olha para a dependência em execução. Para sair de um quantum, duas coisas precisam acontecer: algumas arestas deixarem de ser síncronas (por exemplo, trocando por fila as quatro que chegam em <code>Notificacoes</code>) <strong>e</strong> os serviços deixarem de compartilhar o banco. Os microsserviços do livro, com um banco por serviço, cumprem a segunda condição; um <em>service-based</em> de banco único não cumpre, e por isso continua com um quantum só, qualquer que seja o número de filas.</p>
+<p>Isso reinterpreta o que a Aula 14 chamou de sinais de extração. Extrair <code>Pagamentos</code> com a cobrança ainda síncrona dá <strong>independência de deploy</strong>, que atende ao sinal de cadência de release própria, e não dá independência de características para a cobrança. A conciliação, que é um processamento em lote, é outra conversa: ela pode ganhar escala e janela próprias porque ninguém espera por ela.</p>
+<h2 id="como-escolher-entre-as-formas">Como escolher entre as formas<a class="headerlink" href="#como-escolher-entre-as-formas" title="Permanent link">&para;</a></h2>
+<p>Cada forma do espectro troca algo por algo. Esta seção diz <strong>o que se paga</strong> ao separar, mostra esse custo num cenário do Orion e termina com um guia para ler o resultado: se aparecer tal sinal, tal opção faz sentido; senão, outra.</p>
+<h3 id="dois-custos-de-toda-separacao">Dois custos de toda separação<a class="headerlink" href="#dois-custos-de-toda-separacao" title="Permanent link">&para;</a></h3>
+<p>Quando duas partes que estavam no mesmo processo passam a falar pela rede, dois custos aparecem, e os dois vêm da Aula 16.</p>
+<p><strong>A chance de falha cresce com o número de chamadas.</strong> Cada chamada remota pode falhar (falácia 1) ou demorar além do tolerável (falácia 2). Se um fluxo depende de <span class="arithmatex">\(n\)</span> chamadas remotas e cada uma falha com probabilidade <span class="arithmatex">\(p\)</span>, a chance de pelo menos uma falhar é</p>
+<div class="arithmatex">\[P = 1 - (1 - p)^{n}\]</div>
+<p>Com <span class="arithmatex">\(p = 2\%\)</span>, uma chamada dá 2%, três dão 5,9% e cinco dão 9,6%. O custo não é de uma chamada, e sim do que ela soma às outras.</p>
+<p><strong>A disponibilidade cai com o número de artefatos.</strong> Disponibilidade é a fração do tempo em que um artefato está no ar. Se um fluxo só termina quando <span class="arithmatex">\(k\)</span> artefatos estão no ar ao mesmo tempo, e as falhas de cada um são independentes, a disponibilidade do fluxo é o produto das individuais:</p>
+<div class="arithmatex">\[A = a^{\,k}\]</div>
+<p>Com <span class="arithmatex">\(a = 99{,}9\%\)</span> por artefato (cerca de 43 minutos fora do ar por mês), <span class="arithmatex">\(k = 1\)</span> dá 99,9% e <span class="arithmatex">\(k = 6\)</span> dá 99,4%. A independência é uma simplificação: na prática, falhas costumam ser correlacionadas, como quando um defeito de rede derruba vários serviços de uma vez.</p>
+<p>Os valores <span class="arithmatex">\(p = 2\%\)</span> e <span class="arithmatex">\(a = 99{,}9\%\)</span> são <strong>ilustrativos</strong>, hipóteses de trabalho como na Aula 16, e o Orion ainda não os mediu. O que a conta ensina é a <strong>forma</strong> da relação, e ela vale para outros valores.</p>
+<h3 id="o-cenario-o-fechamento-de-uma-compra">O cenário: o fechamento de uma compra<a class="headerlink" href="#o-cenario-o-fechamento-de-uma-compra" title="Permanent link">&para;</a></h3>
+<p>O fluxo que vamos medir é o <strong>fechamento</strong> de uma compra. O <code>Checkout</code> coordena o fechamento e depende de cinco componentes: <code>Catalogo</code>, <code>Clientes</code>, <code>Promocoes</code>, <code>Pagamentos</code> e <code>Pedidos</code>. Supomos o pior caso: todas as dependências são obrigatórias e síncronas, de modo que, se uma estiver fora do ar, o fechamento falha.</p>
+<p>Cada forma do espectro decide quantas dessas cinco chamadas atravessam a rede, e portanto quanto do custo acima o fechamento paga:</p>
+<table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Artefatos</th>
+<th>Chamadas remotas do <code>Checkout</code></th>
+<th>Chance de falha</th>
+<th>Disponibilidade do fechamento</th>
+<th>Fora do ar por mês</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monólito modular</td>
+<td>1</td>
+<td>0</td>
+<td>0%</td>
+<td>99,9%</td>
+<td>43 min</td>
+</tr>
+<tr>
+<td>Só <code>Pagamentos</code></td>
+<td>2</td>
+<td>1</td>
+<td>2,0%</td>
+<td>99,8%</td>
+<td>86 min</td>
+</tr>
+<tr>
+<td><em>Service-based</em> agrupado (7)</td>
+<td>7</td>
+<td>3</td>
+<td>5,9%</td>
+<td>99,7%</td>
+<td>129 min</td>
+</tr>
+<tr>
+<td><em>Service-based</em> por domínio (8)</td>
+<td>8</td>
+<td>4</td>
+<td>7,8%</td>
+<td>99,6%</td>
+<td>173 min</td>
+</tr>
+<tr>
+<td>Microsserviços (10)</td>
+<td>10</td>
+<td>5</td>
+<td>9,6%</td>
+<td>99,4%</td>
+<td>259 min</td>
+</tr>
+</tbody>
+</table>
+<p>Os números vêm do grafo de dependências do Orion (10 componentes e 17 arestas, o das Aulas 7 e 12), do agrupamento em oito módulos de domínio da Aula 12 e das hipóteses acima. Em cada forma, uma aresta é remota se suas pontas vivem em artefatos diferentes: no <em>service-based</em> por domínio, as 15 arestas remotas são exatamente as 15 que cruzam módulos na Aula 12, e nos microsserviços são as 17. A versão agrupada de sete serviços difere da de oito por um único motivo: <code>Pagamentos</code> fica junto de <code>Checkout</code> e <code>Pedidos</code>, e por isso o <code>Checkout</code> deixa de chamar esses dois pela rede.</p>
+<p>Duas observações sobre a tabela. A primeira: os valores absolutos valem tanto quanto as hipóteses, mas a <strong>ordem</strong> entre as formas não. Ela vem da estrutura e continuaria a mesma com outras taxas. A segunda: as chamadas contadas são só as que saem do <code>Checkout</code>, porque são as que ficam no caminho do fechamento. A Aula 16 contou duas arestas ao extrair <code>Pagamentos</code> (a que entra e a que sai), e aqui só uma conta, porque a outra, de <code>Pagamentos</code> para <code>Notificacoes</code>, não está no caminho.</p>
+<h3 id="como-ler-o-resultado">Como ler o resultado<a class="headerlink" href="#como-ler-o-resultado" title="Permanent link">&para;</a></h3>
+<p>A tabela não escolhe a forma. Ela diz o preço de cada uma, e a escolha depende do que o Orion ganha em troca. O guia abaixo vai da opção mais barata à mais cara, e cada passo diz quando ela deixa de bastar.</p>
+<p>O que decide cada passo é a presença de um <strong>motivador de separação</strong>: uma necessidade de um componente que só se atende implantando-o à parte, e que foi <strong>comprovada por medição</strong>, não apenas alegada. A Aula 14 listou quatro tipos, que ali chamou de sinais de extração:</p>
+<ul>
+<li><strong>escala própria</strong>: o componente precisa crescer em ritmo diferente do resto;</li>
+<li><strong>cadência de release própria</strong>: ele muda com frequência muito diferente da dos vizinhos, e esperar o <em>deploy</em> conjunto custa tempo;</li>
+<li><strong>isolamento de falha</strong>: uma falha nele não pode derrubar o resto, ou o contrário;</li>
+<li><strong>autonomia de time</strong>: um time dono dele não pode depender da agenda de outros.</li>
+</ul>
+<p>A Aula 18 vai tratar dos motivadores com mais cuidado, junto das forças que mantêm as partes unidas. Por ora, basta distinguir um motivador comprovado de um argumento de gosto ("microsserviço é moderno").</p>
+<p><strong>A. Se nenhum componente tem um motivador de separação comprovado, mantenha o monólito modular.</strong> É a forma que não paga nenhum dos dois custos. O que a tabela mostra é que, sem um motivador, qualquer rede é prejuízo.</p>
+<p><strong>B. Se um componente tem um motivador comprovado e quase não participa das transações dos vizinhos, extraia só ele.</strong> É o caso de uma conciliação em lote: ninguém espera por ela, então pode ganhar janela e escala próprias sem entrar no caminho do fechamento. O custo é pequeno e localizado. Esta é a proposta do time de operações, quando o componente é o certo.</p>
+<p><strong>C. Se o componente com motivador participa de uma transação com seus vizinhos, agrupe-os num serviço só.</strong> É o caso de <code>Pagamentos</code> com <code>Checkout</code> e <code>Pedidos</code>. Para fechar uma compra é preciso cobrar, gerar o pedido e baixar o estoque, e esses passos precisam acontecer juntos: ou tudo vale, ou nada. Dentro de um serviço, um banco garante isso com um <em>rollback</em> local. Se o cartão estiver vencido, o pedido simplesmente não é gravado. Separados em serviços, o pedido pode já ter sido criado quando a cobrança falha, e o sistema fica num estado intermediário que alguém precisa tratar: o que fazer com o pedido gravado? E com o estoque já reservado? É isso que os microsserviços pagam com consistência eventual e com o padrão de sagas, que o Módulo 3 apresenta adiante. Por isso, no <em>service-based</em> do livro, essas operações ficam no mesmo serviço, e a tabela mostra o preço da separação: a versão agrupada tem 3 chamadas remotas do <code>Checkout</code> contra 4 da versão por domínio. A contrapartida é que o grupo tem uma cadência de release só, e se o sinal for justamente a cadência própria de <code>Pagamentos</code>, o agrupamento anula o que se queria.</p>
+<p><strong>D. Se vários domínios têm motivadores diferentes (escalas, cadências ou times distintos), agrupe por domínio.</strong> Considere uma plataforma de venda de ingressos com três áreas. A <strong>venda</strong> recebe picos enormes nas aberturas de shows, e isso aparece nos registros de acesso (escala própria). O <strong>cadastro de eventos</strong> é alterado todos os dias por produtores, e cada mudança espera o <em>deploy</em> de todo o resto (cadência própria). A <strong>emissão fiscal</strong> pertence a um time separado, que só libera versões depois de auditoria (autonomia de time). São três motivadores distintos e comprovados, cada um numa área diferente.</p>
+<p>Agrupar por domínio dá três serviços grossos. A venda escala sozinha nos picos, os eventos são liberados no ritmo dos produtores e a emissão fiscal segue a agenda da auditoria, sem que uma área espere a outra. Dentro de cada serviço, as partes que cooperam continuam juntas: reservar o assento e registrar o pagamento da venda seguem numa transação local, como na opção C. Separar essas partes em serviços menores não compraria nada, porque nenhuma delas tem motivador próprio, e somaria chamadas remotas ao fluxo. E manter o monólito deixaria a venda escalar junto com tudo, e o time fiscal preso à agenda dos outros.</p>
+<p>Esse é o <em>service-based</em> de domínios, a forma do meio do espectro. No Orion, o equivalente seria o de oito domínios, e a tabela mostra o preço: 4 chamadas remotas do <code>Checkout</code>, 7,8% de falha e 173 minutos fora do ar por mês. Só compensa quando os motivadores de vários domínios, juntos, valem esse preço, o que o Orion hoje não tem.</p>
+<p><strong>E. Se quase todos os componentes têm motivadores próprios, com dado separável, e o time aguenta a operação, vá aos microsserviços.</strong> É o degrau mais caro: 5 chamadas remotas, 9,6% de falha, 259 minutos por mês, e dado separado em quase todo fluxo. Newman recomenda chegar aqui de forma gradual, quando cada passo anterior deixou de bastar.</p>
+<p>Uma verificação vale para todas as opções, e vem do quantum. Antes de concluir que uma separação trouxe independência, conte os quanta. Com todas as chamadas síncronas, as cinco formas têm <strong>um quantum só</strong>. Trocando por fila as quatro arestas que chegam em <code>Notificacoes</code>, só os microsserviços chegam a dois, porque são os únicos com um banco por serviço. O <em>service-based</em>, nas duas versões, segue com um quantum, porque os serviços compartilham o banco (observação do Cap. 13 do livro). Dividir o banco é a pergunta da Aula 19.</p>
+<p>Para o Orion hoje, o guia dá uma resposta curta: só <code>Pagamentos</code> tem um motivador candidato (a cadência de release, Aula 14), e o gatilho ainda não disparou. Isso aponta para A agora e, se disparar, para B ou C, dependendo de o motivador ser a conciliação, que sai sem dor, ou a cobrança, que carrega a transação. A decisão está registrada na seção seguinte.</p>
+<h3 id="o-que-mediria-de-verdade">O que mediria de verdade<a class="headerlink" href="#o-que-mediria-de-verdade" title="Permanent link">&para;</a></h3>
+<p>A conta é o pior caso e depende de hipóteses. Para trocar cada parte por um número do Orion:</p>
+<ul>
+<li>o <strong>número de artefatos, de arestas remotas e de chamadas diretas</strong> é lido da estrutura. As arestas saem do próprio código, por ferramentas que extraem os <code>import</code>s, como o <code>pydeps</code> e o <code>import-linter</code> da Aula 7. Se uma chamada é síncrona ou assíncrona também se lê do código, olhando se quem chama espera o retorno;</li>
+<li>a <strong>taxa de falha</strong> de cada aresta remota só existe depois de a aresta existir: contagem de <em>timeouts</em> por destino, como na Aula 16;</li>
+<li>a <strong>disponibilidade do fechamento</strong> mede-se na borda, como a razão entre fechamentos concluídos e tentados. É o número que o cliente sente, e pode divergir do produto das disponibilidades dos serviços, porque falhas reais são correlacionadas e mascaradas por <em>fallbacks</em>. Se <code>Promocoes</code> pudesse falhar sem derrubar o fechamento (o cliente compra sem desconto), ela sairia da série e o custo cairia: isso é uma decisão de desenho, e um dos modos de reduzir o preço de qualquer forma distribuída. A Aula 21 trata de como enxergar o caminho de um fechamento de ponta a ponta.</li>
+</ul>
+<h2 id="decisao-sobre-o-orion-a-forma-do-deployable">Decisão sobre o Orion: a forma do <em>deployable</em><a class="headerlink" href="#decisao-sobre-o-orion-a-forma-do-deployable" title="Permanent link">&para;</a></h2>
+<h3 id="cinco-alternativas">Cinco alternativas<a class="headerlink" href="#cinco-alternativas" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que resolve</th>
+<th>O que custa</th>
+<th>Quando não vale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manter o monólito modular</td>
+<td>nenhuma aresta de rede, transação local, um <em>deploy</em></td>
+<td>cadência e escala únicas; a conciliação de <code>Pagamentos</code> segue sem janela própria</td>
+<td>quando o gatilho da Aula 14 disparar</td>
+</tr>
+<tr>
+<td>Só <code>Pagamentos</code> (o resto, mais um)</td>
+<td>cadência de release e janela próprias para a conciliação, com só 2 arestas remotas</td>
+<td>1 chamada direta do <code>Checkout</code> na rede (2,0% de falha por hipótese), cobrar e emitir sem commit único, fechamento em 99,8%</td>
+<td>antes de o gatilho disparar: sem sinal medido, é rede sem ganho</td>
+</tr>
+<tr>
+<td><em>Service-based</em> agrupado (7), como no exemplo do livro</td>
+<td>transação local entre cobrar e emitir, só 14 arestas remotas e 3 chamadas diretas do <code>Checkout</code></td>
+<td>5,9% de falha, fechamento em 99,7%, 7 artefatos, banco único (um quantum só) e <code>Pagamentos</code> sem cadência própria</td>
+<td>quando o sinal é justamente a cadência de <code>Pagamentos</code>, que é o caso hoje</td>
+</tr>
+<tr>
+<td><em>Service-based</em> por domínio (8)</td>
+<td>autonomia por domínio, com a fronteira de rede coincidindo com a lógica já verificada</td>
+<td>15 arestas remotas, 4 chamadas diretas (7,8%), fechamento em 99,6%, 8 artefatos para operar</td>
+<td>quando só um domínio tem sinal próprio, que é o caso hoje</td>
+</tr>
+<tr>
+<td>Microsserviços por componente (10)</td>
+<td>autonomia máxima de deploy, escala e time</td>
+<td>17 arestas remotas, 5 chamadas diretas (9,6%), fechamento em 99,4%, 10 artefatos, dado separado em todos os fluxos</td>
+<td>quando o time é de porte médio e nenhum componente além de um tem sinal medido</td>
+</tr>
+</tbody>
+</table>
+<p>Cada uma tem defensores competentes. Quem escolhe os microsserviços aposta que o custo de operar muitos artefatos se paga em times que deixam de esperar uns pelos outros, e isso é verdade em organizações onde há times de sobra e os módulos mudam em ritmos muito diferentes. Quem mantém o monólito aposta que, sem sinal medido, qualquer rede é prejuízo, e isso é verdade enquanto o time for pequeno. As duas apostas podem estar certas em empresas diferentes. O Orion tem um time de plataforma de porte médio e um trimestre de orçamento (a Aula 9 registrou isso), e um único sinal operacional, o de <code>Pagamentos</code>.</p>
+<h3 id="na-pratica-python">Na prática: Python<a class="headerlink" href="#na-pratica-python" title="Permanent link">&para;</a></h3>
+<p>A conta da seção anterior não está no Mini-Orion, porque o Mini-Orion tem quatro módulos e a pergunta é sobre o grafo inteiro do Orion. Ela está no script <code>quantum.py</code>, no checkpoint <code>07-remoto/</code> do repositório de código (<a href="https://github.com/eduardo-da-silva/fundamentos-arquitetura-code">https://github.com/eduardo-da-silva/fundamentos-arquitetura-code</a>). O <code>07-remoto</code> não ganha código novo de sistema nesta aula: ganha uma ferramenta de análise.</p>
+<p>O grafo é dado, e é o das Aulas 7 e 12:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/quantum.py (recorte)</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ARESTAS</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Checkout"</span><span class="p">),</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="p">(</span><span class="s2">"Portal"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Clientes"</span><span class="p">),</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Promocoes"</span><span class="p">),</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pagamentos"</span><span class="p">),</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="p">(</span><span class="s2">"Checkout"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="p">(</span><span class="s2">"Promocoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="p">(</span><span class="s2">"Pedidos"</span><span class="p">,</span> <span class="s2">"Logistica"</span><span class="p">),</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="p">(</span><span class="s2">"Pagamentos"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="p">(</span><span class="s2">"Logistica"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Catalogo"</span><span class="p">),</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Pedidos"</span><span class="p">),</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="p">(</span><span class="s2">"Integracoes"</span><span class="p">,</span> <span class="s2">"Notificacoes"</span><span class="p">),</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="p">]</span>
+</span></code></pre></div>
+<p>Em um sistema real, essa lista não se escreve à mão: sai do código, por ferramentas que extraem os <code>import</code>s. A natureza síncrona de cada aresta também. O que o script mostra é o que se faz com o grafo depois de extraído.</p>
+<p>O coração da conta é a função que conta os quanta. Ela une os componentes que vivem no mesmo artefato, os que estão ligados por uma chamada síncrona e, se o banco é comum, todos os que estão atrás dele, e conta os grupos que sobram:</p>
+<div class="language-python highlight"><span class="filename">07-remoto/quantum.py (recorte)</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">quanta</span><span class="p">(</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">forma</span><span class="p">:</span> <span class="n">Forma</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">assincronas</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">banco_compartilhado</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="sd">"""Conta os quanta: componentes ligados por artefato comum, por chamada sincrona</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="sd">    OU por um banco compartilhado.</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="sd">    Mesmo artefato: nao se implantam separados. Chamada sincrona: a disponibilidade</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="sd">    e a escala de quem chama dependem de quem e chamado. Banco compartilhado: todos</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="sd">    os componentes atras dele dependem do mesmo ponto de acoplamento, mesmo que</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="sd">    nenhum chame o outro.</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="sd">    """</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">assincronas</span> <span class="o">=</span> <span class="n">assincronas</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">pai</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">COMPONENTES</span><span class="p">}</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">raiz</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        <span class="k">while</span> <span class="n">pai</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">!=</span> <span class="n">c</span><span class="p">:</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>            <span class="n">pai</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">pai</span><span class="p">[</span><span class="n">pai</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>            <span class="n">c</span> <span class="o">=</span> <span class="n">pai</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        <span class="k">return</span> <span class="n">c</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="hll">    <span class="n">ligacoes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">COMPONENTES</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">COMPONENTES</span> <span class="k">if</span> <span class="n">forma</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">==</span> <span class="n">forma</span><span class="p">[</span><span class="n">b</span><span class="p">]]</span>
+</span></span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="hll">    <span class="n">ligacoes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">aresta</span> <span class="k">for</span> <span class="n">aresta</span> <span class="ow">in</span> <span class="n">ARESTAS</span> <span class="k">if</span> <span class="n">aresta</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">assincronas</span><span class="p">]</span>
+</span></span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="hll">    <span class="k">if</span> <span class="n">banco_compartilhado</span><span class="p">:</span>
+</span></span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="hll">        <span class="n">ligacoes</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">COMPONENTES</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">COMPONENTES</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+</span></span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">ligacoes</span><span class="p">:</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        <span class="n">pai</span><span class="p">[</span><span class="n">raiz</span><span class="p">(</span><span class="n">a</span><span class="p">)]</span> <span class="o">=</span> <span class="n">raiz</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>    <span class="k">return</span> <span class="nb">len</span><span class="p">({</span><span class="n">raiz</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">COMPONENTES</span><span class="p">})</span>
+</span></code></pre></div>
+<p>A resposta do script para as cinco formas, com as hipóteses da aula:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Grafo: 10 componentes, 17 arestas.
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Hipoteses: falha de 2,0% por chamada remota; 99,9% de disponibilidade por artefato.
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>forma                      artefatos  arestas  chamadas  P(falha)  disponib.  min/mes  quanta (sinc.)
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>monolito modular                   1        0         0      0,0%      99,9%       43               1
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>so Pagamentos                      2        2         1      2,0%      99,8%       86               1
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>service-based agrupado (7)         7       14         3      5,9%      99,7%      129               1
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>service-based (8 dominios)         8       15         4      7,8%      99,6%      173               1
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>microsservicos (10)               10       17         5      9,6%      99,4%      259               1
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>arestas = arestas remotas; chamadas = chamadas remotas diretas do Checkout;
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>disponib. e min/mes = artefatos tocados por um fechamento, em serie.
+</span></code></pre></div>
+<p>Com <code>--notificacoes-assincronas</code>, as arestas que chegam em <code>Notificacoes</code> passam por fila, e a última coluna muda: só os microsserviços, que têm um banco por serviço, passam a dois quanta; as outras formas seguem em um. Com <code>--banco-unico</code>, os microsserviços também compartilham o banco, e voltam a um quantum, mesmo com as filas.</p>
+<p>Para rodar, com Python 3.12 ou superior:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eduardo-da-silva/fundamentos-arquitetura-code.git
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">cd</span><span class="w"> </span>fundamentos-arquitetura-code
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">   </span><span class="c1"># no Windows: .venv\Scripts\activate</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">cd</span><span class="w"> </span><span class="m">07</span>-remoto
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>python<span class="w"> </span>quantum.py
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>python<span class="w"> </span>quantum.py<span class="w"> </span>--notificacoes-assincronas
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>pytest<span class="w"> </span>tests/test_quantum.py
+</span></code></pre></div>
+<p>O que vale experimentar:</p>
+<ul>
+<li><strong>Propor uma divisão.</strong> <code>python quantum.py --particao "Portal,Checkout,Pedidos|Catalogo,Promocoes|Pagamentos,Notificacoes,Logistica"</code> acrescenta uma linha com a sua forma; o que não for citado fica junto, num artefato "resto". É a mesma conta da tabela aplicada a uma divisão que você escolher.</li>
+<li><strong>Mudar as hipóteses.</strong> Altere <code>TAXA_DE_FALHA</code> e <code>DISPONIBILIDADE</code> no começo do arquivo e rode de novo. Os valores absolutos mudam, e a ordem entre as formas e a proporção entre os degraus não.</li>
+<li><strong>Ver o que o teste fixa.</strong> <code>tests/test_quantum.py</code> confirma que o grafo tem 17 arestas, que os oito módulos deixam 2 internas e 15 inter-módulo (a conta da Aula 12) e que os números desta aula são os que o script produz. Se um deles mudar, o texto precisa ser revisto junto.</li>
+</ul>
+<h2 id="trabalho-do-aluno">Trabalho do aluno<a class="headerlink" href="#trabalho-do-aluno" title="Permanent link">&para;</a></h2>
+<p>O trabalho desta aula continua o da Aula 16: o <a href="../projeto-extrair-ou-nao-extrair/">projeto "Extrair ou não extrair"</a>. A <strong>parte 2</strong> altera o <code>quantum.py</code> para o seu cenário, e a <strong>parte 4</strong> é o ADR da forma do <em>deployable</em>, escrito com o guia "Como ler o resultado". A entrega é antes da Aula 18.</p>
+<h2 id="o-que-ficou-decidido-e-o-que-a-aula-18-pergunta">O que ficou decidido e o que a Aula 18 pergunta<a class="headerlink" href="#o-que-ficou-decidido-e-o-que-a-aula-18-pergunta" title="Permanent link">&para;</a></h2>
+<p>Ficou decidido manter o monólito modular e, se o gatilho da Aula 14 disparar, cortar pouco: a forma "o resto, mais um", com dois artefatos e duas arestas na rede. As formas intermediárias e a de dez serviços ficaram descartadas pelo horizonte do ADR-009, não por serem ruins, mas por não terem sinal medido que as sustente. Ficou registrado também que "serviço" não é sinônimo de "independente": dez artefatos ligados por chamadas síncronas são um quantum só.</p>
+<p>A decisão se apoiou em um sinal, o de <code>Pagamentos</code>. Mas na reunião seguinte alguém propõe separar <code>Catalogo</code> "porque tem quatro dependentes", e outra pessoa propõe separar <code>Promocoes</code> "porque muda todo trimestre". São argumentos de naturezas diferentes, e a reunião os trata como se fossem um só. Que critério diz <strong>onde</strong> cortar, e como separar as forças que empurram para a separação das que mantêm as partes juntas? A Aula 18 responde.</p>
+<h2 id="leitura-complementar">Leitura complementar<a class="headerlink" href="#leitura-complementar" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 13 — Service-Based Architecture (a forma entre o monólito e os microsserviços, com poucos serviços de domínio).</li>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 17 — Microservices Architecture (granularidade e o custo da independência de dado).</li>
+<li>Ford, Neal; Parsons, Rebecca; Kua, Patrick; Sadalage, Pramod. <em>Building Evolutionary Architectures</em>. 2. ed. Cap. 5 — Evolutionary Architecture Topologies (seção "Architectural Quanta and Granularity": <em>architectural quantum</em>, acoplamento estático e dinâmico).</li>
+<li>Richards, Mark; Ford, Neal. <em>Fundamentals of Software Architecture</em>. Cap. 7 — Scope of Architecture Characteristics (a primeira definição de <em>quantum</em>, em termos de conascência síncrona).</li>
+<li>Newman, Sam. <em>Building Microservices</em>. 2. ed. Cap. 1 — What Are Microservices? (independência de <em>deploy</em>, dado próprio, o tamanho como aspecto secundário e o monólito distribuído).</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>RICHARDS, Mark; FORD, Neal. <em>Fundamentals of Software Architecture: An Engineering Approach</em>. O'Reilly, 2020.</li>
+<li>FORD, Neal; PARSONS, Rebecca; KUA, Patrick; SADALAGE, Pramod. <em>Building Evolutionary Architectures</em>. 2. ed. O'Reilly, 2023.</li>
+<li>NEWMAN, Sam. <em>Building Microservices</em>. 2. ed. O'Reilly, 2021.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../aula16-falacias-da-computacao-distribuida/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Aula 16 — Falácias da computação distribuída">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Aula 16 — Falácias da computação distribuída
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../projeto-extrair-ou-nao-extrair/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Projeto das Aulas 16 e 17 — Extrair ou não extrair">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Projeto das Aulas 16 e 17 — Extrair ou não extrair
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Eduardo da Silva
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/eduardo-da-silva" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.code.select","content.tooltips","navigation.expand","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.share","search.suggest","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copiado para área de transferência","clipboard.copy":"Copiar para área de transferência","clipboard.error":"Could not copy to clipboard","search.result.more.one":"mais 1 nesta página","search.result.more.other":"# mais nesta página","search.result.none":"Nenhum documento encontrado","search.result.one":"1 documento encontrado","search.result.other":"# documentos encontrados","search.result.placeholder":"Digite para iniciar a busca","search.result.term.missing":"Ausente","select.version":"Selecione a versão"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
