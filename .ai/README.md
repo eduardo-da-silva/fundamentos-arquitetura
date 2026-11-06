@@ -80,7 +80,7 @@ Aplicação no Orion Evolution Lab
 Ponte para a próxima aula
 ```
 
-Nunca abrir uma aula pela definição do conceito. O conceito aparece porque o sintoma exigiu.
+Nunca abrir uma aula pela definição do conceito novo. O conceito aparece porque o sintoma exigiu. Capítulos do Módulo 3 em diante abrem com revisão do que já foi visto, depois o caso e um subdiagrama (`rules/02-lesson-structure.md`).
 
 ---
 
@@ -136,7 +136,7 @@ Todos os treze arquivos existem. Se um caminho citado aqui não existir em disco
 
 - **Módulo 1** — 8 aulas escritas e publicadas no `nav`. Passaram por análise crítica; as pendências estão em `rules/12-backlog.md`.
 - **Módulo 2** — aulas 9 a 14 escritas, com slides e exercícios de fixação. Falta a Aula 15 (oficina).
-- **Módulo 3** — em produção. Roadmap detalhado em `rules/08-lesson-roadmap.md`; aula 16 escrita, com slides e checkpoint `07-remoto`.
+- **Módulo 3** — em produção. Roadmap detalhado em `rules/08-lesson-roadmap.md`; aulas 16 a 22 escritas, com slides; checkpoints `07-remoto` (16 a 18), `08-dados` (19) e `09-saga` (20 e 21). Falta o trabalho do aluno das Aulas 18 a 21.
 - **Módulo 4** — não escrito. Escopo definido em `rules/07-curriculum.md`.
 - **Mini-Orion** — existe, com os checkpoints `01` a `07`, em repositório à parte (ver acima).
 - **Orion Evolution Lab** — formatos e critérios em `docs/orion/index.md`; o conteúdo dos grupos nunca é publicado aqui.

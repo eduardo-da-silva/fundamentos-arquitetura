@@ -41,7 +41,7 @@ A forma do meio é a menos discutida e a mais instrutiva para o Orion, porque a 
 
 O **monólito modular** otimiza simplicidade operacional: um *deploy*, uma transação local entre cobrar e emitir, um teste que roda sem rede. Cobra o que a Aula 9 nomeou: tudo sobe junto, com uma cadência e uma escala só.
 
-O ***service-based*** otimiza autonomia de deploy por domínio sem multiplicar demais os artefatos. Como cada serviço é grosso, a maior parte das chamadas continua dentro dele, e a transação local sobrevive dentro de cada domínio. Cobra a rede em todas as arestas que cruzam domínios e, se o banco for compartilhado, um acoplamento por dado que a Aula 20 vai examinar.
+O ***service-based*** otimiza autonomia de deploy por domínio sem multiplicar demais os artefatos. Como cada serviço é grosso, a maior parte das chamadas continua dentro dele, e a transação local sobrevive dentro de cada domínio. Cobra a rede em todas as arestas que cruzam domínios e, se o banco for compartilhado, um acoplamento por dado que a Aula 19 vai examinar.
 
 Uma ressalva sobre o estilo, na descrição do livro. Richards e Ford esperam que os serviços de domínio **não se chamem entre si**: a interface fala com cada um, e o que os serviços têm em comum é o banco e as bibliotecas, não chamadas. O exemplo deles é o fechamento de um pedido, em que cobrar, gerar o número do pedido e baixar o estoque acontecem **dentro de um serviço só**, com *rollback* local se o cartão estiver vencido. Transformar cada aresta entre módulos em chamada de rede, como fazemos na linha "os 8 módulos viram 8 serviços" do quadro acima, é a leitura mais cara do estilo, e não a que o livro recomenda.
 
@@ -160,7 +160,7 @@ Esse é o *service-based* de domínios, a forma do meio do espectro. No Orion, o
 
 **E. Se quase todos os componentes têm motivadores próprios, com dado separável, e o time aguenta a operação, vá aos microsserviços.** É o degrau mais caro: 5 chamadas remotas, 9,6% de falha, 259 minutos por mês, e dado separado em quase todo fluxo. Newman recomenda chegar aqui de forma gradual, quando cada passo anterior deixou de bastar.
 
-Uma verificação vale para todas as opções, e vem do quantum. Antes de concluir que uma separação trouxe independência, conte os quanta. Com todas as chamadas síncronas, as cinco formas têm **um quantum só**. Trocando por fila as quatro arestas que chegam em `Notificacoes`, só os microsserviços chegam a dois, porque são os únicos com um banco por serviço. O *service-based*, nas duas versões, segue com um quantum, porque os serviços compartilham o banco (observação do Cap. 13 do livro). Dividir o banco é a pergunta da Aula 20.
+Uma verificação vale para todas as opções, e vem do quantum. Antes de concluir que uma separação trouxe independência, conte os quanta. Com todas as chamadas síncronas, as cinco formas têm **um quantum só**. Trocando por fila as quatro arestas que chegam em `Notificacoes`, só os microsserviços chegam a dois, porque são os únicos com um banco por serviço. O *service-based*, nas duas versões, segue com um quantum, porque os serviços compartilham o banco (observação do Cap. 13 do livro). Dividir o banco é a pergunta da Aula 19.
 
 Para o Orion hoje, o guia dá uma resposta curta: só `Pagamentos` tem um motivador candidato (a cadência de release, Aula 14), e o gatilho ainda não disparou. Isso aponta para A agora e, se disparar, para B ou C, dependendo de o motivador ser a conciliação, que sai sem dor, ou a cobrança, que carrega a transação. A decisão está registrada na seção seguinte.
 
@@ -170,7 +170,7 @@ A conta é o pior caso e depende de hipóteses. Para trocar cada parte por um n�
 
 - o **número de artefatos, de arestas remotas e de chamadas diretas** é lido da estrutura. As arestas saem do próprio código, por ferramentas que extraem os `import`s, como o `pydeps` e o `import-linter` da Aula 7. Se uma chamada é síncrona ou assíncrona também se lê do código, olhando se quem chama espera o retorno;
 - a **taxa de falha** de cada aresta remota só existe depois de a aresta existir: contagem de *timeouts* por destino, como na Aula 16;
-- a **disponibilidade do fechamento** mede-se na borda, como a razão entre fechamentos concluídos e tentados. É o número que o cliente sente, e pode divergir do produto das disponibilidades dos serviços, porque falhas reais são correlacionadas e mascaradas por *fallbacks*. Se `Promocoes` pudesse falhar sem derrubar o fechamento (o cliente compra sem desconto), ela sairia da série e o custo cairia: isso é uma decisão de desenho, e um dos modos de reduzir o preço de qualquer forma distribuída. A Aula 23 trata de como enxergar o caminho de um fechamento de ponta a ponta.
+- a **disponibilidade do fechamento** mede-se na borda, como a razão entre fechamentos concluídos e tentados. É o número que o cliente sente, e pode divergir do produto das disponibilidades dos serviços, porque falhas reais são correlacionadas e mascaradas por *fallbacks*. Se `Promocoes` pudesse falhar sem derrubar o fechamento (o cliente compra sem desconto), ela sairia da série e o custo cairia: isso é uma decisão de desenho, e um dos modos de reduzir o preço de qualquer forma distribuída. A Aula 21 trata de como enxergar o caminho de um fechamento de ponta a ponta.
 
 ## Decisão sobre o Orion: a forma do *deployable*
 

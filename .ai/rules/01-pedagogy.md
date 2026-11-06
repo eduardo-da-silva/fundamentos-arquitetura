@@ -12,7 +12,7 @@ Sintoma → Diagnóstico → Alternativas → Trade-off → Decisão → Evidên
 
 A aula abre com algo observável no Orion. Um incidente, uma reclamação, um prazo que estourou, uma métrica que piorou.
 
-Não abre com definição. Não abre com "nesta aula estudaremos acoplamento".
+Não abre com definição. Não abre com "nesta aula estudaremos acoplamento". A abertura pode começar por uma revisão curta dos conceitos já dados (ver `02-lesson-structure.md`, "Abertura de capítulo"), desde que o sintoma venha antes de qualquer conceito novo.
 
 Ruim:
 

@@ -24,6 +24,19 @@ Quando `05-domain.md` fixa um valor, a aula o apresenta na primeira vez em que e
 
 ---
 
+## Abertura de capítulo (Módulo 3 em diante)
+
+O material é um livro-texto, e um capítulo que depende dos anteriores abre **relembrando-os**. A abertura tem quatro movimentos, nesta ordem:
+
+1. **Revisão de conceitos**, em prosa, sem Orion: as ideias das aulas anteriores de que o capítulo depende, em um parágrafo cada, com a aula de origem entre parênteses. Não é resumo do sumário; só entra o que o capítulo vai usar.
+2. **O caso**: a situação do Orion que faz a pergunta do capítulo aparecer, com o sintoma (ver `01-pedagogy.md`).
+3. **Subdiagrama**: os componentes do caso e suas dependências, extraídos do grafo oficial, para o leitor ver onde estão no sistema. Declara o sentido da seta, o que foi omitido e respeita o limite de sete nós.
+4. **O conceito novo**, que agora responde a uma pergunta que o leitor já tem.
+
+Isso não revoga o sintoma antes do conceito: o sintoma continua vindo antes da definição. A revisão só lembra o que já foi dado.
+
+---
+
 ## Seções obrigatórias
 
 Toda aula precisa ter estas seis coisas. **Os títulos não precisam ser os mesmos entre aulas** — a função é que é obrigatória.

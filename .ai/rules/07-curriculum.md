@@ -12,11 +12,11 @@ Duas aulas por semana. Total de 36 encontros.
 |---|---|---|---|
 | 1 | 1–4 | 8 | Fundamentos Arquiteturais |
 | 2 | 5–8 | 7 | Arquiteturas Monolíticas |
-| 3 | 9–13 | 9 | Arquiteturas Distribuídas |
+| 3 | 9–13 | 7 | Arquiteturas Distribuídas |
 | 4 | 14–17 | 8 | Eventos e Arquitetura Evolutiva |
 | — | 18 | 2 | Apresentação final do Orion Evolution Lab e fechamento |
 
-*O Módulo 3 segue a mesma conta: oito aulas conceituais (16–23) em um encontro cada e a oficina (aula 24) nos dois encontros da semana 13. As dez aulas anunciadas antes não cabiam: com oficina dupla, dez encontros comportam nove aulas. Decisão do professor de 2026-10-15; o Módulo 4 passa a numerar a partir da aula 25.*
+*O Módulo 3 tem 7 aulas e ocupa 8 dos 10 encontros das semanas 9–13: seis aulas conceituais (16–21) em um encontro cada e a oficina (aula 22) nos dois encontros da semana 13. Decisão do professor de 2026-11-03: as nove aulas anteriores (16–24) foram reduzidas a sete, fundindo granularidade com contratos (nova 18) e transação distribuída com saga (nova 20). Os dois encontros que sobram ficam sem aula nova (semana 12), com uso a definir pelo professor, por exemplo revisão ou acompanhamento do Evolution Lab. O Módulo 4 passa a numerar a partir da aula 23.*
 
 *O Módulo 2 tem 7 aulas e ocupa os 8 encontros das semanas 5–8: seis aulas conceituais (9–14) em um encontro cada e a oficina (aula 15) nos dois encontros da semana 8. A fusão das duas aulas de camadas é o que faz a oficina dupla caber — com 8 aulas e oficina dupla não cabia, e é essa a inconsistência que o Módulo 1 ainda carrega. Nada é transferido para outro módulo.*
 
@@ -115,19 +115,17 @@ O módulo começa onde o Módulo 2 parou: a Aula 14 registrou `Pagamentos` como 
 |---|---|
 | 16 | Falácias da computação distribuída |
 | 17 | Do *service-based* aos microsserviços |
-| 18 | Granularidade: o que desintegra e o que integra |
-| 19 | Contratos entre serviços |
-| 20 | Dados: de quem é a tabela |
-| 21 | Transação distribuída e consistência |
-| 22 | Saga orquestrada |
-| 23 | O custo real: operação, observabilidade e times |
-| 24 | Oficina: o que extrair primeiro (dois encontros da semana 13) |
+| 18 | Granularidade |
+| 19 | Propriedade do dado e acesso entre serviços |
+| 20 | Consistência e saga: desfazer o que já foi feito |
+| 21 | O custo real: operação, observabilidade e times |
+| 22 | Oficina: o que extrair primeiro (dois encontros da semana 13) |
 
 Aplicação no Orion: decidir o que extrair primeiro, e defender a decisão contra a alternativa de não extrair nada.
 
 **Por que a rede é simulada.** O Mini-Orion não tem I/O real nem concorrência real (`05-domain.md`). Distribuição, porém, é sobre rede. A saída é um transporte falso, em processo, que injeta latência, timeout e falha parcial de forma determinística (semente fixa). O aluno vê a falha acontecer e o teste a reproduz sempre. A exceção é declarada em `06-code-style.md` e vale só para os checkpoints do Módulo 3.
 
-**Por que a coreografia fica no Módulo 4.** A Aula 22 trata só da saga orquestrada. Coreografia e orquestração como par de alternativas pertencem a eventos, e adiantá-las aqui criaria duas versões do mesmo argumento.
+**Por que a coreografia fica no Módulo 4.** A Aula 20 trata só da saga orquestrada. Coreografia e orquestração como par de alternativas pertencem a eventos, e adiantá-las aqui criaria duas versões do mesmo argumento.
 
 **Por que o código ganha subseção própria.** Neste módulo cada aula fecha com "Na prática: Python", dentro da decisão sobre o Orion: o recorte real do checkpoint e o teste que serve de evidência. O conceito é o centro da aula; o código mostra que ele se sustenta quando executado.
 

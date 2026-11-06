@@ -114,7 +114,7 @@ Dentro de um processo está: é o mesmo programa. Na rede, serviços sobem, caem
 
 !!! tip "Consequência para o projeto"
 
-    O chamador deve conhecer um nome lógico, não um endereço, e tolerar a ausência do destino. Descoberta de serviço e implantação gradual são assuntos de operação, tratados na Aula 23.
+    O chamador deve conhecer um nome lógico, não um endereço, e tolerar a ausência do destino. Descoberta de serviço e implantação gradual são assuntos de operação, tratados na Aula 21.
 
 ### 6. Existe um único administrador
 
@@ -124,7 +124,7 @@ Dentro de um artefato é verdade: os dois componentes saem na mesma entrega. Na 
 
 !!! tip "Consequência para o projeto"
 
-    O que protege os dois lados é um contrato que continue válido enquanto as versões se alternam. É o tema central da Aula 19.
+    O que protege os dois lados é um contrato que continue válido enquanto as versões se alternam. É um dos temas centrais da Aula 18.
 
 ### 7. O custo de transporte é zero
 
@@ -134,7 +134,7 @@ Na rede o objeto não viaja: seus dados precisam ser escritos em um formato, tra
 
 !!! tip "Consequência para o projeto"
 
-    O formato das mensagens é uma interface pública e merece o cuidado de uma. A Aula 19 trata do que ele cobra de quem o muda.
+    O formato das mensagens é uma interface pública e merece o cuidado de uma. A Aula 18 trata do que ele cobra de quem o muda.
 
 ### 8. A rede é homogênea
 
@@ -210,7 +210,7 @@ Se a simulação não mede, o que mediria? A resposta depende do ponto da histó
 | 50% das falhas perdem a resposta | cruzar o registro de `compra` ("estourei o tempo na chamada X") com o de `pagamentos` ("executei a chamada X") |
 | cobrança duplicada | **conciliação**: comparar o extrato do provedor com os pedidos emitidos e contar cobranças sem par |
 
-Duas linhas dessa tabela merecem atenção. A parcela de respostas perdidas é a medida mais difícil: sem um identificador comum nos dois lados, não há como saber, para cada *timeout*, se o servidor chegou a executar. A chave de idempotência já serve a esse papel, e a Aula 23 trata disso como correlação. E a cobrança duplicada não aparece em nenhum relatório de latência: só a conciliação a enxerga, e é por isso que o cliente costuma ser o primeiro a avisar.
+Duas linhas dessa tabela merecem atenção. A parcela de respostas perdidas é a medida mais difícil: sem um identificador comum nos dois lados, não há como saber, para cada *timeout*, se o servidor chegou a executar. A chave de idempotência já serve a esse papel, e a Aula 21 trata disso como correlação. E a cobrança duplicada não aparece em nenhum relatório de latência: só a conciliação a enxerga, e é por isso que o cliente costuma ser o primeiro a avisar.
 
 Daí a razão de o ensaio vir antes da extração. Ele não substitui a medição. Ele diz o que medir e quais defesas desenhar antes que a primeira cobrança duplicada custe dinheiro a um cliente de verdade. E o ADR desta aula, mais abaixo, é escrito para que a medição possa derrubá-lo.
 
@@ -316,7 +316,7 @@ Uma variante testada: com três tentativas e chave, o ensaio fecha com 1 fechame
 | **Decisão** | `ClientePagamentos` repete a cobrança uma vez (2 tentativas, 1 s cada). `compra` gera uma `ChaveIdempotencia` por fechamento, antes da primeira tentativa, e `pagamentos` guarda as chaves vistas. Esgotadas as tentativas, `fechar_pedido` devolve `cobranca_indeterminada`: não devolve `recusada` e não aciona o provedor de contingência. |
 | **Alternativas** | (a) Não repetir: simples, mas deixa 2,05% dos fechamentos sem resposta e 1,2% com o cliente cobrado sem pedido. (b) Repetir sem chave: pouco código, e 1,1% de clientes cobrados em dobro. (c) Três tentativas com chave: reduz os sem resposta a 1 em 2000, ao custo de consumir os 3 s do *timeout* total. |
 | **Consequências positivas** | Nenhuma cobrança duplicada nos 2000 fechamentos. Os fechamentos sem resposta caem de 41 para 2. |
-| **Consequências negativas** | `pagamentos` passa a guardar estado: a tabela de chaves cresce e precisa de prazo de expiração, que o Mini-Orion não implementa. A responsabilidade pela chave é de `compra`: um chamador que a esqueça reintroduz a duplicação sem erro nenhum. Os 2 fechamentos sem resposta continuam, com cliente possivelmente cobrado e sem pedido, e ficam sem tratamento até as Aulas 21 e 22. O pior fechamento passa de 1 s para 2 s. |
+| **Consequências negativas** | `pagamentos` passa a guardar estado: a tabela de chaves cresce e precisa de prazo de expiração, que o Mini-Orion não implementa. A responsabilidade pela chave é de `compra`: um chamador que a esqueça reintroduz a duplicação sem erro nenhum. Os 2 fechamentos sem resposta continuam, com cliente possivelmente cobrado e sem pedido, e ficam sem tratamento até a Aula 20. O pior fechamento passa de 1 s para 2 s. |
 | **Reversão** | Barata enquanto só `compra` consumir `pagamentos`: tirar a chave devolve a duplicação, e evitá-la exigiria desligar também a repetição, voltando à primeira linha da tabela. Cara depois que um segundo consumidor depender do comportamento idempotente. |
 | **Condição de falseamento** | Este ADR estaria errado se, com os parâmetros reais de campanha, houvesse cobrança duplicada mesmo com a chave (a chave não chega, ou expirou cedo), ou se os fechamentos sem resposta não ficassem pelo menos dez vezes abaixo dos da política sem repetição. |
 

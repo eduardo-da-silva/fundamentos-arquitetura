@@ -240,6 +240,22 @@ Derivados, que as aulas podem usar sem recalcular de outro jeito:
 
 ---
 
+### Extensão para a saga (Aulas 20 e 21)
+
+Parâmetros adicionais, da mesma natureza dos acima: hipóteses de enunciado, não medições.
+
+| Parâmetro | Valor |
+|---|---|
+| Intervalo do job de reconciliação | 15 minutos (900 s) |
+| Tentativas por chamada de estorno ou consulta | 2, como na cobrança |
+
+Derivados que as aulas podem usar:
+
+- **Janela de inconsistência.** Com compensação imediata, o cliente fica cobrado e sem pedido pelo tempo de uma chamada de estorno (centésimos de segundo no simulador, no máximo o timeout de 3 s do fechamento). Quando só a reconciliação corrige, a janela é da ordem do intervalo do job: cerca de 900 s.
+- **Cobrança sem pedido no ensaio da Aula 16.** 2 em 2000 fechamentos (0,1%) em campanha, com semente 42.
+
+Sem `05-domain.md` ter número de times, de custo de infraestrutura ou de volume de registro, as aulas marcam esses itens como "não medido".
+
 ## Recorte legado (para a aula de acoplamento)
 
 Antes da separação atual, `Checkout`, `Promocoes` e parte de `Pedidos` viviam em um único componente chamado `CoreService`, que tinha ciclo com `Promocoes`:

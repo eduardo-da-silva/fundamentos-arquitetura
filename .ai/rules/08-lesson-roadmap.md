@@ -202,7 +202,7 @@ A coluna **Artefato** é a mais importante: é o que torna verificável a promes
 
 ## Módulo 3
 
-Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na prática: Python"**: o recorte real do checkpoint e o teste que serve de evidência. Os checkpoints são `07-remoto/` (Aulas 16–19), `08-dados/` (20) e `09-saga/` (21–23), cada um partindo do anterior, e todos partem de `06-microkernel/`. A rede é simulada (`06-code-style.md`) e os parâmetros vêm de `05-domain.md`.
+Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na prática: Python"**: o recorte real do checkpoint e o teste que serve de evidência. Os checkpoints são `07-remoto/` (Aulas 16–18), `08-dados/` (19) e `09-saga/` (20–21), cada um partindo do anterior, e todos partem de `06-microkernel/`. A rede é simulada (`06-code-style.md`) e os parâmetros vêm de `05-domain.md`.
 
 ### Aula 16 — Falácias da computação distribuída
 
@@ -224,57 +224,45 @@ Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na 
 - **Avaliação:** o ADR compara pelo menos dois estilos em duas características priorizadas na Aula 3 do recorte. "Microsserviços escalam melhor" sem a característica nomeada não conta.
 - **Ponte:** *service-based* ou microsserviços é pergunta de tamanho. Que critério diz onde cortar?
 
-### Aula 18 — Granularidade: o que desintegra e o que integra
+### Aula 18 — Granularidade
 
-- **Sintoma:** um time quer separar `Catalogo` porque ele tem quatro dependentes. Outro quer separar `Promocoes` porque ele muda todo trimestre. Os dois argumentos são de naturezas diferentes, e a reunião os trata como um só.
-- **Conceitos:** forças que desintegram (escopo da função, volatilidade, escala, tolerância a falha, segurança, extensibilidade) e forças que integram (transação, fluxo entre serviços, dado compartilhado); $C_a$, $C_e$ e connascência como evidência de cada força; o que a métrica não vê.
+- **Sintoma:** um time quer separar `Catalogo` porque ele tem quatro dependentes. Outro quer separar `Promocoes` porque ele muda todo trimestre. Os dois argumentos são de naturezas diferentes, e a reunião os trata como um só. Decidido o corte, `pagamentos` publica uma versão que acrescenta um resultado novo de cobrança, `EM_ANALISE`, e `compra`, que não conhece o valor, o trata como cobrança aprovada.
+- **Conceitos:** forças que desintegram (escopo da função, volatilidade, escala, tolerância a falha, segurança, extensibilidade) e forças que integram (transação, fluxo entre serviços, código compartilhado e relações entre dados); $C_a$, $C_e$ e connascência como evidência de cada força; o que a métrica não vê; contrato remoto como API pública; mudança aditiva e mudança que quebra; leitor tolerante e seus limites; teste de contrato guiado pelo consumidor; connascência de tipo e de significado atravessando a rede (força, localidade, grau).
 - **Artefato:**
-    - *Mini-Orion:* `07-remoto/setup.cfg` ganha um contrato que impede `compra` de importar `pagamentos` por qualquer caminho que não seja o cliente remoto. A fronteira nova nasce verificada.
-    - *Evolution Lab:* matriz módulo × força, com a ordenação dos candidatos e a evidência de cada célula.
-- **Avaliação:** cada força citada aponta para aresta, métrica ou incidente. A matriz contém pelo menos uma força integradora que contraria o candidato preferido do grupo.
-- **Ponte:** decidimos onde cortar. Do outro lado do corte o contrato muda de dono. Quem manda quando um campo muda?
+    - *Mini-Orion:* `07-remoto/setup.cfg` ganha um contrato que impede `compra` de importar `pagamentos` por qualquer caminho que não seja o cliente remoto. O contrato é serializado (v1 e v2), com um teste de contrato do lado do consumidor que falha quando o produtor quebra o acordo e um leitor tolerante que trata o valor desconhecido como falha, não como aprovação.
+    - *Evolution Lab:* matriz módulo × força, com a ordenação dos candidatos e a evidência de cada célula; contrato de uma aresta remota do recorte, com a regra de evolução (o que pode mudar sem aviso e o que exige versão).
+- **Avaliação:** cada força citada aponta para aresta, métrica ou incidente, e a matriz contém pelo menos uma força integradora que contraria o candidato preferido do grupo. O teste de contrato falha de verdade quando o produtor remove ou renomeia um campo, e a classificação de connascência usa os três eixos.
+- **Ponte:** decidimos onde cortar e o que cruza o corte. E o que fica do outro lado, os dados? De quem é a tabela?
 
-### Aula 19 — Contratos entre serviços
+!!! note "Origem"
 
-- **Sintoma:** `pagamentos` publica uma versão que acrescenta um resultado novo de cobrança, `EM_ANALISE`. `compra`, que não conhece o valor, o trata como cobrança aprovada.
-- **Conceitos:** contrato remoto como API pública; mudança aditiva e mudança que quebra; leitor tolerante e seus limites; teste de contrato guiado pelo consumidor; connascência de tipo e de significado atravessando a rede (força, localidade, grau); deploys coordenados.
-- **Artefato:**
-    - *Mini-Orion:* `07-remoto/` serializa o contrato (v1 e v2) e traz um teste de contrato do lado do consumidor, que falha quando o produtor quebra o acordo, e um leitor tolerante que trata o valor desconhecido como falha, não como aprovação.
-    - *Evolution Lab:* contrato de uma aresta remota do recorte, com a regra de evolução (o que pode mudar sem aviso e o que exige versão).
-- **Avaliação:** o teste de contrato falha de verdade quando o produtor remove ou renomeia um campo. A classificação de connascência usa os três eixos.
-- **Ponte:** o contrato descreve o que atravessa a rede. E o que fica do outro lado, os dados? De quem é a tabela?
+    Funde as antigas Aulas 18 (granularidade) e 19 (contratos), decisão do professor de 2026-11-03. A matriz de forças fica enxuta porque a Aula 17 já cobre espectro e *quantum*; o peso da aula está no corte e no teste de contrato.
 
-### Aula 20 — Dados: de quem é a tabela
+### Aula 19 — Propriedade do dado e acesso entre serviços
 
 - **Sintoma:** a conciliação de `Pagamentos` casa transações com `Pedidos` por um *join*. Depois da extração, o *join* deixa de existir, e o relatório de conciliação do mês fecha com diferença.
-- **Conceitos:** banco compartilhado contra dado por serviço; dono do dado; composição de consulta na borda contra cópia local; duplicação intencional e seu custo; acoplamento por esquema; o que se perde (*join*, integridade referencial, transação).
+- **Conceitos:** banco compartilhado contra dado por serviço; dono do dado e os três cenários de propriedade (única, comum, conjunta); composição de consulta na borda (*Interservice Communication*) contra cópia local (*Column Schema Replication*); duplicação intencional e seu custo; acoplamento por esquema; o que se perde (*join*, integridade referencial, transação).
 - **Artefato:**
     - *Mini-Orion:* `08-dados/`. `pagamentos` com repositório próprio. A conciliação passa a usar a cópia local dos campos de que precisa, gravada no momento da cobrança, e roda sem importar `compra`.
     - *Evolution Lab:* tabela de dados do recorte: dono, quem lê, como lê depois do corte.
 - **Avaliação:** o teste de conciliação roda sem `compra`, e um contrato do `import-linter` garante isso. A tabela do grupo nomeia pelo menos um *join* que deixa de existir e o que o substitui.
-- **Ponte:** com o dado separado, cobrar e emitir já não cabem numa transação. O que existe entre os dois passos?
+- **Ponte:** com o dado separado, cobrar e emitir já não cabem numa transação. O que existe entre os dois passos, e como desfazer o que já foi feito?
 
-### Aula 21 — Transação distribuída e consistência
+### Aula 20 — Consistência e saga: desfazer o que já foi feito
 
-- **Sintoma:** a cobrança é aprovada e a emissão do pedido falha, ou o timeout acontece depois de a cobrança ter ocorrido. O cliente foi cobrado e não tem pedido.
-- **Conceitos:** ACID local; *two-phase commit* (coordenador, bloqueio, por que raramente se usa entre serviços); consistência forte e eventual; janela de inconsistência, já nomeada no Módulo 1; estado ambíguo e reconciliação; CAP e PACELC só como vocabulário de trade-off.
+- **Sintoma:** a cobrança é aprovada e a emissão do pedido falha, ou o timeout acontece depois de a cobrança ter ocorrido. O cliente foi cobrado e não tem pedido. Hoje alguém do suporte estorna à mão, quando percebe.
+- **Conceitos:** ACID local; *two-phase commit* (coordenador, bloqueio, por que raramente se usa entre serviços), tratado como alternativa descartada; consistência forte e eventual; janela de inconsistência, já nomeada no Módulo 1; estado ambíguo e reconciliação; CAP e PACELC só como vocabulário de trade-off; saga e transação compensável; compensação não é *rollback*; passo pivô e passo repetível; idempotência de cada passo; a compensação que também falha; orquestração como estado explícito (coreografia só nomeada, pertence ao Módulo 4).
 - **Artefato:**
-    - *Mini-Orion:* `09-saga/`. A simulação reproduz o "cobrou e não emitiu", e um teste mede a janela até a reconciliação corrigir.
-    - *Evolution Lab:* para a operação mais crítica do recorte, escolha entre consistência forte e eventual, com a janela tolerada em segundos e a consequência de negócio.
-- **Avaliação:** a janela de inconsistência aparece em tempo e em consequência de negócio. "Consistência eventual" sem janela não conta.
-- **Ponte:** *two-phase commit* bloqueia, e a eventual deixa o estado errado por um tempo. Existe uma forma de desfazer o que já foi feito?
-
-### Aula 22 — Saga orquestrada
-
-- **Sintoma:** quando a emissão falha depois da cobrança, alguém do suporte estorna à mão, quando percebe.
-- **Conceitos:** saga; transação compensável; compensação não é *rollback*; passo pivô e passo repetível; idempotência de cada passo; a compensação que também falha; orquestração como estado explícito (coreografia só nomeada, pertence ao Módulo 4).
-- **Artefato:**
-    - *Mini-Orion:* `09-saga/` com um orquestrador do fechamento (cobrar, emitir, notificar), a compensação (estornar) e uma matriz de testes que injeta falha em cada passo.
-    - *Evolution Lab:* a saga da operação escolhida na Aula 21, em tabela: passo, compensação, o que o cliente enxerga no intervalo.
-- **Avaliação:** a matriz de falhas cobre cada passo, e a compensação que pode falhar tem tratamento nomeado.
+    - *Mini-Orion:* `09-saga/`. A simulação reproduz o "cobrou e não emitiu" e um teste mede a janela até a reconciliação corrigir. Um orquestrador do fechamento (cobrar, emitir, notificar) com a compensação (estornar) e uma matriz de testes que injeta falha em cada passo.
+    - *Evolution Lab:* para a operação mais crítica do recorte, escolha entre consistência forte e eventual, com a janela tolerada em segundos e a consequência de negócio; e a saga dessa operação em tabela: passo, compensação, o que o cliente enxerga no intervalo.
+- **Avaliação:** a janela de inconsistência aparece em tempo e em consequência de negócio ("consistência eventual" sem janela não conta). A matriz de falhas cobre cada passo, e a compensação que pode falhar tem tratamento nomeado.
 - **Ponte:** já sabemos cortar, chamar, versionar, separar o dado e compensar. Quanto custa operar tudo isso?
 
-### Aula 23 — O custo real: operação, observabilidade e times
+!!! note "Origem"
+
+    Funde as antigas Aulas 21 (transação distribuída) e 22 (saga orquestrada), decisão do professor de 2026-11-03. O problema e a solução formam um arco só e compartilham o checkpoint. *Two-phase commit*, CAP e PACELC ficam reduzidos a vocabulário e alternativa descartada.
+
+### Aula 21 — O custo real: operação, observabilidade e times
 
 - **Sintoma:** depois da campanha, clientes reclamam de cobrança sem pedido e ninguém diz em que serviço o fechamento parou: os registros estão em dois lugares, sem identificador em comum.
 - **Conceitos:** observabilidade (registro, métrica, rastro); identificador de correlação; disponibilidade composta (derivada em `05-domain.md`); custo de operar mais um artefato; Lei de Conway e autonomia de time; o balanço final de ganho e custo.
@@ -284,7 +272,7 @@ Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na 
 - **Avaliação:** todo item da conta tem número ou a marca "não medido" com a forma de medir. O balanço não esconde custo.
 - **Ponte:** temos a conta inteira. Falta decidir sob orçamento.
 
-### Aula 24 — Oficina: o que extrair primeiro
+### Aula 22 — Oficina: o que extrair primeiro
 
 - **Sintoma:** a diretoria aprovou "extrair com critério" e quer um plano: o que sai primeiro, o que fica, e quando parar.
 - **Conceitos:** nenhum novo. Integração de falácias, granularidade, contrato, dado, consistência, saga e custo.
@@ -302,7 +290,7 @@ Todas as aulas do módulo fecham a seção de decisão com uma subseção **"Na 
 
 ## Módulo 4
 
-Escopo em `07-curriculum.md`. Numeração a partir da aula 25. Detalhar aula a aula somente quando o módulo entrar em produção — roadmap escrito com antecedência demais envelhece antes de ser usado.
+Escopo em `07-curriculum.md`. Numeração a partir da aula 23. Detalhar aula a aula somente quando o módulo entrar em produção — roadmap escrito com antecedência demais envelhece antes de ser usado.
 
 Quando detalhar, manter as cinco colunas. A coluna **Artefato** é o que impede as trilhas de virarem promessa retórica de novo.
 

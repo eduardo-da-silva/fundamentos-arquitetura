@@ -134,4 +134,9 @@ nav:
     - Aula 16 — Falácias da computação distribuída: modulo3/aula16-falacias-da-computacao-distribuida.md
     - Aula 17 — Do service-based aos microsserviços: modulo3/aula17-service-based-e-microsservicos.md
     - Projeto das Aulas 16 e 17 — Extrair ou não extrair: modulo3/projeto-extrair-ou-nao-extrair.md
+    - Aula 18 — Granularidade: modulo3/aula18-granularidade.md
+    - Aula 19 — Propriedade do dado e acesso entre serviços: modulo3/aula19-propriedade-do-dado.md
+    - Aula 20 — Consistência e saga: modulo3/aula20-consistencia-e-saga.md
+    - Aula 21 — O custo real, operação, observabilidade e times: modulo3/aula21-custo-real-operacao-e-times.md
+    - Aula 22 — Oficina, o que extrair primeiro: modulo3/aula22-oficina-o-que-extrair-primeiro.md
   - Orion Evolution Lab: orion/index.md
