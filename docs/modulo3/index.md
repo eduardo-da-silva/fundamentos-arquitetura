@@ -16,9 +16,9 @@ Isso inverte o hábito comum. Quem vem de POO costuma tratar "serviço" como uma
 | 10 | **18** — Granularidade · **19** — Propriedade do dado e acesso entre serviços |
 | 11 | **20** — Consistência e saga: desfazer o que já foi feito · **21** — O custo real: operação, observabilidade e times |
 | 12 | Sem aula nova (revisão e acompanhamento dos projetos) |
-| 13 | **22** — Oficina: o que extrair primeiro (dois encontros) |
+| 13 | Encerramento do módulo (entrega e apresentação da lista final) |
 
-O módulo tem sete aulas: seis conceituais em um encontro cada e a oficina, que ocupa os dois encontros da semana 13. Os dois encontros restantes ficam livres para revisão.
+O módulo tem seis aulas conceituais, uma por encontro. Os encontros restantes ficam para revisão e para o encerramento do módulo.
 
 ## O percurso
 
@@ -32,7 +32,7 @@ flowchart LR
 
 O diagrama ordena as perguntas que uma extração obriga a responder, na sequência em que cada uma depende da anterior: não se versiona um contrato que ainda não existe, e não se compensa uma transação cujo dado ainda é compartilhado.
 
-O que ele **não** mostra: não é um roteiro de migração. Nenhum time extrai um serviço percorrendo as cinco etapas em ordem, e várias delas acontecem ao mesmo tempo. É a ordem em que o argumento se constrói, e a oficina da Aula 22 reordena tudo sob orçamento.
+O que ele **não** mostra: não é um roteiro de migração. Nenhum time extrai um serviço percorrendo as cinco etapas em ordem, e várias delas acontecem ao mesmo tempo. É a ordem em que o argumento se constrói.
 
 ## O Mini-Orion neste módulo
 
@@ -55,4 +55,5 @@ Trabalho das Aulas 16 e 17: [projeto "Extrair ou não extrair"](projeto-extrair-
 4. [Propriedade do dado e acesso entre serviços](aula19-propriedade-do-dado.md) — o que o corte faz com o *join*, o acoplamento por esquema, a cópia local e a pergunta que ela deixa sem resposta.
 5. [Consistência e saga: desfazer o que já foi feito](aula20-consistencia-e-saga.md) — transação local, *two-phase commit* descartado, janela de inconsistência, saga orquestrada com compensação e reconciliação.
 6. [O custo real: operação, observabilidade e times](aula21-custo-real-operacao-e-times.md) — o que significa operar, o identificador de correlação, a Lei de Conway e o balanço de ganho e custo, com número ou "não medido".
-7. [Oficina: o que extrair primeiro](aula22-oficina-o-que-extrair-primeiro.md) — a proposta de extração priorizada, o critério de parada e a defesa de "não extrair nada" como opção real.
+
+Trabalho de encerramento: [lista final dos Módulos 3 e 4](lista-final-modulos-3-e-4.md), individual ou em dupla, com exercícios sobre as Aulas 18 a 21, um ADR final e a pesquisa de um tema do Módulo 4.

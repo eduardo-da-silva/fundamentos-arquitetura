@@ -12,29 +12,88 @@ Ao fechar esta aula, conseguimos:
 - montar um balanço de ganho e custo de uma extração em que **todo item tem número ou a marca "não medido"** com a forma de medir;
 - rodar o Mini-Orion e reconstruir, a partir de dois registros, o caminho de um fechamento que falhou.
 
-## Cobrança sem pedido, e ninguém sabe onde parou
+## O que já sabemos
 
-Depois da campanha, o suporte recebe reclamações de clientes cobrados sem pedido. A Aula 20 deu ao fechamento a compensação e a reconciliação, e elas corrigem o que podem. Mas a pergunta que o time de plataforma recebe é outra: **em que passo e em que serviço aquele fechamento parou?** `Compra` tem seu registro. `Pagamentos` tem o dele. Cada um escreve uma linha por evento, com horário e mensagem. Nenhuma linha de um tem algo em comum com uma linha do outro. Para juntar a história de um cliente, alguém compara horários, valores e e-mails nos dois arquivos, e a campanha produziu milhares de linhas por minuto.
+Este capítulo parte de quatro ideias que as aulas anteriores deixaram assentadas. Os números do balanço do final vêm delas.
+
+A primeira é que **extrair um componente tem um custo que a conta da Aula 14 listou numa frase só**, "mais um artefato para operar", e que o gatilho de extração é um sinal medido, como a espera por *deploy* conjunto. Enquanto o gatilho não dispara, separar é rede sem ganho comprovado (Aulas 14 e 17).
+
+A segunda é que **a disponibilidade se multiplica quando as partes estão em série**. Dois artefatos de 99,9% de disponibilidade, um chamando o outro de forma síncrona, entregam cerca de 99,8% juntos, e a Aula 17 concluiu que a forma certa para o Orion é cortar pouco.
+
+A terceira é que **um campo novo e opcional numa mensagem é uma mudança aditiva**: o leitor tolerante o ignora, e quem ainda não o conhece continua funcionando (Aula 18).
+
+A quarta é que **a saga transforma a falha em registro**. O fechamento do Orion é um orquestrador: cobrar é compensável, emitir é o pivô, notificar é repetível, e a compensação que falha vira pendência para a reconciliação. A janela de inconsistência tem dois valores, cerca de 0,01 s quando o estorno responde e cerca de 900 s quando só a reconciliação corrige, o segundo ainda uma hipótese sobre o intervalo do job (Aula 20).
+
+O que essas ideias ainda não respondem é uma pergunta que vem depois da falha: **onde, exatamente, ela aconteceu**, e quanto custa ter pessoas e instrumentos capazes de responder.
+
+## O caso: cobrança sem pedido, e ninguém sabe onde parou
+
+Depois da campanha, o suporte recebe reclamações de clientes cobrados sem pedido. A Aula 20 deu ao fechamento a compensação e a reconciliação, e elas corrigem o que podem. Mas a pergunta que o time de plataforma recebe é outra: **em que passo e em que serviço aquele fechamento parou?**
+
+O diagrama mostra o que existe hoje para respondê-la.
+
+```mermaid
+flowchart LR
+    Checkout --> Pagamentos
+    Checkout --> RegCompra[(registro de compra)]
+    Pagamentos --> RegPag[(registro de pagamentos)]
+```
+
+Leitura das setas: `A --> B` significa que A depende de B, e que `Checkout` e `Pagamentos` escrevem cada um no seu registro. O diagrama omite `Pedidos` e `Notificacoes`, que também escrevem registros, e mostra uma ideia só: os dois registros são separados e nada liga uma linha de um a uma linha do outro.
+
+`Checkout` (o módulo `compra`, no Mini-Orion) tem o seu registro. `Pagamentos` tem o dele. Cada um escreve uma linha por evento, com horário e mensagem. Nenhuma linha de um tem algo em comum com uma linha do outro. Para juntar a história de um cliente, alguém compara horários, valores e e-mails nos dois arquivos, e a campanha produziu milhares de linhas por minuto.
 
 Esta é a parte do custo da distribuição que o grafo não mostra e que o orçamento raramente considera: a **operação**. A conta da Aula 14 listou, entre os custos de extrair, "mais um artefato para operar". Esta aula olha para essa frase e a desdobra em itens que se possam contar.
 
 ## O que significa operar
 
-Um artefato implantável, antes de entregar valor, precisa de tudo o que o mantém no ar. Ele tem **um caminho de entrega** próprio (compilar, testar, publicar, subir), **monitoramento** (saber se está vivo e saudável), **alertas** (quem é avisado e de quê), **versões e contratos** a manter (a Aula 18), **dado** com cópia de segurança e migração (a Aula 19) e **alguém de plantão** quando algo cai de madrugada. Dentro de um monólito, tudo isso existe uma vez. Extrair um serviço cria uma segunda cópia de cada item.
+Um artefato implantável, antes de entregar valor, precisa de tudo o que o mantém no ar. Um cenário de fora mostra o tamanho disso. Uma agência de viagens online tem um sistema só, com um painel de saúde, um caminho de entrega e uma escala de plantão. Quando a equipe extrai o serviço de hotéis, cada um desses itens passa a existir duas vezes: o novo serviço tem o seu caminho de entrega, o seu painel, os seus alertas e o seu banco, e alguém precisa atender o plantão dele, que pode cair de madrugada por um motivo que o outro serviço não tem. O código dos hotéis não mudou de tamanho. O que cresceu foi o que o cerca.
 
-O custo cresce com o número de artefatos, e não com o número de linhas de código. Dez serviços pequenos têm dez caminhos de entrega, dez painéis e dez dados a salvar. Por isso a conclusão da Aula 17 (cortar pouco) é também uma conclusão sobre operação: cada artefato evitado é uma cópia a menos de tudo isso. O Orion, no entanto, **ainda não mediu** esse custo. Nem o tempo que o time gasta com cada item, nem o número de pessoas de plantão. A aula marca esses itens como "não medido" e diz como medi-los, em vez de inventar um número.
+A tabela lista os itens e o que cada um passa a exigir depois da extração.
+
+| Item | No sistema único | Com um artefato a mais |
+|---|---|---|
+| **Caminho de entrega** | compilar, testar, publicar e subir uma vez | uma segunda esteira, com os seus testes e a sua janela |
+| **Monitoramento e alertas** | um painel, um conjunto de limites | um segundo painel e a decisão de quem é avisado |
+| **Versões e contratos** | internos, verificados pelo compilador | contrato remoto a manter e a evoluir (Aula 18) |
+| **Dado** | um banco, uma cópia de segurança, uma migração | dois bancos, duas migrações, e a cópia a manter correta (Aula 19) |
+| **Plantão** | uma escala | uma escala a mais, ou a mesma escala com mais motivos para acordar |
+
+O custo de operar é de tempo da equipe (horas em cada item) e de pessoas (quem atende o plantão), e quem o paga é uma decisão de organização, que a seção sobre Conway retoma. Ele cresce com o número de artefatos, e não com o número de linhas de código. Dez serviços pequenos têm dez caminhos de entrega, dez painéis e dez dados a salvar. Por isso a conclusão da Aula 17 (cortar pouco) é também uma conclusão sobre operação: cada artefato evitado é uma cópia a menos de tudo isso. O Orion, no entanto, **ainda não mediu** esse custo. Nem o tempo que o time gasta com cada item, nem o número de pessoas de plantão. A aula marca esses itens como "não medido" e diz como medi-los, em vez de inventar um número.
 
 ## Ver o que acontece: monitoramento e observabilidade
 
 **Monitoramento** responde a perguntas que alguém já previu: a CPU passou de um limite? A fila está maior que o normal? É preciso decidir antes quais perguntas importam. **Observabilidade** é a propriedade de um sistema que permite entender o que ele está fazendo a partir do que ele emite para fora, inclusive para perguntas que ninguém previu. Newman a define nesses termos, e acrescenta um aviso: ela é uma propriedade, não uma lista de ferramentas; o foco deve estar em tornar o sistema compreensível, e não em instalar mais ferramentas.
 
-Três tipos de informação costumam sustentá-la. O **registro** (*log*) é uma linha por evento, com instante e mensagem: responde "o que aconteceu, em detalhe". A **métrica** é um número agregado ao longo do tempo (taxa de erro, latência no percentil 95): responde "quanto, e se está piorando". O **rastro** (*trace*) é a trilha de uma única requisição atravessando vários serviços: responde "por onde passou, quanto demorou em cada trecho". Newman nota que os três se sobrepõem (é possível guardar métricas em arquivo de registro, ou construir um rastro a partir de linhas de registro), e é isso que permite começar pequeno.
+Na agência, o monitoramento do serviço de hotéis dispara às três da manhã: a taxa de recusa passou do limite. Foi previsto, e o alerta cumpriu o papel. O que o alerta não diz é qual pacote ficou com voo e sem hotel, nem por quê, e é uma pergunta que ninguém programou. Responder a ela exige que o sistema tenha emitido informação suficiente para ser interrogado depois.
+
+Três tipos de informação costumam sustentar essa capacidade, e cada um responde a uma pergunta diferente.
+
+| Tipo | O que é | Responde | Na agência |
+|---|---|---|---|
+| **Registro** (*log*) | uma linha por evento, com instante e mensagem | o que aconteceu, em detalhe | "hotel recusou a reserva do pacote 7" |
+| **Métrica** | um número agregado ao longo do tempo | quanto, e se está piorando | taxa de recusa de hotéis, por hora |
+| **Rastro** (*trace*) | a trilha de uma requisição atravessando vários serviços | por onde passou e quanto demorou em cada trecho | o pacote 7: voo reservado, hotel recusado, voo cancelado |
+
+Newman nota que os três se sobrepõem (é possível guardar métricas em arquivo de registro, ou construir um rastro a partir de linhas de registro), e é isso que permite começar pequeno.
 
 ### O identificador de correlação
 
-Um **identificador de correlação** (*correlation ID*) é um valor gerado quando uma requisição entra no sistema e carregado em toda chamada que ela provoca. Cada serviço o grava em todas as linhas de registro que escreve por causa dela. Com ele, juntar os registros de serviços diferentes deixa de ser comparar horários e passa a ser uma busca por um valor.
+Um **identificador de correlação** (*correlation ID*) é um valor gerado quando uma requisição entra no sistema e carregado em toda chamada que ela provoca. Cada serviço o grava em todas as linhas de registro que escreve por causa dela. Na agência, o pacote 7 passaria a ter um código, e uma busca por esse código nos registros de voos e de hotéis devolveria a história inteira. Com ele, juntar os registros de serviços diferentes deixa de ser comparar horários e passa a ser uma busca por um valor.
 
-Três regras tornam o identificador útil. Ele **nasce na borda**, no começo do fluxo, e não em cada serviço (senão há um por serviço e nenhum em comum). Ele **viaja em toda chamada**, como campo da mensagem. E ele é **gravado em toda linha**. Esquecer qualquer um dos três faz o rastro ter buracos justamente onde a falha aconteceu.
+```mermaid
+sequenceDiagram
+    participant B as Borda (orquestrador)
+    participant V as Voos
+    participant H as Hoteis
+    Note over B: gera o identificador
+    B->>V: reservar voo [id]
+    Note over V: grava [id] em cada linha
+    B->>H: reservar hotel [id]
+    Note over H: grava [id] em cada linha
+```
+
+As setas são mensagens, e o `[id]` é o campo que viaja com cada uma. O diagrama mostra o caminho de ida e omite o que cada serviço faz com o pedido, para ficar com os três movimentos que tornam o identificador útil. Ele **nasce na borda**, no começo do fluxo, e não em cada serviço (senão há um por serviço e nenhum em comum). Ele **viaja em toda chamada**, como campo da mensagem. E ele é **gravado em toda linha**. Esquecer qualquer um dos três faz o rastro ter buracos justamente onde a falha aconteceu.
 
 A Aula 18 já deu a ferramenta que torna a propagação barata: um campo novo e opcional na mensagem é uma **mudança aditiva**, e um leitor tolerante o ignora. Um serviço que ainda não grava o identificador continua funcionando; apenas aparece como buraco no rastro. Newman recomenda introduzir o identificador cedo: ele não parece útil no começo, mas é caro de acrescentar depois.
 
@@ -48,9 +107,17 @@ Vale não prometer mais do que isso. A observabilidade não corta nenhum dos 43 
 
 ## Conway: quem é dono de quê
 
-A **Lei de Conway**, formulada por Melvin Conway em 1968, diz que as organizações que projetam sistemas produzem projetos que são cópias das suas estruturas de comunicação. O corolário prático é que a fronteira de um serviço tende a acompanhar a fronteira de um time. Se dois serviços pertencem ao mesmo time, a fronteira entre eles custa mais do que rende: a autonomia que ela promete é a de um time em relação a si mesmo. Se um serviço atravessa dois times, cada mudança vira uma negociação.
+A **Lei de Conway**, formulada por Melvin Conway em 1968, diz que as organizações que projetam sistemas produzem projetos que são cópias das suas estruturas de comunicação. O corolário prático é que a fronteira de um serviço tende a acompanhar a fronteira de um time.
 
-A consequência para o Orion é uma pergunta a fazer antes de extrair: **que time seria dono de `Pagamentos`**, e esse time tem plantão, ritmo de entrega e conhecimento de provedores para sustentá-lo? O Orion tem uma equipe de plataforma de porte médio. Se a mesma equipe fosse dona do monólito e de `Pagamentos`, a extração entregaria isolamento de processo e de entrega, e não autonomia de time, que é o motivador mais citado dos microsserviços e o que menos se aplica aqui. Existe também a manobra inversa (*Inverse Conway Maneuver*): reorganizar os times primeiro para favorecer a arquitetura desejada. Qualquer das duas leituras é defensável, e nenhuma é sem custo: a segunda custa uma reorganização que a diretoria precisa aprovar.
+Três arranjos na agência de viagens mostram o que isso implica. No primeiro, o serviço de hotéis e o de voos pertencem à mesma equipe. A fronteira entre eles tende a custar mais do que rende: a autonomia que ela promete é a de um time em relação a si mesmo, e cada contrato remoto é uma negociação da equipe consigo. No segundo, o serviço de hotéis é de uma equipe que fala com os fornecedores hoteleiros e entrega no ritmo deles, e o de voos é de outra, com outro ritmo e outros fornecedores. Aqui a fronteira acompanha a divisão do trabalho, e a autonomia que ela dá é real. Num terceiro arranjo, um serviço atravessa dois times, e cada mudança vira uma negociação entre eles.
+
+| Arranjo | O que a extração entrega | O que ela custa |
+|---|---|---|
+| Mesmo time dono dos dois lados | isolamento de processo e de entrega | operar dois artefatos sem ganho de autonomia |
+| Times diferentes, cada um dono de um lado | autonomia de entrega e de decisão | contrato remoto e coordenação entre times |
+| Um serviço dividido entre dois times | nenhuma clareza de dono | cada mudança é uma negociação |
+
+A consequência para o Orion é uma pergunta a fazer antes de extrair: **que time seria dono de `Pagamentos`**, e esse time tem plantão, ritmo de entrega e conhecimento de provedores para sustentá-lo? O Orion tem uma equipe de plataforma de porte médio. Se a mesma equipe fosse dona do monólito e de `Pagamentos`, estaríamos no primeiro arranjo: a extração entregaria isolamento de processo e de entrega, e não autonomia de time, que é um dos motivadores mais citados dos microsserviços e o que menos se aplica aqui. Existe também a **manobra inversa de Conway** (*Inverse Conway Maneuver*), expressão atribuída a Jonny Leroy, da ThoughtWorks: evoluir a estrutura dos times junto com a arquitetura, para favorecer a arquitetura desejada. Qualquer das duas leituras é defensável, e nenhuma é sem custo: a segunda custa uma reorganização que a diretoria precisa aprovar.
 
 ## Estudo de caso: o balanço da extração de `Pagamentos`
 
@@ -160,7 +227,8 @@ Temos a conta inteira, com seus buracos à vista. Falta o que o módulo inteiro 
 
 - Newman, Sam. *Building Microservices*. 2. ed. Cap. 10 — From Monitoring to Observability (a definição de observabilidade, registros, métricas, rastro distribuído e a recomendação de adotar o identificador de correlação cedo).
 - Conway, Melvin E. "How Do Committees Invent?". *Datamation*, abril de 1968.
-- Richards, Mark; Ford, Neal. *Fundamentals of Software Architecture*. Seção "Conway's Law" (a lei e a manobra inversa de Conway).
+- Richards, Mark; Ford, Neal. *Fundamentals of Software Architecture*. Cap. 8 — Component-Based Thinking (quadro "Conway's Law": a lei e a manobra inversa de Conway).
+- Ford, Neal; Parsons, Rebecca; Kua, Patrick; Sadalage, Pramod. *Building Evolutionary Architectures*. 2. ed. Cap. 9 — Putting Evolutionary Architecture into Practice (seção "Don't Fight Conway's Law": times organizados em torno das fronteiras de serviço).
 - Ford, Neal; Parsons, Rebecca; Kua, Patrick; Sadalage, Pramod. *Building Evolutionary Architectures*. 2. ed. (observabilidade e métricas como base de funções de aptidão, tema do Módulo 4).
 
 ## Referências
